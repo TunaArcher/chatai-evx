@@ -1,5 +1,11 @@
+const wsUrl =
+  window.location.hostname === "localhost"
+    ? "ws://localhost:8080" // สำหรับการเทสใน Local
+    : "wss://websocket.evxcars.com"; // สำหรับ Production
+
 // สร้างการเชื่อมต่อกับ WebSocket Server
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket(wsUrl);
+console.log(`WebSocket URL: ${wsUrl}`);
 
 // DOM Elements (ดึง Element ต่าง ๆ จาก DOM)
 const chatInput = document.getElementById("chat-input");
