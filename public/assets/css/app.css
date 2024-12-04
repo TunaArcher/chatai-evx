@@ -625,7 +625,7 @@ input.add-file-input {
   margin-left: var(--bs-startbar-width);
   position: relative;
   min-height: calc(100vh - var(--bs-topbar-height));
-  padding: 0 8px 68px 8px;
+  /* padding: 0 8px 68px 8px; */
   margin-top: var(--bs-topbar-height);
 }
 .page-wrapper .page-content .page-title-box {
@@ -2168,7 +2168,8 @@ File: footer Css
 .chat-box-left {
   float: left;
   width: 340px;
-  height: 710px;
+  /* height: 710px; */
+  height: 100%;
   background-color: var(--bs-secondary-bg);
   border-radius: 8px;
   margin-bottom: 20px;
@@ -2184,7 +2185,8 @@ File: footer Css
   display: block;
   border-radius: 8px;
   position: relative;
-  height: 710px;
+  /* height: 710px; */
+  height: 100%;
   margin-left: 361px;
   margin-bottom: 20px;
 }

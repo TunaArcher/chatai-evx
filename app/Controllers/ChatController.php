@@ -77,9 +77,16 @@ class ChatController extends BaseController
      */
     public function fetchMessages($roomID)
     {
-        // TODO:: จัดการด้วย
+        $room = $this->messageRoomModel->getMessageRoomByID($roomID);
+        $customer = $this->customerModel->getCustomerByID($room->customer_id);
         $messages = $this->messageModel->getMessageRoomByRoomID($roomID);
-        return $this->response->setJSON($messages);
+        $data = [
+            'room' => $room,
+            'customer' => $customer,
+            'messages' => $messages
+        ];
+        
+        return $this->response->setJSON(json_encode($data));
     }
 
     // -----------------------------------------------------------------------------
@@ -154,10 +161,10 @@ class ChatController extends BaseController
             'room_id' => $messageRoom->id,
             'send_by' => 'Customer',
             'sender_id' => $customer->id,
-            'sender_avatar' => $customer->profile,
             'message' => $message,
             'platform' => $platform,
             'sender_name' => $customer->name,
+            'created_at' => date('Y-m-d H:i:s')
         ]);
     }
 
@@ -266,7 +273,8 @@ class ChatController extends BaseController
                     'send_by' => 'Admin',
                     'sender_id' => $userID,
                     'message' => $input->message,
-                    'platform' => $platform
+                    'platform' => $platform,
+                    'created_at' => date('Y-m-d H:i:s')
                 ]);
             }
         } catch (\Exception $e) {
@@ -298,7 +306,6 @@ class ChatController extends BaseController
 
         return $messageRoom;
     }
-
 
     // บันทึกข้อความลงฐานข้อมูล
     private function saveMessage($roomID, $customerID, $message, $platform)
@@ -338,7 +345,7 @@ class ChatController extends BaseController
                             "type": "text",
                             "id": "537640104437743685",
                             "quoteToken": "YjpCuVg0NaKnHYNYbdyFIfUY4dBolOvHmRVc4mbvKxxwMD73WbGS4CmSTn139cz7bWfLO9wMDyclaa34qFBw3nJwy7RVIxP2ogHAc2elrPm8RGtzLXtCriv_KV2c5f8XtXYqz1NirIOhDphNTjdzag",
-                            "text": "Mmm"
+                            "text": "ข้อความทดสอบจาก Mockup"
                         },
                         "webhookEventId": "01JE81Y7QRESCF081NGE7TTESX",
                         "deliveryContext": { "isRedelivery": false },

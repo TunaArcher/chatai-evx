@@ -19,9 +19,29 @@
     <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+
+    <!-- เรียกใช้ Google Translate Element -->
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        /** BASE **/
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+    </style>
+
     <?php if (isset($css_critical)) {
         echo $css_critical;
     } ?>
+
+    <style>
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -39,7 +59,7 @@
                         </button>
                     </li>
                     <li class="mx-3 welcome-text">
-                        <h3 class="mb-0 fw-bold text-truncate">Good Morning</h3>
+                        <h3 class="mb-0 fw-bold text-truncate">Chat AI Demo</h3>
                         <!-- <h6 class="mb-0 fw-normal text-muted text-truncate fs-14">Here's your overview this week.</h6> -->
                     </li>
                 </ul>

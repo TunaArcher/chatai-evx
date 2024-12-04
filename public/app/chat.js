@@ -16,6 +16,9 @@ const chatHeader = document.getElementById("chat-header");
 const profilePic = document.getElementById("profile-pic");
 const chatTitle = document.getElementById("chat-title");
 
+const chatBoxProfile = document.getElementById("chat-box-profile");
+const chatBoxUsername = document.getElementById("chat-box-username");
+
 // ตัวแปรสถานะปัจจุบัน
 let currentRoomId = null; // ห้องปัจจุบันที่ใช้งาน
 let currentPlatform = null; // แพลตฟอร์มปัจจุบัน (Facebook, Line ฯลฯ)
@@ -31,8 +34,18 @@ let currentChatGroup = null; // กลุ่มข้อความปัจจ
 // ฟังก์ชันโหลดข้อความเมื่อเปลี่ยนห้องสนทนา
 // -----------------------------------------------------------------------------
 roomsList.addEventListener("click", (event) => {
+  const chatBoxEmpty = document.getElementById("chat-box-emtry");
+  const chatBoxRight = document.querySelector(".chat-box-right");
+  const preloader = document.getElementById("preloader"); // เพิ่ม preloader (สร้าง element นี้ใน HTML)
+
+  // ซ่อน chat-box-emtry
+  chatBoxEmpty.style.display = "none";
+
   const roomItem = event.target.closest(".room-item");
   if (!roomItem) return; // หากไม่ได้คลิกที่รายการห้องให้หยุดทำงาน
+
+  // แสดง preloader
+  preloader.style.display = "block";
 
   // อัปเดตสถานะห้องปัจจุบัน
   currentRoomId = roomItem.getAttribute("data-room-id");
@@ -49,15 +62,28 @@ roomsList.addEventListener("click", (event) => {
   // ดึงข้อความของห้องสนทนาจาก API
   fetch(`/messages/${currentRoomId}`)
     .then((response) => response.json())
-    .then((messages) => {
+    .then((data) => {
+      let customer = data.customer;
+      let messages = data.messages;
+
+      // จัดการกล่องแชท
+      chatBoxProfile.src = customer.profile;
+      chatBoxUsername.innerHTML = customer.name;
+
       // เคลียร์ข้อความเก่าในหน้าจอ
       messagesDiv.innerHTML = "";
 
       // วนลูปข้อความและเพิ่มลงในหน้าจอ
       messages.forEach((msg) => renderMessage(msg));
       scrollToBottom();
+
+      // ซ่อน preloader เมื่อโหลดเสร็จ
+      preloader.style.display = "none";
     })
     .catch((err) => console.error("Error loading messages:", err));
+
+  // แสดง chat-box-right
+  chatBoxRight.style.display = "block";
 });
 
 // -----------------------------------------------------------------------------
@@ -89,6 +115,8 @@ function renderMessage(msg) {
 
     // ระบุฝั่งผู้ส่ง (ลูกค้าหรือแอดมิน)
     if (msg.send_by === "Customer") {
+      msg.sender_avatar = chatBoxProfile.src;
+
       msgDiv.innerHTML = `
                 <img src="${msg.sender_avatar}" alt="user" class="rounded-circle thumb-md">
                 <div class="ms-1 chat-box w-100">
@@ -258,16 +286,24 @@ function addNewRoom(data) {
             <a href="#" class="">
                 <div class="d-flex align-items-start">
                     <div class="position-relative">
-                        <img src="${data.sender_avatar}" alt="" class="thumb-lg rounded-circle">
+                        <img src="${
+                          data.sender_avatar
+                        }" alt="" class="thumb-lg rounded-circle">
                         <span class="position-absolute bottom-0 end-0">
-                            <img src="assets/images/${getPlatformIcon(data.platform)}" width="14">
+                            <img src="assets/images/${getPlatformIcon(
+                              data.platform
+                            )}" width="14">
                         </span>
                     </div>
                     <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                        <h6 class="my-0 fw-medium text-dark fs-14">${data.sender_name}
+                        <h6 class="my-0 fw-medium text-dark fs-14">${
+                          data.sender_name
+                        }
                             <small class="float-end text-muted fs-11">Now</small>
                         </h6>
-                        <p class="text-muted mb-0"><span class="text-primary">${data.message}</span></p>
+                        <p class="text-muted mb-0"><span class="text-primary">${
+                          data.message
+                        }</span></p>
                     </div>
                 </div>
             </a>`;
@@ -298,4 +334,3 @@ function getPlatformIcon(platform) {
       return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
   }
 }
-

@@ -114,20 +114,19 @@
                     </div>
                 </div><!--end chat-box-left -->
 
-                <div class="chat-box-right">
+                <div id="chat-box-right" class="chat-box-right" style="display: none;">
                     <div class="p-3 d-flex justify-content-between align-items-center card-bg rounded">
                         <a href="" class="d-flex align-self-center">
                             <div class="flex-shrink-0">
-                                <img src="assets/images/users/avatar-1.jpg" alt="user" class="rounded-circle thumb-lg">
+                                <img id="chat-box-profile" alt="user" class="rounded-circle thumb-lg">
                             </div><!-- media-left -->
                             <div class="flex-grow-1 ms-2 align-self-center">
                                 <div>
-                                    <h6 class="my-0 fw-medium text-dark fs-14">Mary Schneider</h6>
-                                    <p class="text-muted mb-0">Last seen: 2 hours ago</p>
+                                    <h6 class="my-0 fw-medium text-dark fs-14" id="chat-box-username"></h6>
                                 </div>
                             </div><!-- end media-body -->
                         </a><!--end media-->
-                        <div class="d-none d-sm-inline-block align-self-center">
+                        <div class="d-none d-sm-inline-block align-self-center disabled">
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Call" data-bs-custom-class="tooltip-primary"><i class="iconoir-phone"></i></a>
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Video call" data-bs-custom-class="tooltip-primary"><i class="iconoir-video-camera"></i></a>
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete" data-bs-custom-class="tooltip-primary"><i class="iconoir-trash"></i></a>
@@ -135,68 +134,7 @@
                         </div>
                     </div><!-- end chat-header -->
                     <div class="chat-body" data-simplebar>
-                        <div id="chat-detail" class="chat-detail">
-                            <div class="d-flex">
-                                <img src="assets/images/users/avatar-1.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="ms-1 chat-box w-100">
-                                    <div class="user-chat">
-                                        <p class="">Good Morning !</p>
-                                        <p class="">There are many variations of passages of Lorem Ipsum available.</p>
-                                    </div>
-                                    <div class="chat-time">yesterday</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                            <div class="d-flex flex-row-reverse">
-                                <img src="assets/images/users/avatar-3.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="me-1 chat-box w-100 reverse">
-                                    <div class="user-chat">
-                                        <p class="">Hi,</p>
-                                        <p class="">Can be verified on any platform using docker?</p>
-                                    </div>
-                                    <div class="chat-time">12:35pm</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                            <div class="d-flex">
-                                <img src="assets/images/users/avatar-1.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="ms-1 chat-box w-100">
-                                    <div class="user-chat">
-                                        <p class="">Have a nice day !</p>
-                                        <p class="">Command was run with root privileges. I'm sure about that.</p>
-                                        <p class="">ok</p>
-                                    </div>
-                                    <div class="chat-time">11:10pm</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                            <div class="d-flex flex-row-reverse">
-                                <img src="assets/images/users/avatar-3.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="me-1 chat-box w-100 reverse">
-                                    <div class="user-chat">
-                                        <p class="">Thanks for your message David. I thought I'm alone with this issue. Please, 👍 the issue to support it :)</p>
-                                    </div>
-                                    <div class="chat-time">10:10pm</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                            <div class="d-flex">
-                                <img src="assets/images/users/avatar-1.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="ms-1 chat-box w-100">
-                                    <div class="user-chat">
-                                        <p class="">Sorry, I just back !</p>
-                                        <p class="">It seems like you are from Mac OS world. There is no /Users/ folder on linux 😄</p>
-                                    </div>
-                                    <div class="chat-time">11:15am</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                            <div class="d-flex flex-row-reverse">
-                                <img src="assets/images/users/avatar-3.jpg" alt="user" class="rounded-circle thumb-md">
-                                <div class="me-1 chat-box w-100 reverse">
-                                    <div class="user-chat">
-                                        <p class="">Good Morning !</p>
-                                        <p class="">There are many variations of passages of Lorem Ipsum available.</p>
-                                    </div>
-                                    <div class="chat-time">9:02am</div>
-                                </div><!--end media-body-->
-                            </div><!--end media-->
-                        </div> <!-- end chat-detail -->
+                        <div id="chat-detail" class="chat-detail"></div> <!-- end chat-detail -->
                     </div><!-- end chat-body -->
                     <div class="chat-footer">
                         <div class="row">
@@ -205,7 +143,7 @@
                             </div><!-- col-8 -->
                             <div class="col-2 col-md-4 text-end">
                                 <div class="chat-features">
-                                    <div class="d-none d-sm-inline-block ">
+                                    <div class="d-none d-sm-inline-block disabled">
                                         <a href=""><i class="iconoir-camera"></i></a>
                                         <a href=""><i class="iconoir-attachment"></i></a>
                                         <a href=""><i class="iconoir-microphone"></i></a>
@@ -216,6 +154,51 @@
                         </div><!-- end row -->
                     </div><!-- end chat-footer -->
                 </div><!--end chat-box-right -->
+
+                <style>
+                    .cn {
+                        position: relative;
+                    }
+
+                    .inner {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 200px;
+                        height: 200px;
+                    }
+                </style>
+                <div id="chat-box-emtry" class="chat-box-right cn">
+                    <div class="container-xxl">
+
+                        <div class="row justify-content-center inner">
+                            <div class="col-12">
+                                <div class="">
+                                    <div class="card-header text-center">
+                                        <h4 class="card-title pt-2 fw-semibold mb-2 fs-18">ไม่มีข้อความจากลูกค้าของคุณในการเชื่อมต่อ</h4>
+                                        <p> <i class="la la-grip-lines text-primary fs-18"></i> <i class="la la-question-circle text-primary fs-18"></i> <i class="la la-grip-lines text-primary fs-18"></i></p>
+                                    </div><!--end card-header-->
+                                </div><!--end card-->
+                            </div> <!--end col-->
+                        </div><!--end row-->
+
+                    </div>
+                </div>
+
+                <div id="chat-box-preloader" class="chat-box-right cn" style="display: none;">
+                    <div class="container-xxl">
+
+                        <div class="row justify-content-center inner">
+                            <div class="col-12">
+                                <div class="" style="height: 710px;">
+                                    <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                </div><!--end card-->
+                            </div> <!--end col-->
+                        </div><!--end row-->
+
+                    </div>
+                </div>
             </div> <!-- end col -->
         </div><!-- end row -->
     </div><!-- container -->
@@ -263,31 +246,6 @@
     <!--end Rightbar/offcanvas-->
     <!--end Rightbar-->
     <!--Start Footer-->
-
-    <footer class="footer text-center text-sm-start d-print-none">
-        <div class="container-xxl">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mb-0 rounded-bottom-0">
-                        <div class="card-body">
-                            <p class="text-muted mb-0">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>
-                                Rizz
-                                <span
-                                    class="text-muted d-none d-sm-inline-block float-end">
-                                    Crafted with
-                                    <i class="iconoir-heart text-danger"></i>
-                                    by Mannatthemes</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <!--end footer-->
 </div>
