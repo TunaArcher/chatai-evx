@@ -40,7 +40,7 @@ $routes->get('/', 'HomeController::index');
 
 $routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
 $routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
-$routes->post('/webhook', 'ChatController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+$routes->post('/webhook/(:any)', 'ChatController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข้อความไปยัง WebSocket
 
 $routes->get('/setting', 'SettingController::index'); // หน้าแสดงรายการห้องสนทนา

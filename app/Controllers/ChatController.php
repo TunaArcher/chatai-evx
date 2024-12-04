@@ -2,27 +2,31 @@
 
 namespace App\Controllers;
 
-use App\Models\UserModel;
+use App\Models\CustomerModel;
 use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
-use App\Models\CustomerModel;
+use App\Models\UserSocialModel;
+use App\Models\UserModel;
 
 class ChatController extends BaseController
 {
-    private UserModel $userModel;
+    private CustomerModel $customerModel;
     private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
-    private CustomerModel $customerModel;
+    private UserModel $userModel;
+    private UserSocialModel $userSocialModel;
+    
 
     /**
      * Constructor สำหรับเตรียม Model ที่จำเป็น
      */
     public function __construct()
     {
-        $this->userModel = new UserModel();
+        $this->customerModel = new CustomerModel();
         $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
-        $this->customerModel = new CustomerModel();
+        $this->userModel = new UserModel();
+        $this->userSocialModel = new UserSocialModel();        
     }
 
     // NOTE: ต้องจัดการ ID, Refactor foreach
@@ -79,9 +83,36 @@ class ChatController extends BaseController
      * - บันทึกข้อความในฐานข้อมูล
      * - ส่งข้อความไปยัง WebSocket Server
      */
-    public function webhook()
+    public function webhook($userSocialID)
     {
         $input = $this->request->getJSON();
+
+        $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
+
+        switch($userSocial->platform) {
+            case 'Facebook':
+                
+                break;
+
+
+            case 'Line':
+                log_message('error', 'Webhook Input: ' . json_encode($input));
+                
+                echo '<pre>';
+                print_r($input); exit();
+
+                break;
+
+            case 'WhatsApp':
+                break;
+
+            case 'Instagram':
+                break;
+
+            case 'Tiktok':
+                break;
+        }
+
 
         // ตรวจสอบว่าผู้ส่งข้อความมีอยู่ในระบบหรือไม่
         $user = $this->userModel
@@ -106,6 +137,10 @@ class ChatController extends BaseController
         $this->sendMessageToWebSocket($input);
 
         return $this->response->setJSON(['status' => 'success']);
+    }
+
+    public function handleWebHookLine() {
+
     }
 
     /**

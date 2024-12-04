@@ -15,7 +15,7 @@ class UserSocialModel
         $this->db = &$db;
     }
 
-    public function getUserAll()
+    public function getUserSocialAll()
     {
         $builder = $this->db->table('user_socials');
 
@@ -25,37 +25,31 @@ class UserSocialModel
             ->getResult();
     }
 
-    public function getUserByID($id)
+    public function getUserSocialByID($id)
     {
         $builder = $this->db->table('user_socials');
 
         return $builder->where('id', $id)->get()->getRow();
     }
 
-    public function insertUser($data)
+    public function insertUserSocial($data)
     {
         $builder = $this->db->table('user_socials');
 
         return $builder->insert($data) ? $this->db->insertID() : false;
     }
 
-    public function updateUserByID($id, $data)
+    public function updateUserSocialByID($id, $data)
     {
         $builder = $this->db->table('user_socials');
 
         return $builder->where('id', $id)->update($data);
     }
 
-    public function deleteUserByID($id)
+    public function deleteUserSocialByID($id)
     {
         $builder = $this->db->table('user_socials');
 
         return $builder->where('id', $id)->delete();
-    }
-
-    public function getUser($Username)
-    {
-        $builder = $this->db->table('user_socials');
-        return $builder->where('Username', $Username)->get()->getResult();
     }
 }
