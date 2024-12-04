@@ -59,4 +59,11 @@ class CustomerModel
         
         return $builder->where('Customername', $Customername)->get()->getResult();
     }
+
+    public function getCustomerByUIDAndPlatform($UID, $platform)
+    {
+        $builder = $this->db->table('customers');
+
+        return $builder->where('uid', $UID)->where('platform', $platform)->get()->getRow();
+    }
 }

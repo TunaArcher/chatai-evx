@@ -8,6 +8,8 @@ use App\Models\MessageRoomModel;
 use App\Models\UserSocialModel;
 use App\Models\UserModel;
 
+use App\Libraries\Line;
+
 class ChatController extends BaseController
 {
     private CustomerModel $customerModel;
@@ -15,7 +17,7 @@ class ChatController extends BaseController
     private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
-    
+
 
     /**
      * Constructor สำหรับเตรียม Model ที่จำเป็น
@@ -26,7 +28,7 @@ class ChatController extends BaseController
         $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
-        $this->userSocialModel = new UserSocialModel();        
+        $this->userSocialModel = new UserSocialModel();
     }
 
     // NOTE: ต้องจัดการ ID, Refactor foreach
@@ -89,17 +91,21 @@ class ChatController extends BaseController
 
         $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
 
-        switch($userSocial->platform) {
+        $platform = $userSocial->platform;
+
+        switch ($platform) {
             case 'Facebook':
-                
+
                 break;
 
 
             case 'Line':
-                log_message('error', 'Webhook Input: ' . json_encode($input));
-                
-                echo '<pre>';
-                print_r($input); exit();
+                $this->handleWebHookLine($input, $userSocial);
+                // log_message('error', 'Webhook Input: ' . json_encode($input));
+
+                // echo '<pre>';
+                // print_r($input);
+                // exit();
 
                 break;
 
@@ -113,34 +119,79 @@ class ChatController extends BaseController
                 break;
         }
 
-
-        // ตรวจสอบว่าผู้ส่งข้อความมีอยู่ในระบบหรือไม่
-        $user = $this->userModel
-            ->where('platform', $input->platform)
-            ->where('id', $input->sender_id)
-            ->first();
-
-        if (!$user) {
-            return $this->response->setStatusCode(404, 'User not found');
-        }
-
-        // บันทึกข้อความลงฐานข้อมูล
-        $this->messageModel->insert([
-            'room_id' => $input->room_id,
-            'send_by' => 'Admin',
-            'sender_id' => $input->sender_id,
-            'message' => $input->message,
-            'platform' => $input->platform,
-        ]);
-
-        // ส่งข้อความไปยัง WebSocket Server
-        $this->sendMessageToWebSocket($input);
-
         return $this->response->setJSON(['status' => 'success']);
     }
 
-    public function handleWebHookLine() {
+    public function handleWebHookLine($input, $userSocial)
+    {
+        $platform = 'Line';
 
+        // ข้อมูล Mock สำหรับ Development
+        if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockLineWebhookData();
+
+        // ดึงข้อมูลเหตุการณ์จาก Line API
+        $user = $input->events[0];
+        $type = $user->source->type;
+        $UID = $user->source->userId;
+        $message = $user->message->text;
+
+        // ตรวจสอบลูกค้าจาก UID และ Platform
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
+
+        // Case 1: ถ้ายังไม่มี ให้ไปสร้างห้อง แล้ว send message
+        if (!$customer) {
+
+            // ให้สร้างยูส
+            $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
+
+            // TODO:: Handle get profile
+
+            $customer = $this->customerModel->insertCustomer([
+                'platform' => 'LINE',
+                'uid' => $UID,
+                'profile' => ''
+            ]);
+            $customerID = $customer;
+
+            if ($customer) {
+
+                $messageRoom = $this->messageRoomModel->insertMessageRoom([
+                    'platform' => 'Line',
+                    'user_social_id' => $userSocial->id,
+                    'user_social_name' => $userSocial->name,
+                    'customer_id' => $customerID,
+                    'user_id' => $userSocial->user_id,
+                ]);
+                $messageRoomID = $messageRoom;
+            }
+        }
+
+        // Case 2: ถ้ามีแล้วแปลงว่าเป็นยูสที่เคยส่งข้อความมาแล้ว ให้ค้นหาห้อง แล้ว send message
+        else {
+
+            $customerID = $customer->id;
+
+            $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customerID);
+            $messageRoomID = $messageRoom->id;
+        }
+
+        // บันทึกข้อความลงฐานข้อมูล
+        $this->messageModel->insertMessage([
+            'room_id' => $messageRoomID,
+            'send_by' => 'Customer',
+            'sender_id' => $customerID,
+            'message' => $message,
+            'platform' => $platform,
+        ]);
+
+        // ส่งข้อความไปยัง WebSocket Server
+        sendMessageToWebSocket([
+            'room_id' => $messageRoomID,
+            'send_by' => 'Customer',
+            'sender_id' => $customer,
+            'message' => $message,
+            'platform' => $platform,
+        ]);
     }
 
     /**
@@ -152,48 +203,83 @@ class ChatController extends BaseController
     public function sendMessage()
     {
         $input = $this->request->getJSON();
-        $userID = session()->get('userID');
 
-        // เตรียมข้อมูลสำหรับบันทึกลงฐานข้อมูล
-        $messageData = [
-            'room_id' => $input->room_id,
-            'send_by' => 'Admin',
-            'sender_id' => $userID,
-            'message' => $input->message,
-            'platform' => $input->platform
-        ];
+        $platform = $input->platform;
 
-        // บันทึกข้อความลงในฐานข้อมูล
-        $this->messageModel->insertMessage($messageData);
+        switch ($platform) {
+            case 'Facebook':
 
-        // เตรียมข้อมูลสำหรับส่งไปยัง WebSocket Server
-        $websocketData = [
-            'room_id' => $input->room_id,
-            'send_by' => 'Admin',
-            'sender_id' => $userID,
-            'message' => $input->message,
-            'platform' => $input->platform
-        ];
+                break;
 
-        // ส่งข้อความไปยัง WebSocket Server
-        $this->sendMessageToWebSocket($websocketData);
+
+            case 'Line':
+                $this->handleSendMessageLine($input);
+                // log_message('error', 'Webhook Input: ' . json_encode($input));
+
+                // echo '<pre>';
+                // print_r($input);
+                // exit();
+
+                break;
+
+            case 'WhatsApp':
+                break;
+
+            case 'Instagram':
+                break;
+
+            case 'Tiktok':
+                break;
+        }
 
         return $this->response->setJSON(['status' => 'success']);
     }
 
-    /**
-     * ฟังก์ชันสำหรับส่งข้อความไปยัง WebSocket Server
-     * - ใช้ cURL เพื่อส่งข้อมูล
-     */
-    private function sendMessageToWebSocket(array $data)
+    public function handleSendMessageLine($input)
     {
-        $url = getenv('WS_URL'); // URL ของ WebSocket Server
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // แปลงข้อมูลเป็น JSON
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // ไม่ต้องการรับ Response กลับ
-        curl_exec($ch);
-        curl_close($ch);
+        try {
+
+            $platform = 'Line';
+
+            $input = $this->request->getJSON();
+            $userID = session()->get('userID');
+
+            // ข้อมูล Mock สำหรับ Development
+            if (getenv('CI_ENVIRONMENT') == 'development') {
+                $uid = 'U0434fa7d7cfef4a035f9dce7c0253def';
+                $channelAccessToken = 'UUvglmk7qWbUBSAzM2ThjtAtV+8ipnI1KabsWobuQt8VqFgizLGi91+eVfpZ86i9YRU/oWrmHSBFtACvAwZ/Z6rynrfHU4tWEQi6Yi/HhHzBjCeD5pMdPODqLaEbfCO5bX7rlAbD5swrrhQPljjhTgdB04t89/1O/w1cDnyilFU=';
+            } else {
+                $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+                $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+                $channelAccessToken = $userSocial->line_channel_access_token;
+            }
+
+            $lineAPI = new Line(['channelAccessToken' => $channelAccessToken]);
+            $sendToLine = $lineAPI->pushMessage($uid, $input->message);
+
+            if ($sendToLine) {
+                // บันทึกข้อความลงในฐานข้อมูล
+                $this->messageModel->insertMessage([
+                    'room_id' => $input->room_id,
+                    'send_by' => 'Admin',
+                    'sender_id' => $userID,
+                    'message' => $input->message,
+                    'platform' => $platform
+                ]);
+
+                // ส่งข้อความไปยัง WebSocket Server
+                sendMessageToWebSocket([
+                    'room_id' => $input->room_id,
+                    'send_by' => 'Admin',
+                    'sender_id' => $userID,
+                    'message' => $input->message,
+                    'platform' => $platform
+                ]);
+            }
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'LineAPI::handleSendMessageLine error {message}', ['message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -218,5 +304,34 @@ class ChatController extends BaseController
     {
         $customer = $this->customerModel->getCustomerByID($customerID);
         return $customer->name ?? 'Unknown';
+    }
+
+    private function getMockLineWebhookData()
+    {
+        return json_decode(
+            '{
+                "destination": "Uebfcefae558f36b52310a78674602ef1",
+                "events": [
+                    {
+                        "type": "message",
+                        "message": {
+                            "type": "text",
+                            "id": "537640104437743685",
+                            "quoteToken": "YjpCuVg0NaKnHYNYbdyFIfUY4dBolOvHmRVc4mbvKxxwMD73WbGS4CmSTn139cz7bWfLO9wMDyclaa34qFBw3nJwy7RVIxP2ogHAc2elrPm8RGtzLXtCriv_KV2c5f8XtXYqz1NirIOhDphNTjdzag",
+                            "text": "Mmm"
+                        },
+                        "webhookEventId": "01JE81Y7QRESCF081NGE7TTESX",
+                        "deliveryContext": { "isRedelivery": false },
+                        "timestamp": 1733289778596,
+                        "source": {
+                            "type": "user",
+                            "userId": "U0434fa7d7cfef4a035f9dce7c0253def"
+                        },
+                        "replyToken": "54fc984b6d054cc391d47b0f7ef2b902",
+                        "mode": "active"
+                    }
+                ]
+            }'
+        );
     }
 }

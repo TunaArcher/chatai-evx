@@ -1,6 +1,6 @@
 const wsUrl =
   window.location.hostname === "localhost"
-    ? "ws://localhost:8080" // สำหรับการเทสใน Local
+    ? "ws://localhost:3000" // สำหรับการเทสใน Local
     : "wss://websocket.evxcars.com:8080"; // สำหรับ Production
 
 // สร้างการเชื่อมต่อกับ WebSocket Server
