@@ -59,11 +59,25 @@ class MessageRoomModel
         return $builder->where('MessageRoomname', $MessageRoomname)->get()->getResult();
     }
 
-    public function getMessageRoomByUserID($userID) 
+    public function getMessageRoomByUserID($userID)
     {
         $sql = "
-            SELECT * FROM message_rooms
-            WHERE user_id = '$userID'
+            SELECT 
+                mr.*,
+                m.created_at AS latest_message_time
+            FROM 
+                message_rooms mr
+            LEFT JOIN 
+                messages m ON mr.id = m.room_id
+            WHERE 
+                mr.user_id = '$userID'
+                AND m.created_at = (
+                    SELECT MAX(created_at)
+                    FROM messages
+                    WHERE room_id = mr.id
+                )
+            ORDER BY 
+                m.created_at DESC
         ";
 
         $builder = $this->db->query($sql);

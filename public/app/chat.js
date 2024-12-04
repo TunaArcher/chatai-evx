@@ -1,7 +1,7 @@
 const wsUrl =
   window.location.hostname === "localhost"
-    ? "ws://localhost:3000" // สำหรับการเทสใน Local
-    : "wss://websocket.evxcars.com:8080"; // สำหรับ Production
+    ? "ws://localhost:3000"
+    : "wss://websocket.evxcars.com:8080";
 
 // สร้างการเชื่อมต่อกับ WebSocket Server
 const ws = new WebSocket(wsUrl);
@@ -15,7 +15,6 @@ const roomsList = document.getElementById("rooms-list");
 const chatHeader = document.getElementById("chat-header");
 const profilePic = document.getElementById("profile-pic");
 const chatTitle = document.getElementById("chat-title");
-
 const chatBoxProfile = document.getElementById("chat-box-profile");
 const chatBoxUsername = document.getElementById("chat-box-username");
 
@@ -90,97 +89,180 @@ roomsList.addEventListener("click", (event) => {
 // ฟังก์ชันแสดงข้อความบนหน้าจอ
 // -----------------------------------------------------------------------------
 function renderMessage(msg) {
-  const messageTime = new Date(msg.created_at).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const messageTime = formatMessageTime(msg.created_at);
 
-  // ตรวจสอบว่าข้อความสามารถรวมกับข้อความก่อนหน้าได้หรือไม่
-  const canGroupWithPrevious =
-    msg.sender_id === previousSenderId && previousTime === messageTime;
+  // กรณีเป็นข้อความในนาทีเดียวกัน ให้ Group
+  if (shouldGroupWithPrevious(msg.sender_id, messageTime)) {
+    appendMessageToGroup(msg.message);
+  }
 
-  if (canGroupWithPrevious && currentChatGroup !== null) {
-    // เพิ่มข้อความใหม่ในกลุ่มเดิม
-    const userChatDiv = currentChatGroup.querySelector(".user-chat");
-    if (userChatDiv) {
-      const newMessage = document.createElement("p");
-      newMessage.textContent = msg.message;
-      userChatDiv.appendChild(newMessage);
-    }
-  } else {
-    // สร้างกล่องข้อความใหม่
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("d-flex");
-
-    // ระบุฝั่งผู้ส่ง (ลูกค้าหรือแอดมิน)
-    if (msg.send_by === "Customer") {
-      msg.sender_avatar = chatBoxProfile.src;
-
-      msgDiv.innerHTML = `
-                <img src="${msg.sender_avatar}" alt="user" class="rounded-circle thumb-md">
-                <div class="ms-1 chat-box w-100">
-                    <div class="user-chat">
-                        <p>${msg.message}</p>
-                    </div>
-                    <div class="chat-time">${messageTime}</div>
-                </div>`;
-    } else if (msg.send_by === "Admin") {
-      msgDiv.classList.add("flex-row-reverse");
-      msgDiv.innerHTML = `
-                <img src="${msg.sender_avatar}" alt="user" class="rounded-circle thumb-md">
-                <div class="me-1 chat-box w-100 reverse">
-                    <div class="user-chat">
-                        <p>${msg.message}</p>
-                    </div>
-                    <div class="chat-time">${messageTime}</div>
-                </div>`;
-    }
-
-    // เพิ่มข้อความใหม่ลงในหน้าจอ
-    messagesDiv.appendChild(msgDiv);
-
-    // อัปเดตตัวแปรสถานะสำหรับจัดกลุ่มข้อความ
-    currentChatGroup = msgDiv;
-    previousSenderId = msg.sender_id;
-    previousTime = messageTime;
+  // กรณีแยกเป็นแต่ละข้อความ
+  else {
+    createMessageBubble(msg, messageTime);
+    updateRoomPreview(msg);
   }
 }
 
 // -----------------------------------------------------------------------------
 // ฟังก์ชันส่งข้อความใหม่
 // -----------------------------------------------------------------------------
-// sendBtn.addEventListener("click", () => {
-//   const message = chatInput.value.trim(); // ตัดช่องว่างด้านหน้าและท้ายออก
 
-//   if (message !== "" && currentRoomId) {
-//     const data = {
-//       room_id: currentRoomId,
-//       message: message,
-//       platform: currentPlatform,
-//     };
+// ฟังก์ชันส่งข้อความ
+function sendMessage() {
+  const message = chatInput.value.trim();
 
-//     console.log("กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์:", data);
+  if (!message || !currentRoomId) {
+    console.warn("กรุณาใส่ข้อความก่อนส่ง");
+    return;
+  }
 
-//     // ส่งข้อความไปยัง API
-//     fetch("/send-message", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(data),
-//     })
-//       .then((response) => {
-//         if (!response.ok) throw new Error("HTTP error " + response.status);
-//         return response.json();
-//       })
-//       .then((result) => console.log("ส่งข้อความสำเร็จ:", result))
-//       .catch((err) => console.error("Error sending message:", err));
+  const data = { room_id: currentRoomId, message, platform: currentPlatform };
 
-//     // ล้างข้อความในช่องกรอก
-//     chatInput.value = "";
-//   } else {
-//     console.warn("กรุณาใส่ข้อความก่อนส่ง");
-//   }
-// });
+  console.log("กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์:", data);
+
+  fetch("/send-message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error("HTTP error " + response.status);
+      return response.json();
+    })
+    .then((result) => {
+      console.log("ส่งข้อความสำเร็จ:", result);
+      addOrUpdateRoom({
+        room_id: currentRoomId,
+        message,
+        platform: currentPlatform,
+        sender_name: "Admin",
+        sender_avatar: chatBoxProfile.src,
+      });
+      scrollToBottom();
+    })
+    .catch((err) => console.error("Error sending message:", err));
+
+  chatInput.value = "";
+}
+
+// ตรวจจับการคลิกปุ่มส่งข้อความ
+sendBtn.addEventListener("click", sendMessage);
+
+// ตรวจจับการกดปุ่ม Enter
+chatInput.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+// -----------------------------------------------------------------------------
+// ฟังก์ชันจัดการข้อความใหม่ที่ได้รับผ่าน WebSocket
+// -----------------------------------------------------------------------------
+// จัดการข้อความใหม่ที่ได้รับผ่าน WebSocket
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log("ข้อความใหม่:", data);
+
+  if (data.room_id === currentRoomId) {
+    renderMessage(data);
+    scrollToBottom();
+  } else {
+    addOrUpdateRoom(data);
+  }
+};
+// จัดการสถานะ WebSocket
+ws.onopen = () => console.log("WebSocket connection opened.");
+ws.onclose = () => console.log("WebSocket connection closed.");
+ws.onerror = (error) => console.error("WebSocket error:", error);
+
+// -----------------------------------------------------------------------------
+// อื่น ๆ แปะไปก่อน
+// -----------------------------------------------------------------------------
+
+// ฟังก์ชันแปลงเวลา
+function formatMessageTime(createdAt) {
+  return new Date(createdAt).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+// ฟังก์ชันตรวจสอบว่าควรรวมข้อความใหม่กับข้อความเดิมหรือไม่
+function shouldGroupWithPrevious(senderId, messageTime) {
+  return (
+    senderId === previousSenderId &&
+    messageTime === previousTime &&
+    currentChatGroup !== null
+  );
+}
+
+// ฟังก์ชันเพิ่มข้อความใหม่ในกลุ่มเดิม
+function appendMessageToGroup(message) {
+  const userChatDiv = currentChatGroup.querySelector(".user-chat");
+  if (userChatDiv) {
+    const newMessage = document.createElement("p");
+    newMessage.textContent = message;
+    userChatDiv.appendChild(newMessage);
+  }
+}
+
+// ฟังก์ชันสร้างข้อความใหม่ในรูปแบบ Bubble
+function createMessageBubble(msg, messageTime) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("d-flex");
+  const isCustomer = msg.send_by === "Customer";
+  msgDiv.classList.toggle("flex-row-reverse", !isCustomer);
+
+  msg.sender_avatar = chatBoxProfile.src;
+
+  msgDiv.innerHTML = `
+    <img src="${
+      msg.sender_avatar || "default-avatar.png"
+    }" alt="user" class="rounded-circle thumb-md">
+    <div class="${isCustomer ? "ms-1" : "me-1"} chat-box w-100 ${
+    isCustomer ? "" : "reverse"
+  }">
+      <div class="user-chat">
+        <p>${msg.message}</p>
+      </div>
+      <div class="chat-time">${messageTime}</div>
+    </div>`;
+
+  messagesDiv.appendChild(msgDiv);
+
+  currentChatGroup = msgDiv;
+  previousSenderId = msg.sender_id;
+  previousTime = messageTime;
+}
+
+// ฟังก์ชันอัปเดต Preview ข้อความล่าสุดในห้อง
+function updateRoomPreview(data) {
+  const existingRoom = document.querySelector(
+    `.room-item[data-room-id="${data.room_id}"]`
+  );
+  if (!existingRoom) return;
+
+  const messagePreview = existingRoom.querySelector(".text-primary");
+  const timestamp = existingRoom.querySelector("small.float-end");
+
+  if (messagePreview) messagePreview.textContent = data.message;
+  if (timestamp) timestamp.textContent = "Now";
+}
+
+function getPlatformIcon(platform) {
+  switch (platform) {
+    case "Facebook":
+      return "ic-Facebook.svg";
+    case "Line":
+      return "ic-Line.png";
+    case "WhatsApp":
+      return "ic-WhatsApp.png";
+    default:
+      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
+  }
+}
 
 // ฟังก์ชันเลื่อนหน้าจอไปยังข้อความล่าสุด
 function scrollToBottom() {
@@ -197,140 +279,75 @@ function scrollToBottom() {
   }
 }
 
-// ฟังก์ชันส่งข้อความ
-function sendMessage() {
-  const message = chatInput.value.trim(); // ตัดช่องว่างด้านหน้าและท้ายออก
-
-  if (message !== "" && currentRoomId) {
-    const data = {
-      room_id: currentRoomId,
-      message: message,
-      platform: currentPlatform,
-    };
-
-    console.log("กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์:", data);
-
-    // ส่งข้อความไปยัง API
-    fetch("/send-message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("HTTP error " + response.status);
-        return response.json();
-      })
-      .then((result) => {
-        console.log("ส่งข้อความสำเร็จ:", result);
-        scrollToBottom(); // เลื่อนหน้าจอไปยังข้อความล่าสุด
-      })
-      .catch((err) => console.error("Error sending message:", err));
-
-    // ล้างข้อความในช่องกรอก
-    chatInput.value = "";
-  } else {
-    console.warn("กรุณาใส่ข้อความก่อนส่ง");
+function addOrUpdateRoom(data) {
+  if (!data.room_id || !data.message || !data.sender_name) {
+    console.warn("ข้อมูลไม่ครบถ้วนสำหรับ addOrUpdateRoom:", data);
+    return;
   }
-}
 
-// ตรวจจับการคลิกปุ่มส่งข้อความ
-sendBtn.addEventListener("click", sendMessage);
-
-// ตรวจจับการกดปุ่ม Enter
-chatInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    // ตรวจสอบว่าปุ่มที่กดคือ Enter
-    event.preventDefault(); // ป้องกันการส่งฟอร์มหรือเหตุการณ์เริ่มต้น
-    sendMessage(); // เรียกใช้ฟังก์ชันส่งข้อความ
-  }
-});
-
-// -----------------------------------------------------------------------------
-// ฟังก์ชันจัดการข้อความใหม่ที่ได้รับผ่าน WebSocket
-// -----------------------------------------------------------------------------
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log("ข้อความใหม่:", data);
-
-  if (data.room_id === currentRoomId) {
-    renderMessage(data); // แสดงข้อความในห้องปัจจุบัน
-    scrollToBottom(); // เลื่อนหน้าจอไปยังข้อความล่าสุด
-  } else {
-    // เพิ่มห้องใหม่ถ้าห้องนั้นยังไม่มีใน rooms-list
-    addNewRoom(data);
-  }
-};
-
-// -----------------------------------------------------------------------------
-// ฟังก์ชันเพิ่มห้องใหม่ใน rooms-list
-// -----------------------------------------------------------------------------
-function addNewRoom(data) {
-  const existingRoom = document.querySelector(
+  const roomsList = document.getElementById("rooms-list");
+  const existingRoom = roomsList.querySelector(
     `.room-item[data-room-id="${data.room_id}"]`
   );
 
-  if (!existingRoom) {
-    const newRoom = document.createElement("div");
-    newRoom.classList.add(
-      "room-item",
-      "p-2",
-      "border-dashed",
-      "border-theme-color",
-      "rounded",
-      "mb-2"
-    );
-    newRoom.setAttribute("data-room-id", data.room_id);
-    newRoom.setAttribute("data-platform", data.platform);
-
-    newRoom.innerHTML = `
-            <a href="#" class="">
-                <div class="d-flex align-items-start">
-                    <div class="position-relative">
-                        <img src="${
-                          data.sender_avatar
-                        }" alt="" class="thumb-lg rounded-circle">
-                        <span class="position-absolute bottom-0 end-0">
-                            <img src="assets/images/${getPlatformIcon(
-                              data.platform
-                            )}" width="14">
-                        </span>
-                    </div>
-                    <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                        <h6 class="my-0 fw-medium text-dark fs-14">${
-                          data.sender_name
-                        }
-                            <small class="float-end text-muted fs-11">Now</small>
-                        </h6>
-                        <p class="text-muted mb-0"><span class="text-primary">${
-                          data.message
-                        }</span></p>
-                    </div>
-                </div>
-            </a>`;
-
-    roomsList.prepend(newRoom);
-    console.log("เพิ่มห้องใหม่:", newRoom);
+  if (existingRoom) {
+    updateRoom(existingRoom, data);
+    roomsList.prepend(existingRoom);
+  } else {
+    createNewRoom(data);
   }
 }
 
-// จัดการสถานะ WebSocket
-ws.onopen = () => console.log("WebSocket connection opened.");
-ws.onclose = () => console.log("WebSocket connection closed.");
-ws.onerror = (error) => console.error("WebSocket error:", error);
+// ฟังก์ชันอัปเดตห้องที่มีอยู่
+function updateRoom(roomElement, data) {
+  const messagePreview = roomElement.querySelector(".text-primary");
+  const timestamp = roomElement.querySelector("small.float-end");
 
-// -----------------------------------------------------------------------------
-// อื่น ๆ แปะไปก่อน
-// -----------------------------------------------------------------------------
+  if (messagePreview) messagePreview.textContent = data.message;
+  if (timestamp) timestamp.textContent = "Now";
 
-function getPlatformIcon(platform) {
-  switch (platform) {
-    case "Facebook":
-      return "ic-Facebook.svg";
-    case "Line":
-      return "ic-Line.png";
-    case "WhatsApp":
-      return "ic-WhatsApp.png";
-    default:
-      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
-  }
+  console.log("อัปเดตห้อง:", roomElement);
+}
+
+// ฟังก์ชันสร้างห้องใหม่
+function createNewRoom(data) {
+  const newRoom = document.createElement("div");
+  newRoom.classList.add(
+    "room-item",
+    "p-2",
+    "border-dashed",
+    "border-theme-color",
+    "rounded",
+    "mb-2"
+  );
+  newRoom.setAttribute("data-room-id", data.room_id);
+  newRoom.setAttribute("data-platform", data.platform || "Unknown");
+
+  data.sender_avatar = chatBoxProfile.src;
+
+  newRoom.innerHTML = `
+    <a href="#" class="">
+      <div class="d-flex align-items-start">
+        <div class="position-relative">
+          <img src="${
+            data.sender_avatar || "default-avatar.png"
+          }" alt="user" class="thumb-lg rounded-circle">
+          <span class="position-absolute bottom-0 end-0">
+            <img src="assets/images/${getPlatformIcon(
+              data.platform || "Unknown"
+            )}" width="14">
+          </span>
+        </div>
+        <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+          <h6 class="my-0 fw-medium text-dark fs-14">${data.sender_name}
+            <small class="float-end text-muted fs-11">Now</small>
+          </h6>
+          <p class="text-muted mb-0">
+            <span class="text-primary">${data.message}</span>
+          </p>
+        </div>
+      </div>
+    </a>`;
+  document.getElementById("rooms-list").prepend(newRoom);
+  console.log("เพิ่มห้องใหม่:", newRoom);
 }
