@@ -1,3 +1,38 @@
+<style>
+    .btn-gradient {
+        font-weight: bold;
+        color: white;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        background: linear-gradient(90deg, #8e44ad, #c0392b, #f39c12, #8e44ad);
+        background-size: 300% 300%;
+        animation: gradient-animation 3s ease infinite;
+        transition: transform 0.2s ease-in-out;
+        overflow: hidden;
+    }
+
+    .btn-gradient:hover {
+        transform: scale(1.05);
+    }
+
+    @keyframes gradient-animation {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+</style>
+
 <!-- Page Content-->
 <div class="page-content">
     <div class="container-xxl">
@@ -126,6 +161,7 @@
                                 </div>
                             </div><!-- end media-body -->
                         </a><!--end media-->
+                        <button type="button" class="btn-gradient btn rounded-pill btn-outline-primary" onclick="alert('in devlopment')">เปิดฟังก์ชั่นให้ AI ช่วยตอบ</button>
                         <div class="d-none d-sm-inline-block align-self-center disabled">
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Call" data-bs-custom-class="tooltip-primary"><i class="iconoir-phone"></i></a>
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Video call" data-bs-custom-class="tooltip-primary"><i class="iconoir-video-camera"></i></a>
