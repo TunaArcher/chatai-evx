@@ -152,7 +152,7 @@ class ChatController extends BaseController
      */
     private function sendMessageToWebSocket(array $data)
     {
-        $url = 'http://localhost:8080'; // URL ของ WebSocket Server
+        $url = getenv('WS_URL'); // URL ของ WebSocket Server
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // แปลงข้อมูลเป็น JSON
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
