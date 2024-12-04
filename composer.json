@@ -10,16 +10,12 @@
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "aws/aws-sdk-php": "^3.269",
-        "dompdf/dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.3",
         "hashids/hashids": "^4.1",
         "hermawan/codeigniter4-datatables": "^0.6.1",
         "kint-php/kint": "^4.2",
         "laminas/laminas-escaper": "^2.9",
-        "psr/log": "^1.1",
-        "pusher/pusher-php-server": "^6.1",
-        "tecnickcom/tcpdf": "^6.6"
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "codeigniter/coding-standard": "^1.1",

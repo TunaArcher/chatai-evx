@@ -260,7 +260,7 @@ function addNewRoom(data) {
                     <div class="position-relative">
                         <img src="${data.sender_avatar}" alt="" class="thumb-lg rounded-circle">
                         <span class="position-absolute bottom-0 end-0">
-                            <img src="assets/images/${data.platform}.png" width="14">
+                            <img src="assets/images/${getPlatformIcon(data.platform)}" width="14">
                         </span>
                     </div>
                     <div class="flex-grow-1 ms-2 text-truncate align-self-center">
@@ -281,3 +281,21 @@ function addNewRoom(data) {
 ws.onopen = () => console.log("WebSocket connection opened.");
 ws.onclose = () => console.log("WebSocket connection closed.");
 ws.onerror = (error) => console.error("WebSocket error:", error);
+
+// -----------------------------------------------------------------------------
+// อื่น ๆ แปะไปก่อน
+// -----------------------------------------------------------------------------
+
+function getPlatformIcon(platform) {
+  switch (platform) {
+    case "Facebook":
+      return "ic-Facebook.svg";
+    case "Line":
+      return "ic-Line.png";
+    case "WhatsApp":
+      return "ic-WhatsApp.png";
+    default:
+      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
+  }
+}
+

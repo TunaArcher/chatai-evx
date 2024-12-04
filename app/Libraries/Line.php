@@ -66,7 +66,6 @@ class Line
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
             $statusCode = $response->getStatusCode();
             if ($statusCode === 200 || isset($responseData->statusCode) && (int)$responseData->statusCode === 0) {
-                log_message('info', "Message sent successfully to Line API: " . json_encode($responseData));
                 return true; // ส่งข้อความสำเร็จ
             }
 
@@ -79,4 +78,43 @@ class Line
             return false;
         }
     }
+
+    /*********************************************************************
+     * 1. Profile | ดึงข้อมูล
+     */
+
+     public function getProfile($UID)
+     {
+         try {
+
+             $endPoint = $this->baseURL . '/profile/' . $UID;
+    
+             $headers = [
+                 'Authorization' => "Bearer " . $this->channelAccessToken,
+             ];
+
+             // ส่งคำขอ GET ไปยัง API
+             $response = $this->http->request('GET', $endPoint, [
+                 'headers' => $headers
+             ]);
+
+             // แปลง Response กลับมาเป็น Object
+             $responseData = json_decode($response->getBody());
+ 
+             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+             $statusCode = $response->getStatusCode();
+             if ($statusCode === 200 ) {
+                 return $responseData;
+             }
+ 
+             // กรณีส่งข้อความล้มเหลว
+             log_message('error', "Failed to send message to Line API: " . json_encode($responseData));
+             return false;
+         } catch (\Exception $e) {
+            print_r($e->getMessage()); exit();
+             // จัดการข้อผิดพลาด
+             log_message('error', 'LineAPI::getProfile error {message}', ['message' => $e->getMessage()]);
+             return false;
+         }
+     }
 }

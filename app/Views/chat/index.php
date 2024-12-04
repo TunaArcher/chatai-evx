@@ -36,7 +36,7 @@
                                                     <a href="#" class="">
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative">
-                                                                <img src="assets/images/users/avatar-1.jpg" alt="" class="thumb-lg rounded-circle">
+                                                                <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                 <span class="position-absolute bottom-0 end-0">
                                                                     <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
                                                                 </span>

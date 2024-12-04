@@ -52,7 +52,9 @@ class ChatController extends BaseController
             $room->ic_platform = $this->getPlatformIcon($room->platform);
 
             // ชื่อลูกค้า
-            $room->customer_name = $this->getCustomerName($room->customer_id);
+            $customer = $this->customerModel->getCustomerByID($room->customer_id);
+            $room->customer_name = $customer->name;
+            $room->profile = $customer->profile;
 
             // ข้อความล่าสุด
             $lastMessage = $this->messageModel->getLastMessageByRoomID($room->id);
@@ -75,9 +77,14 @@ class ChatController extends BaseController
      */
     public function fetchMessages($roomID)
     {
+        // TODO:: จัดการด้วย
         $messages = $this->messageModel->getMessageRoomByRoomID($roomID);
         return $this->response->setJSON($messages);
     }
+
+    // -----------------------------------------------------------------------------
+    // ส่วนจัดการ Web Hook
+    // -----------------------------------------------------------------------------
 
     /**
      * ฟังก์ชันสำหรับรับข้อมูล Webhook จากแพลตฟอร์มต่าง ๆ
@@ -101,12 +108,6 @@ class ChatController extends BaseController
 
             case 'Line':
                 $this->handleWebHookLine($input, $userSocial);
-                // log_message('error', 'Webhook Input: ' . json_encode($input));
-
-                // echo '<pre>';
-                // print_r($input);
-                // exit();
-
                 break;
 
             case 'WhatsApp':
@@ -127,72 +128,64 @@ class ChatController extends BaseController
         $platform = 'Line';
 
         // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockLineWebhookData();
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            $input = $this->getMockLineWebhookData(); // ใช้ข้อมูล Mock ใน Development
+            $channelAccessToken = 'UUvglmk7qWbUBSAzM2ThjtAtV+8ipnI1KabsWobuQt8VqFgizLGi91+eVfpZ86i9YRU/oWrmHSBFtACvAwZ/Z6rynrfHU4tWEQi6Yi/HhHzBjCeD5pMdPODqLaEbfCO5bX7rlAbD5swrrhQPljjhTgdB04t89/1O/w1cDnyilFU=';
+        } else {
+            $channelAccessToken = $userSocial->line_channel_access_token; // ใช้ข้อมูลจริงใน Production
+        }
 
         // ดึงข้อมูลเหตุการณ์จาก Line API
-        $user = $input->events[0];
-        $type = $user->source->type;
-        $UID = $user->source->userId;
-        $message = $user->message->text;
+        $event = $input->events[0];
+        $UID = $event->source->userId;
+        $message = $event->message->text;
 
-        // ตรวจสอบลูกค้าจาก UID และ Platform
-        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
+        // ตรวจสอบหรือสร้างลูกค้า
+        $customer = $this->webHookLineGetOrCreateCustomer($UID, $platform, $channelAccessToken);
 
-        // Case 1: ถ้ายังไม่มี ให้ไปสร้างห้อง แล้ว send message
-        if (!$customer) {
-
-            // ให้สร้างยูส
-            $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
-
-            // TODO:: Handle get profile
-
-            $customer = $this->customerModel->insertCustomer([
-                'platform' => 'LINE',
-                'uid' => $UID,
-                'profile' => ''
-            ]);
-            $customerID = $customer;
-
-            if ($customer) {
-
-                $messageRoom = $this->messageRoomModel->insertMessageRoom([
-                    'platform' => 'Line',
-                    'user_social_id' => $userSocial->id,
-                    'user_social_name' => $userSocial->name,
-                    'customer_id' => $customerID,
-                    'user_id' => $userSocial->user_id,
-                ]);
-                $messageRoomID = $messageRoom;
-            }
-        }
-
-        // Case 2: ถ้ามีแล้วแปลงว่าเป็นยูสที่เคยส่งข้อความมาแล้ว ให้ค้นหาห้อง แล้ว send message
-        else {
-
-            $customerID = $customer->id;
-
-            $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customerID);
-            $messageRoomID = $messageRoom->id;
-        }
+        // ตรวจสอบหรือสร้างห้องสนทนา
+        $messageRoom = $this->getOrCreateMessageRoom($customer, $userSocial);
 
         // บันทึกข้อความลงฐานข้อมูล
-        $this->messageModel->insertMessage([
-            'room_id' => $messageRoomID,
-            'send_by' => 'Customer',
-            'sender_id' => $customerID,
-            'message' => $message,
-            'platform' => $platform,
-        ]);
+        $this->saveMessage($messageRoom->id, $customer->id, $message, $platform);
 
         // ส่งข้อความไปยัง WebSocket Server
         sendMessageToWebSocket([
-            'room_id' => $messageRoomID,
+            'room_id' => $messageRoom->id,
             'send_by' => 'Customer',
-            'sender_id' => $customer,
+            'sender_id' => $customer->id,
+            'sender_avatar' => $customer->profile,
             'message' => $message,
             'platform' => $platform,
+            'sender_name' => $customer->name,
         ]);
     }
+
+    // ตรวจสอบหรือสร้างลูกค้าใหม่ในระบบ
+    private function webHookLineGetOrCreateCustomer($UID, $platform, $channelAccessToken)
+    {
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
+
+        if (!$customer) {
+            $lineAPI = new Line(['channelAccessToken' => $channelAccessToken]);
+            $profile = $lineAPI->getProfile($UID);
+
+            $customerID = $this->customerModel->insertCustomer([
+                'platform' => $platform,
+                'uid' => $UID,
+                'name' => $profile->displayName,
+                'profile' => $profile->pictureUrl,
+            ]);
+
+            return $this->customerModel->getCustomerByID($customerID);
+        }
+
+        return $customer;
+    }
+
+    // -----------------------------------------------------------------------------
+    // ส่วนจัดการ การส่องข้อความ
+    // -----------------------------------------------------------------------------
 
     /**
      * ฟังก์ชันสำหรับส่งข้อความจากฝั่ง Admin
@@ -282,6 +275,43 @@ class ChatController extends BaseController
         }
     }
 
+    // -----------------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------------
+
+    // ตรวจสอบหรือสร้างห้องสนทนาใหม่
+    private function getOrCreateMessageRoom($customer, $userSocial)
+    {
+        $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
+
+        if (!$messageRoom) {
+            $roomID = $this->messageRoomModel->insertMessageRoom([
+                'platform' => 'Line',
+                'user_social_id' => $userSocial->id,
+                'user_social_name' => $userSocial->name,
+                'customer_id' => $customer->id,
+                'user_id' => $userSocial->user_id,
+            ]);
+
+            return $this->messageRoomModel->getMessageRoomByID($roomID);
+        }
+
+        return $messageRoom;
+    }
+
+
+    // บันทึกข้อความลงฐานข้อมูล
+    private function saveMessage($roomID, $customerID, $message, $platform)
+    {
+        $this->messageModel->insertMessage([
+            'room_id' => $roomID,
+            'send_by' => 'Customer',
+            'sender_id' => $customerID,
+            'message' => $message,
+            'platform' => $platform,
+        ]);
+    }
+
     /**
      * ฟังก์ชันสำหรับคืนค่าไอคอนของแพลตฟอร์ม
      * - รองรับ Facebook, Line, WhatsApp
@@ -294,16 +324,6 @@ class ChatController extends BaseController
             'WhatsApp' => 'ic-WhatsApp.png',
             default => '',
         };
-    }
-
-    /**
-     * ฟังก์ชันสำหรับดึงชื่อลูกค้าจาก customerID
-     * - หากไม่พบลูกค้า คืนค่า 'Unknown'
-     */
-    private function getCustomerName(int $customerID): string
-    {
-        $customer = $this->customerModel->getCustomerByID($customerID);
-        return $customer->name ?? 'Unknown';
     }
 
     private function getMockLineWebhookData()
