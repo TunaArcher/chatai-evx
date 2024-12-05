@@ -180,6 +180,30 @@ ws.onerror = (error) => console.error("WebSocket error:", error);
 // อื่น ๆ แปะไปก่อน
 // -----------------------------------------------------------------------------
 
+function getPlatformIcon(platform) {
+  switch (platform) {
+    case "Facebook":
+      return "ic-Facebook.svg";
+    case "Line":
+      return "ic-Line.png";
+    case "WhatsApp":
+      return "ic-WhatsApp.png";
+    default:
+      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
+  }
+}
+
+function getAvatar(data) {
+  switch (data.send_by) {
+    case "Customer":
+      return chatBoxProfile.src;
+    case "Admin":
+      return "";
+    default:
+      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
+  }
+}
+
 // ฟังก์ชันแปลงเวลา
 function formatMessageTime(createdAt) {
   return new Date(createdAt).toLocaleTimeString([], {
@@ -187,6 +211,21 @@ function formatMessageTime(createdAt) {
     minute: "2-digit",
     hour12: true,
   });
+}
+
+// ฟังก์ชันเลื่อนหน้าจอไปยังข้อความล่าสุด
+function scrollToBottom() {
+  const chatBody = document.querySelector(".chat-body"); // Container ของ SimpleBar
+  if (chatBody) {
+    const scrollElement = chatBody.querySelector(".simplebar-content-wrapper"); // Scroll Element ของ SimpleBar
+    if (scrollElement) {
+      scrollElement.scrollTo({
+        top: scrollElement.scrollHeight,
+        behavior: "smooth",
+      });
+      console.log("เลื่อนหน้าจอไปที่ข้อความล่าสุด (SimpleBar)");
+    }
+  }
 }
 
 // ฟังก์ชันตรวจสอบว่าควรรวมข้อความใหม่กับข้อความเดิมหรือไม่
@@ -252,45 +291,6 @@ function updateRoomPreview(data) {
 
   // if (timestamp) timestamp.textContent = "Now";
   if (timestamp) timestamp.textContent = timestamp.innerHTML;
-}
-
-function getPlatformIcon(platform) {
-  switch (platform) {
-    case "Facebook":
-      return "ic-Facebook.svg";
-    case "Line":
-      return "ic-Line.png";
-    case "WhatsApp":
-      return "ic-WhatsApp.png";
-    default:
-      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
-  }
-}
-
-function getAvatar(data) {
-  switch (data.send_by) {
-    case "Customer":
-      return chatBoxProfile.src;
-    case "Admin":
-      return "";
-    default:
-      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
-  }
-}
-
-// ฟังก์ชันเลื่อนหน้าจอไปยังข้อความล่าสุด
-function scrollToBottom() {
-  const chatBody = document.querySelector(".chat-body"); // Container ของ SimpleBar
-  if (chatBody) {
-    const scrollElement = chatBody.querySelector(".simplebar-content-wrapper"); // Scroll Element ของ SimpleBar
-    if (scrollElement) {
-      scrollElement.scrollTo({
-        top: scrollElement.scrollHeight,
-        behavior: "smooth",
-      });
-      console.log("เลื่อนหน้าจอไปที่ข้อความล่าสุด (SimpleBar)");
-    }
-  }
 }
 
 // ฟังก์ชั่นหลักในการเพิ่มห้องหรืออัพเดท
