@@ -34,11 +34,11 @@ class WebhookController extends BaseController
     }
 
 
-    public function verifyWebhook()
+    public function verifyWebhook($userSocialID)
     {
-        $hubMode = $this->request->getGet('hub.mode');
-        $hubVerifyToken = $this->request->getGet('hub.verify_token');
-        $hubChallenge = $this->request->getGet('hub.challenge');
+        $hubMode = $this->request->getGet('hub_mode');
+        $hubVerifyToken = $this->request->getGet('hub_verify_token');
+        $hubChallenge = $this->request->getGet('hub_challenge');
 
         // ตรวจสอบเงื่อนไข
         if ($hubMode === 'subscribe' && $hubVerifyToken === 'HAPPY') {
