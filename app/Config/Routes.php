@@ -42,7 +42,7 @@ $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข�
 
 $routes->get('/setting', 'SettingController::index'); // หน้าแสดงรายการห้องสนทนา
 
-$routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+$routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 /*
