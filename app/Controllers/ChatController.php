@@ -34,7 +34,6 @@ class ChatController extends BaseController
         $this->userSocialModel = new UserSocialModel();
     }
 
-    // NOTE: ต้องจัดการ ID, Refactor foreach
     /**
      * ฟังก์ชันแสดงหน้าหลักของระบบ Chat
      * - โหลดข้อมูลห้องสนทนา
@@ -42,6 +41,9 @@ class ChatController extends BaseController
      */
     public function index()
     {
+        // TODO:: HANDLE
+        // NOTE:: ต้องจัดการ ID, Refactor foreach
+        
         // Mock userID สำหรับ Session (สมมติว่าผู้ใช้ ID 1 กำลังล็อกอิน)
         session()->set(['userID' => 1]);
         $userID = session()->get('userID');
@@ -96,7 +98,7 @@ class ChatController extends BaseController
     }
 
     // -----------------------------------------------------------------------------
-    // ส่วนจัดการ การส่องข้อความ
+    // ส่วนจัดการ การส่งข้อความ
     // -----------------------------------------------------------------------------
 
     /**
@@ -119,12 +121,6 @@ class ChatController extends BaseController
 
             case 'Line':
                 $this->handleSendMessageLine($input);
-                // log_message('error', 'Webhook Input: ' . json_encode($input));
-
-                // echo '<pre>';
-                // print_r($input);
-                // exit();
-
                 break;
 
             case 'WhatsApp':

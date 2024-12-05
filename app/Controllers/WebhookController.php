@@ -174,7 +174,6 @@ class WebhookController extends BaseController
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockWhatsAppWebhookData(); // ใช้ข้อมูล Mock ใน Development
 
-
         // ดึงข้อมูลเหตุการณ์จาก Whats App
         $entry = $input->entry[0] ?? null;
         $changes = $entry->changes[0] ?? null;
@@ -210,7 +209,6 @@ class WebhookController extends BaseController
 
     private function webHookWhatsAppGetOrCreateCustomer($UID, $name)
     {
-
         $platform = 'WhatsApp';
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);

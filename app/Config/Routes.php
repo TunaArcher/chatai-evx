@@ -36,12 +36,21 @@ $routes->set404Override('App\Controllers\Errors::show404');
 
 $routes->get('/', 'HomeController::index');
 
+// -----------------------------------------------------------------------------
+// Chat & Message
+// -----------------------------------------------------------------------------
 $routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
 $routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
 $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข้อความไปยัง WebSocket
 
+// -----------------------------------------------------------------------------
+// Setting
+// -----------------------------------------------------------------------------
 $routes->get('/setting', 'SettingController::index'); // หน้าแสดงรายการห้องสนทนา
 
+// -----------------------------------------------------------------------------
+// Webhook
+// -----------------------------------------------------------------------------
 $routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
