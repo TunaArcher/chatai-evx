@@ -161,9 +161,8 @@ chatInput.addEventListener("keypress", (event) => {
 // -----------------------------------------------------------------------------
 // จัดการข้อความใหม่ที่ได้รับผ่าน WebSocket
 ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log("ข้อความใหม่:", data);
-
+  console.log("onmessage ข้อความใหม่:", event.data);
+  let data = JSON.parse(event.data);
   if (data.room_id === currentRoomId) {
     renderMessage(data);
     scrollToBottom();
@@ -313,6 +312,8 @@ function addOrUpdateRoom(data) {
 
   // ถ้ายังไม่มี
   else createNewRoom(data);
+
+  console.log(data);
 }
 
 // ฟังก์ชันอัปเดตห้องที่มีอยู่
@@ -344,8 +345,6 @@ function createNewRoom(data) {
   );
   newRoom.setAttribute("data-room-id", data.room_id);
   newRoom.setAttribute("data-platform", data.platform || "Unknown");
-
-  data.sender_avatar = chatBoxProfile.src;
 
   newRoom.innerHTML = `
     <a href="#" class="">

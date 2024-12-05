@@ -174,17 +174,18 @@ class WebhookController extends BaseController
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockWhatsAppWebhookData(); // ใช้ข้อมูล Mock ใน Development
 
+
         // ดึงข้อมูลเหตุการณ์จาก Whats App
-        $entry = $input['entry'][0] ?? null;
-        $changes = $entry['changes'][0] ?? null;
-        $value = $changes['value'] ?? null;
-        $metadata = $value['metadata'][0] ?? null;
-        $name = $metadata['display_phone_number'][0] ?? null;
-        $UID = $metadata['phone_number_id'][0] ?? null;
-        $whatAppMessage = $value['messages'][0] ?? null;
-        $message = $whatAppMessage['text']['body'] ?? null;
-        $contact = $value['contacts'][0] ?? null;
-        $waID = $contact['wa_id'][0] ?? null;
+        $entry = $input->entry[0] ?? null;
+        $changes = $entry->changes[0] ?? null;
+        $value = $changes->value ?? null;
+        $metadata = $value->metadata ?? null;
+        $UID = $metadata->phone_number_id ?? null;
+        $whatAppMessage = $value->messages[0] ?? null;
+        $message = $whatAppMessage->text->body ?? null;
+        $contact = $value->contacts[0] ?? null;
+        $name = $contact->profile->name ?? null;
+        $waID = $contact->wa_id[0] ?? null;
 
         // ตรวจสอบหรือสร้างลูกค้า
         $customer = $this->webHookWhatsAppGetOrCreateCustomer($UID, $name);
