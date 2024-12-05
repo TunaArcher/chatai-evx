@@ -201,9 +201,9 @@ class ChatController extends BaseController
 
             // ข้อมูล Mock สำหรับ Development
             if (getenv('CI_ENVIRONMENT') == 'development') {
-                $phoneNumberID = '520204877839971';
-                $UID = '513951735130592';
-                $whatsAppToken = 'EAAPwTXFKRgoBO3kO0ZCJ6FzEq9dojcOjgphBUwG9wmy9yo9U2C9ZB1JAgZA5gbztLkNaGED3KZBtkH58vX6RnmEB9rjZACrZCCjvbKZB69b4xvFwRkSU6uKagcNg0PPBGH49nXBrITmHlH0xOKKv7baEp2HOZCcQaodWZCsmIyOAZBklYPwYFvEpuxTZCv6RGjTxPZBkac9mCoKiNswgpixx1le18HotjZCkZD';
+                $phoneNumberID = '513951735130592';
+                $UID = '66611188669';
+                $whatsAppToken = 'EAAPwTXFKRgoBO3m1wcmZBUa92023EjuTrvFe5rAHKSO9se0pPoMyeQgZCxyvu3dQGLj8wyM0lXN8iuyvtzUCYinTRnfTKRrfYZCQYQ8EEdwlrB0rT6PjIOAlZCLN0dxernIo4SyWRY0p4IjsWFGpr34Y4KSMTUqwWVVFFWoUsvbxMB7NwTcZBvxd67nsW42ZA3rtrvtVFZAHG6VWfkiKMZB3DAqbpkUZD';
             } else {
                 $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
                 $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);

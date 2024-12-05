@@ -120,7 +120,7 @@ class WebhookController extends BaseController
         $customer = $this->webHookLineGetOrCreateCustomer($UID, $channelAccessToken);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
-        $messageRoom = $this->getOrCreateMessageRoom($customer, $userSocial);
+        $messageRoom = $this->getOrCreateMessageRoom($platform, $customer, $userSocial);
 
         // บันทึกข้อความลงฐานข้อมูล
         $this->saveMessage($messageRoom->id, $customer->id, $message, $platform);
@@ -179,10 +179,9 @@ class WebhookController extends BaseController
         $entry = $input->entry[0] ?? null;
         $changes = $entry->changes[0] ?? null;
         $value = $changes->value ?? null;
-        $metadata = $value->metadata ?? null;
-        $UID = $metadata->phone_number_id ?? null;
         $whatAppMessage = $value->messages[0] ?? null;
-        $message = $whatAppMessage->text->body ?? null;
+        $UID = $whatAppMessage->from ?? null; // เบอร์ของคนที่ส่งมา
+        $message = $whatAppMessage->text->body ?? null; // ข้อความที่ส่งมา
         $contact = $value->contacts[0] ?? null;
         $name = $contact->profile->name ?? null;
         $waID = $contact->wa_id[0] ?? null;
@@ -191,7 +190,7 @@ class WebhookController extends BaseController
         $customer = $this->webHookWhatsAppGetOrCreateCustomer($UID, $name);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
-        $messageRoom = $this->getOrCreateMessageRoom($customer, $userSocial);
+        $messageRoom = $this->getOrCreateMessageRoom($platform, $customer, $userSocial);
 
         // บันทึกข้อความลงฐานข้อมูล
         $this->saveMessage($messageRoom->id, $customer->id, $message, $platform);
@@ -235,13 +234,13 @@ class WebhookController extends BaseController
     // -----------------------------------------------------------------------------
 
     // ตรวจสอบหรือสร้างห้องสนทนาใหม่
-    private function getOrCreateMessageRoom($customer, $userSocial)
+    private function getOrCreateMessageRoom($platform, $customer, $userSocial)
     {
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         if (!$messageRoom) {
             $roomID = $this->messageRoomModel->insertMessageRoom([
-                'platform' => 'Line',
+                'platform' => $platform,
                 'user_social_id' => $userSocial->id,
                 'user_social_name' => $userSocial->name,
                 'customer_id' => $customer->id,

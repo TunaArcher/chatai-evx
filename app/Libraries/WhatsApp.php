@@ -51,9 +51,7 @@ class WhatsApp
                 'to' => $to,
                 'type' => 'text',
                 'text' => [
-                    [
-                        'body' => $messages
-                    ],
+                    'body' => $messages
                 ],
             ];
 
