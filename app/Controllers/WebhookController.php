@@ -34,14 +34,14 @@ class WebhookController extends BaseController
     }
 
 
-    public function verifyWebhook($userSocialID)
+    public function verifyWebhook()
     {
         $hubMode = $this->request->getGet('hub.mode');
         $hubVerifyToken = $this->request->getGet('hub.verify_token');
         $hubChallenge = $this->request->getGet('hub.challenge');
 
         // ตรวจสอบเงื่อนไข
-        if ($hubMode === 'subscribe' && $hubVerifyToken === 'whatapps') {
+        if ($hubMode === 'subscribe' && $hubVerifyToken === 'HAPPY') {
             // ส่ง hub.challenge กลับ
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)->setBody($hubChallenge);
         } else {
