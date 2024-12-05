@@ -9,6 +9,7 @@ use App\Models\UserSocialModel;
 use App\Models\UserModel;
 
 use App\Libraries\Line;
+use App\Libraries\WhatsApp;
 
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -116,7 +117,7 @@ class WebhookController extends BaseController
         $message = $event->message->text;
 
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->webHookLineGetOrCreateCustomer($UID, $platform, $channelAccessToken);
+        $customer = $this->webHookLineGetOrCreateCustomer($UID, $channelAccessToken);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->getOrCreateMessageRoom($customer, $userSocial);
@@ -138,8 +139,11 @@ class WebhookController extends BaseController
     }
 
     // ตรวจสอบหรือสร้างลูกค้าใหม่ในระบบ
-    private function webHookLineGetOrCreateCustomer($UID, $platform, $channelAccessToken)
+    private function webHookLineGetOrCreateCustomer($UID, $channelAccessToken)
     {
+
+        $platform = 'Line';
+
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
 
         if (!$customer) {
@@ -165,67 +169,64 @@ class WebhookController extends BaseController
 
     public function handleWebHookWhatsApp($input, $userSocial)
     {
-        $platform = 'Line';
+        $platform = 'WhatsApp';
 
-        // // ตรวจสอบว่ามีข้อความใน webhook หรือไม่
-        // $entry = $input['entry'][0] ?? null;
-        // $changes = $entry['changes'][0] ?? null;
-        // $value = $changes['value'] ?? null;
-        // $message = $value['messages'][0] ?? null;
+        // ข้อมูล Mock สำหรับ Development
+        if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockWhatsAppWebhookData(); // ใช้ข้อมูล Mock ใน Development
 
-        // // ตรวจสอบว่าข้อความมีประเภทเป็น "text"
-        // if ($message && $message['type'] === 'text') {
-        //     // ดึงหมายเลขโทรศัพท์ธุรกิจ
-        //     $businessPhoneNumberId = $value['metadata']['phone_number_id'] ?? null;
+        // ดึงข้อมูลเหตุการณ์จาก Whats App
+        $entry = $input['entry'][0] ?? null;
+        $changes = $entry['changes'][0] ?? null;
+        $value = $changes['value'] ?? null;
+        $metadata = $value['metadata'][0] ?? null;
+        $name = $metadata['display_phone_number'][0] ?? null;
+        $UID = $metadata['phone_number_id'][0] ?? null;
+        $whatAppMessage = $value['messages'][0] ?? null;
+        $message = $whatAppMessage['text']['body'] ?? null;
+        $contact = $value['contacts'][0] ?? null;
+        $waID = $contact['wa_id'][0] ?? null;
 
-        //     // ดึง Graph API Token (ควรตั้งค่าจากไฟล์ .env)
-        //     $graphApiToken = getenv('GRAPH_API_TOKEN');
+        // ตรวจสอบหรือสร้างลูกค้า
+        $customer = $this->webHookWhatsAppGetOrCreateCustomer($UID, $name);
 
-        //     // ส่งข้อความตอบกลับ
-        //     $replyData = [
-        //         'messaging_product' => 'whatsapp',
-        //         'to' => $message['from'],
-        //         'text' => ['body' => 'Echo: ' . $message['text']['body']],
-        //         'context' => ['message_id' => $message['id']],
-        //     ];
+        // ตรวจสอบหรือสร้างห้องสนทนา
+        $messageRoom = $this->getOrCreateMessageRoom($customer, $userSocial);
 
-        //     $this->sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $replyData);
+        // บันทึกข้อความลงฐานข้อมูล
+        $this->saveMessage($messageRoom->id, $customer->id, $message, $platform);
 
-        //     // ทำเครื่องหมายข้อความว่าอ่านแล้ว
-        //     $readData = [
-        //         'messaging_product' => 'whatsapp',
-        //         'status' => 'read',
-        //         'message_id' => $message['id'],
-        //     ];
-
-        //     $this->sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $readData);
-        // }
-
-        // ส่งสถานะ 200 กลับ
-        return $this->response->setStatusCode(ResponseInterface::HTTP_OK);
+        // ส่งข้อความไปยัง WebSocket Server
+        sendMessageToWebSocket([
+            'room_id' => $messageRoom->id,
+            'send_by' => 'Customer',
+            'sender_id' => $customer->id,
+            'message' => $message,
+            'platform' => $platform,
+            'sender_name' => $customer->name,
+            'created_at' => date('Y-m-d H:i:s'),
+            'sender_avatar' => $customer->profile
+        ]);
     }
 
-    private function sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $data)
+    private function webHookWhatsAppGetOrCreateCustomer($UID, $name)
     {
-        $url = "https://graph.facebook.com/v18.0/{$businessPhoneNumberId}/messages";
 
-        $options = [
-            'http' => [
-                'header' => [
-                    "Authorization: Bearer {$graphApiToken}",
-                    "Content-Type: application/json",
-                ],
-                'method' => 'POST',
-                'content' => json_encode($data),
-            ],
-        ];
+        $platform = 'WhatsApp';
 
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $platform);
 
-        if ($result === FALSE) {
-            log_message('error', 'Error sending to WhatsApp: ' . json_encode($data));
+        if (!$customer) {
+            $customerID = $this->customerModel->insertCustomer([
+                'platform' => $platform,
+                'uid' => $UID,
+                'name' => $name,
+                'profile' => 'https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-and-shapes-3/177800/129-512.png',
+            ]);
+
+            return $this->customerModel->getCustomerByID($customerID);
         }
+
+        return $customer;
     }
 
     // -----------------------------------------------------------------------------
@@ -287,6 +288,51 @@ class WebhookController extends BaseController
                         },
                         "replyToken": "54fc984b6d054cc391d47b0f7ef2b902",
                         "mode": "active"
+                    }
+                ]
+            }'
+        );
+    }
+
+    private function getMockWhatsAppWebhookData()
+    {
+        return json_decode(
+            '{
+                "object": "whatsapp_business_account",
+                "entry": [
+                    {
+                        "id": "520204877839971",
+                        "changes": [
+                            {
+                                "value": {
+                                    "messaging_product": "whatsapp",
+                                    "metadata": {
+                                        "display_phone_number": "15551868121",
+                                        "phone_number_id": "513951735130592"
+                                    },
+                                    "contacts": [
+                                        {
+                                            "profile": {
+                                                "name": "0611188669"
+                                            },
+                                            "wa_id": "66611188669"
+                                        }
+                                    ],
+                                    "messages": [
+                                        {
+                                            "from": "66611188669",
+                                            "id": "wamid.HBgLNjY2MTExODg2NjkVAgASGCA2RTdFNDY1NDYwQzlERjI2NjYyNjhCNTc5NzUwRkI0MgA=",
+                                            "timestamp": "1733391693",
+                                            "text": {
+                                                "body": "."
+                                            },
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "field": "messages"
+                            }
+                        ]
                     }
                 ]
             }'

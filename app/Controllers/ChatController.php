@@ -9,6 +9,7 @@ use App\Models\UserSocialModel;
 use App\Models\UserModel;
 
 use App\Libraries\Line;
+use App\Libraries\WhatsApp;
 
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -127,12 +128,14 @@ class ChatController extends BaseController
                 break;
 
             case 'WhatsApp':
+                $this->handleSendMessageWhatsApp($input);
                 break;
 
             case 'Instagram':
                 break;
 
             case 'Tiktok':
+                // $this->handleSendMessageTiktok($input);
                 break;
         }
 
@@ -150,7 +153,7 @@ class ChatController extends BaseController
 
             // ข้อมูล Mock สำหรับ Development
             if (getenv('CI_ENVIRONMENT') == 'development') {
-                $uid = 'U0434fa7d7cfef4a035f9dce7c0253def';
+                $UID = 'U0434fa7d7cfef4a035f9dce7c0253def';
                 $channelAccessToken = 'UUvglmk7qWbUBSAzM2ThjtAtV+8ipnI1KabsWobuQt8VqFgizLGi91+eVfpZ86i9YRU/oWrmHSBFtACvAwZ/Z6rynrfHU4tWEQi6Yi/HhHzBjCeD5pMdPODqLaEbfCO5bX7rlAbD5swrrhQPljjhTgdB04t89/1O/w1cDnyilFU=';
             } else {
                 $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
@@ -159,7 +162,7 @@ class ChatController extends BaseController
             }
 
             $lineAPI = new Line(['channelAccessToken' => $channelAccessToken]);
-            $sendToLine = $lineAPI->pushMessage($uid, $input->message);
+            $sendToLine = $lineAPI->pushMessage($UID, $input->message);
 
             if ($sendToLine) {
                 // บันทึกข้อความลงในฐานข้อมูล
@@ -183,13 +186,66 @@ class ChatController extends BaseController
             }
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'LineAPI::handleSendMessageLine error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'ChatController::handleSendMessageLine error {message}', ['message' => $e->getMessage()]);
         }
     }
 
-    // // -----------------------------------------------------------------------------
-    // // Helper
-    // // -----------------------------------------------------------------------------
+    public function handleSendMessageWhatsApp($input)
+    {
+        try {
+
+            $platform = 'WhatsApp';
+
+            $input = $this->request->getJSON();
+            $userID = session()->get('userID');
+
+            // ข้อมูล Mock สำหรับ Development
+            if (getenv('CI_ENVIRONMENT') == 'development') {
+                $phoneNumberID = '520204877839971';
+                $UID = '513951735130592';
+                $whatsAppToken = 'EAAPwTXFKRgoBO3kO0ZCJ6FzEq9dojcOjgphBUwG9wmy9yo9U2C9ZB1JAgZA5gbztLkNaGED3KZBtkH58vX6RnmEB9rjZACrZCCjvbKZB69b4xvFwRkSU6uKagcNg0PPBGH49nXBrITmHlH0xOKKv7baEp2HOZCcQaodWZCsmIyOAZBklYPwYFvEpuxTZCv6RGjTxPZBkac9mCoKiNswgpixx1le18HotjZCkZD';
+            } else {
+                $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+                $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+                $phoneNumberID = $userSocial->whatsapp_phone_number_id;
+                $whatsAppToken = $userSocial->whatsapp_token;
+            }
+
+            $whatsAppAPI = new WhatsApp([
+                'phoneNumberID' => $phoneNumberID,
+                'whatsAppToken' => $whatsAppToken
+            ]);
+            $sendToWhatsApp = $whatsAppAPI->pushMessage($UID, $input->message);
+
+            if ($sendToWhatsApp) {
+                // บันทึกข้อความลงในฐานข้อมูล
+                $this->messageModel->insertMessage([
+                    'room_id' => $input->room_id,
+                    'send_by' => 'Admin',
+                    'sender_id' => $userID,
+                    'message' => $input->message,
+                    'platform' => $platform
+                ]);
+
+                // ส่งข้อความไปยัง WebSocket Server
+                sendMessageToWebSocket([
+                    'room_id' => $input->room_id,
+                    'send_by' => 'Admin',
+                    'sender_id' => $userID,
+                    'message' => $input->message,
+                    'platform' => $platform,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'ChatController::handleSendMessageWhatsApp error {message}', ['message' => $e->getMessage()]);
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------------
 
     /**
      * ฟังก์ชันสำหรับคืนค่าไอคอนของแพลตฟอร์ม

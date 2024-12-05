@@ -9,17 +9,19 @@ use \GuzzleHttp\Middleware;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
-class Line
+class WhatsApp
 {
     private $http;
     private $baseURL;
-    private $channelAccessToken;
+    private $phoneNumberID;
+    private $whatsAppToken;
     private $debug = false;
 
     public function __construct($config)
     {
-        $this->baseURL = 'https://api.line.me/v2/bot';
-        $this->channelAccessToken = $config['channelAccessToken'];
+        $this->baseURL = 'https://graph.facebook.com/v21.0/';
+        $this->phoneNumberID = $config['phoneNumberID'];
+        $this->whatsAppToken = $config['whatsAppToken'];
         $this->http = new Client();
     }
 
@@ -36,20 +38,21 @@ class Line
     {
         try {
 
-            $endPoint = $this->baseURL . '/message/push/';
+            $endPoint = $this->baseURL . $this->phoneNumberID . '/messages/';
 
             $headers = [
-                'Authorization' => "Bearer " . $this->channelAccessToken,
+                'Authorization' => "Bearer " . $this->whatsAppToken,
                 'Content-Type' => 'application/json',
             ];
 
             // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
+                'messaging_product' => 'whatsapp',
                 'to' => $to,
-                'messages' => [
+                'type' => 'text',
+                'text' => [
                     [
-                        'type' => 'text',
-                        'text' => $messages
+                        'body' => $messages
                     ],
                 ],
             ];
@@ -70,11 +73,11 @@ class Line
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to send message to Line API: " . json_encode($responseData));
+            log_message('error', "Failed to send message to WhatsApp API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'LineAPI::pushMessage error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'WhatsAppAPI::pushMessage error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }
@@ -83,37 +86,37 @@ class Line
      * 1. Profile | ดึงข้อมูล
      */
 
-     public function getProfile($UID)
-     {
-         try {
+    public function getProfile($UID)
+    {
+        try {
 
-             $endPoint = $this->baseURL . '/profile/' . $UID;
-    
-             $headers = [
-                 'Authorization' => "Bearer " . $this->channelAccessToken,
-             ];
+            $endPoint = $this->baseURL . $UID . '/phone_numbers/';
 
-             // ส่งคำขอ GET ไปยัง API
-             $response = $this->http->request('GET', $endPoint, [
-                 'headers' => $headers
-             ]);
+            $headers = [
+                'Authorization' => "Bearer " . $this->whatsAppToken,
+            ];
 
-             // แปลง Response กลับมาเป็น Object
-             $responseData = json_decode($response->getBody());
- 
-             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
-             $statusCode = $response->getStatusCode();
-             if ($statusCode === 200 ) {
-                 return $responseData;
-             }
- 
-             // กรณีส่งข้อความล้มเหลว
-             log_message('error', "Failed to send message to Line API: " . json_encode($responseData));
-             return false;
-         } catch (\Exception $e) {
-             // จัดการข้อผิดพลาด
-             log_message('error', 'LineAPI::getProfile error {message}', ['message' => $e->getMessage()]);
-             return false;
-         }
-     }
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('GET', $endPoint, [
+                'headers' => $headers
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to send message to WhatsApp API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppAPI::getProfile error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
 }
