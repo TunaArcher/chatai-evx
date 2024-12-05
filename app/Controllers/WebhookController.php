@@ -71,21 +71,32 @@ class WebhookController extends BaseController
 
 
             case 'Line':
+                // Log ข้อความที่เข้ามา
+                log_message('info', 'Incoming webhook Line: ' . json_encode($input, JSON_PRETTY_PRINT));
                 $this->handleWebHookLine($input, $userSocial);
                 break;
 
             case 'WhatsApp':
+                // Log ข้อความที่เข้ามา
+                log_message('info', 'Incoming webhook WhatsApp: ' . json_encode($input, JSON_PRETTY_PRINT));
+                $this->handleWebHookWhatsApp($input, $userSocial);
                 break;
 
             case 'Instagram':
                 break;
 
             case 'Tiktok':
+                // log_message('info', 'Incoming webhook Tiktok: ' . json_encode($input, JSON_PRETTY_PRINT));
+                // $this->handleWebHookTiktok($input, $userSocial);
                 break;
         }
 
         return $this->response->setJSON(['status' => 'success']);
     }
+
+    // -----------------------------------------------------------------------------
+    // LINE
+    // -----------------------------------------------------------------------------
 
     public function handleWebHookLine($input, $userSocial)
     {
@@ -146,6 +157,75 @@ class WebhookController extends BaseController
         }
 
         return $customer;
+    }
+
+    // -----------------------------------------------------------------------------
+    // Whats App
+    // -----------------------------------------------------------------------------
+
+    public function handleWebHookWhatsApp($input, $userSocial)
+    {
+        $platform = 'Line';
+
+        // // ตรวจสอบว่ามีข้อความใน webhook หรือไม่
+        // $entry = $input['entry'][0] ?? null;
+        // $changes = $entry['changes'][0] ?? null;
+        // $value = $changes['value'] ?? null;
+        // $message = $value['messages'][0] ?? null;
+
+        // // ตรวจสอบว่าข้อความมีประเภทเป็น "text"
+        // if ($message && $message['type'] === 'text') {
+        //     // ดึงหมายเลขโทรศัพท์ธุรกิจ
+        //     $businessPhoneNumberId = $value['metadata']['phone_number_id'] ?? null;
+
+        //     // ดึง Graph API Token (ควรตั้งค่าจากไฟล์ .env)
+        //     $graphApiToken = getenv('GRAPH_API_TOKEN');
+
+        //     // ส่งข้อความตอบกลับ
+        //     $replyData = [
+        //         'messaging_product' => 'whatsapp',
+        //         'to' => $message['from'],
+        //         'text' => ['body' => 'Echo: ' . $message['text']['body']],
+        //         'context' => ['message_id' => $message['id']],
+        //     ];
+
+        //     $this->sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $replyData);
+
+        //     // ทำเครื่องหมายข้อความว่าอ่านแล้ว
+        //     $readData = [
+        //         'messaging_product' => 'whatsapp',
+        //         'status' => 'read',
+        //         'message_id' => $message['id'],
+        //     ];
+
+        //     $this->sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $readData);
+        // }
+
+        // ส่งสถานะ 200 กลับ
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK);
+    }
+
+    private function sendToWhatsApp($businessPhoneNumberId, $graphApiToken, $data)
+    {
+        $url = "https://graph.facebook.com/v18.0/{$businessPhoneNumberId}/messages";
+
+        $options = [
+            'http' => [
+                'header' => [
+                    "Authorization: Bearer {$graphApiToken}",
+                    "Content-Type: application/json",
+                ],
+                'method' => 'POST',
+                'content' => json_encode($data),
+            ],
+        ];
+
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+
+        if ($result === FALSE) {
+            log_message('error', 'Error sending to WhatsApp: ' . json_encode($data));
+        }
     }
 
     // -----------------------------------------------------------------------------
