@@ -215,12 +215,8 @@ function createMessageBubble(msg, messageTime) {
   const isCustomer = msg.send_by === "Customer";
   msgDiv.classList.toggle("flex-row-reverse", !isCustomer);
 
-  msg.sender_avatar = chatBoxProfile.src;
-
   msgDiv.innerHTML = `
-    <img src="${
-      msg.sender_avatar || "default-avatar.png"
-    }" alt="user" class="rounded-circle thumb-md">
+    <img src="${getAvatar(msg)}" alt="user" class="rounded-circle thumb-md">
     <div class="${isCustomer ? "ms-1" : "me-1"} chat-box w-100 ${
     isCustomer ? "" : "reverse"
   }">
@@ -228,7 +224,8 @@ function createMessageBubble(msg, messageTime) {
         <p>${msg.message}</p>
       </div>
       <div class="chat-time">${messageTime}</div>
-    </div>`;
+    </div>
+  `;
 
   messagesDiv.appendChild(msgDiv);
 
@@ -247,8 +244,14 @@ function updateRoomPreview(data) {
   const messagePreview = existingRoom.querySelector(".text-primary");
   const timestamp = existingRoom.querySelector("small.float-end");
 
-  if (messagePreview) messagePreview.textContent = data.message;
-  if (timestamp) timestamp.textContent = "Now";
+  // อัปเดตข้อความพร้อมตรวจสอบผู้ส่ง
+  if (messagePreview) {
+    const prefix = data.send_by === "Admin" ? "คุณ: " : "";
+    messagePreview.textContent = `${prefix}${data.message}`;
+  }
+
+  // if (timestamp) timestamp.textContent = "Now";
+  if (timestamp) timestamp.textContent = timestamp.innerHTML;
 }
 
 function getPlatformIcon(platform) {
@@ -259,6 +262,17 @@ function getPlatformIcon(platform) {
       return "ic-Line.png";
     case "WhatsApp":
       return "ic-WhatsApp.png";
+    default:
+      return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
+  }
+}
+
+function getAvatar(data) {
+  switch (data.send_by) {
+    case "Customer":
+      return chatBoxProfile.src;
+    case "Admin":
+      return "";
     default:
       return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
   }
@@ -279,6 +293,7 @@ function scrollToBottom() {
   }
 }
 
+// ฟังก์ชั่นหลักในการเพิ่มห้องหรืออัพเดท
 function addOrUpdateRoom(data) {
   if (!data.room_id || !data.message || !data.sender_name) {
     console.warn("ข้อมูลไม่ครบถ้วนสำหรับ addOrUpdateRoom:", data);
@@ -290,12 +305,14 @@ function addOrUpdateRoom(data) {
     `.room-item[data-room-id="${data.room_id}"]`
   );
 
+  // ถ้ามีห้องแล้ว
   if (existingRoom) {
     updateRoom(existingRoom, data);
     roomsList.prepend(existingRoom);
-  } else {
-    createNewRoom(data);
   }
+
+  // ถ้ายังไม่มี
+  else createNewRoom(data);
 }
 
 // ฟังก์ชันอัปเดตห้องที่มีอยู่
@@ -303,7 +320,12 @@ function updateRoom(roomElement, data) {
   const messagePreview = roomElement.querySelector(".text-primary");
   const timestamp = roomElement.querySelector("small.float-end");
 
-  if (messagePreview) messagePreview.textContent = data.message;
+  // อัปเดตข้อความพร้อมตรวจสอบผู้ส่ง
+  if (messagePreview) {
+    const prefix = data.sender_name === "Admin" ? "คุณ: " : "";
+    messagePreview.textContent = `${prefix}${data.message}`;
+  }
+
   if (timestamp) timestamp.textContent = "Now";
 
   console.log("อัปเดตห้อง:", roomElement);

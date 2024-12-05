@@ -58,7 +58,10 @@ class ChatController extends BaseController
 
             // ข้อความล่าสุด
             $lastMessage = $this->messageModel->getLastMessageByRoomID($room->id);
-            $room->last_message = $lastMessage->message ?? '';
+
+            $prefix = '';
+            if ($lastMessage->send_by == 'Admin') $prefix = 'คุณ: ';
+            $room->last_message = $lastMessage->message ?  $prefix . $lastMessage->message : '';
             $room->last_time = $lastMessage->created_at ?? '';
         }
 

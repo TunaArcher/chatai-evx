@@ -81,7 +81,6 @@
                                                                     <small class="float-end text-muted fs-11"><?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?></small>
                                                                 </h6>
                                                                 <p class="text-muted mb-0"><span class="text-primary"><?php echo $room->last_message; ?></span>
-                                                                    <span class="badge float-end rounded text-white bg-success ">3</span>
                                                                 </p>
                                                             </div><!--end media-body-->
                                                         </div><!--end media-->
