@@ -24,7 +24,6 @@ class LineHandler
 
     public function handleWebhook($input, $userSocial)
     {
-
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
             $input = $this->getMockLineWebhookData();
