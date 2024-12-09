@@ -72,11 +72,11 @@ class FacebookClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to send message to WhatsApp API: " . json_encode($responseData));
+            log_message('error', "Failed to send message to facebook API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'WhatsAppAPI::pushMessage error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'facebook API::pushMessage error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }

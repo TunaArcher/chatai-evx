@@ -27,16 +27,14 @@ class FacebookHandler
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockFacebookWebhookData();
 
-        // ดึงข้อมูลเหตุการณ์จาก Whats App
-        $entry = $input->entry[0] ?? null;
-        $changes = $entry->changes[0] ?? null;
-        $value = $changes->value ?? null;
-        $whatAppMessage = $value->messages[0] ?? null;
-        $UID = $whatAppMessage->from ?? null; // เบอร์ของคนที่ส่งมา
-        $message = $whatAppMessage->text->body ?? null; // ข้อความที่ส่งมา
-        $contact = $value->contacts[0] ?? null;
-        $name = $contact->profile->name ?? null;
-        $waID = $contact->wa_id[0] ?? null;
+        // ดึงข้อมูลเหตุการณ์จาก facebook
+        $message = $input->value->message->text ?? null;
+        $UID = $input->value->sender->id ?? null;
+
+        echo($UID);
+        exit;
+     
+        
 
         // ตรวจสอบหรือสร้างลูกค้า
         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial, $name);
@@ -109,44 +107,29 @@ class FacebookHandler
     {
         return json_decode(
             '{
-                "object": "whatsapp_business_account",
-                "entry": [
-                    {
-                        "id": "520204877839971",
-                        "changes": [
-                            {
-                                "value": {
-                                    "messaging_product": "whatsapp",
-                                    "metadata": {
-                                        "display_phone_number": "15551868121",
-                                        "phone_number_id": "513951735130592"
-                                    },
-                                    "contacts": [
-                                        {
-                                            "profile": {
-                                                "name": "0611188669"
-                                            },
-                                            "wa_id": "66611188669"
-                                        }
-                                    ],
-                                    "messages": [
-                                        {
-                                            "from": "66611188669",
-                                            "id": "wamid.HBgLNjY2MTExODg2NjkVAgASGCA2RTdFNDY1NDYwQzlERjI2NjYyNjhCNTc5NzUwRkI0MgA=",
-                                            "timestamp": "1733391693",
-                                            "text": {
-                                                "body": "."
-                                            },
-                                            "type": "text"
-                                        }
-                                    ]
-                                },
-                                "field": "messages"
-                            }
-                        ]
-                    }
-                ]
-            }'
+  "field": "messages",
+  "value": {
+    "sender": {
+      "id": "12334"
+    },
+    "recipient": {
+      "id": "23245"
+    },
+    "timestamp": "1527459824",
+    "message": {
+      "mid": "test_message_id",
+      "text": "test_message",
+      "commands": [
+        {
+          "name": "command123"
+        },
+        {
+          "name": "command456"
+        }
+      ]
+    }
+  }
+}'
         );
     }
 }
