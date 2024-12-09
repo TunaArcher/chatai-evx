@@ -10,7 +10,7 @@ use App\Services\MessageService;
 class WhatsAppHandler
 {
     private $platform = 'WhatsApp';
-
+    
     private MessageService $messageService;
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
