@@ -9,7 +9,7 @@ use App\Services\MessageService;
 
 class FacebookHandler
 {
-    private $platform = 'WhatsApp';
+    private $platform = 'Facebook';
 
     private MessageService $messageService;
     private MessageRoomModel $messageRoomModel;
