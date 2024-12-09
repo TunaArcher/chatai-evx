@@ -18,7 +18,7 @@ class FacebookClient
 
     public function __construct($config)
     {
-        $this->baseURL = 'https://graph.facebook.com/v21.0/me/messages';
+        $this->baseURL = 'https://graph.facebook.com/';
         $this->facebookToken = $config['facebookToken'];
         $this->http = new Client();
     }
@@ -36,7 +36,7 @@ class FacebookClient
     {
         try {
 
-            $endPoint = $this->baseURL;
+            $endPoint = $this->baseURL . 'v21.0/me/messages';
 
             // $headers = [
             //     'Authorization' => "Bearer " . $this->facebookToken,
@@ -85,20 +85,18 @@ class FacebookClient
      * 1. Profile | ดึงข้อมูล
      */
 
-    public function getUserProfile($UID)
+    public function getUserProfileFacebook($UID)
     {
         try {
 
-            $endPoint = $this->baseURL . $UID . '/phone_numbers/';
+            $endPoint = $this->baseURL . $UID . '?fields=first_name,last_name,profile_pic&access_token=' . $this->facebookToken;
 
-            $headers = [
-                'Authorization' => "Bearer " . $this->facebookToken,
-            ];
+            // $headers = [
+            //     'Authorization' => "Bearer " . $this->facebookToken,
+            // ];
 
             // ส่งคำขอ GET ไปยัง API
-            $response = $this->http->request('GET', $endPoint, [
-                'headers' => $headers
-            ]);
+            $response = $this->http->request('GET', $endPoint);
 
             // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
@@ -110,11 +108,11 @@ class FacebookClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to send message to WhatsApp API: " . json_encode($responseData));
+            log_message('error', "Failed to send message to Facebook API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'WhatsAppAPI::getProfile error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'FacebookAPI::getProfile error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }

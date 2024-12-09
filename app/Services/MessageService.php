@@ -7,6 +7,7 @@ use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
+use App\Integrations\Facebook\FacebookClient;
 
 class MessageService
 {
@@ -55,6 +56,14 @@ class MessageService
 
             switch ($platform) {
                 case 'Facebook':
+                    $faceBookAPI = new FacebookClient(['facebookToken' => $userSocial->fb_token]);
+                    $profile = $faceBookAPI->getUserProfileFacebook($UID);
+                    $customerID = $this->customerModel->insertCustomer([
+                        'platform' => $platform,
+                        'uid' => $UID,
+                        'name' => $profile->first_name . ' ' . $profile->last_name,
+                        'profile' => $profile->profile_pic,
+                    ]);
                     break;
                 case 'Line':
                     $lineAPI = new LineClient(['channelAccessToken' => $userSocial->line_channel_access_token]);

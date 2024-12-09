@@ -31,13 +31,8 @@ class FacebookHandler
         $message = $input->value->message->text ?? null;
         $UID = $input->value->sender->id ?? null;
 
-        echo($UID);
-        exit;
-     
-        
-
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial, $name);
+        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
@@ -66,7 +61,7 @@ class FacebookHandler
 
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
-            $UID = '66611188669';
+            $UID = '9158866310814762';
             $facebookToken = 'EAAPwTXFKRgoBO3m1wcmZBUa92023EjuTrvFe5rAHKSO9se0pPoMyeQgZCxyvu3dQGLj8wyM0lXN8iuyvtzUCYinTRnfTKRrfYZCQYQ8EEdwlrB0rT6PjIOAlZCLN0dxernIo4SyWRY0p4IjsWFGpr34Y4KSMTUqwWVVFFWoUsvbxMB7NwTcZBvxd67nsW42ZA3rtrvtVFZAHG6VWfkiKMZB3DAqbpkUZD';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
@@ -110,7 +105,7 @@ class FacebookHandler
   "field": "messages",
   "value": {
     "sender": {
-      "id": "12334"
+      "id": "9158866310814762"
     },
     "recipient": {
       "id": "23245"
