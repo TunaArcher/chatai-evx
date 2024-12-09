@@ -28,11 +28,11 @@ class FacebookHandler
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockFacebookWebhookData();
 
         // ดึงข้อมูลเหตุการณ์จาก facebook
-        $message = $input->value->message->text ?? null;
-        $UID = $input->value->sender->id ?? null;
+        $message = $input->entry->messaging->message->text ?? null;
+        $UID = $input->entry->messaging->sender->id ?? null;
 
-        log_message('info', 'check stuck: ' . json_encode($input, JSON_PRETTY_PRINT));
-        log_message('info', 'check uid: ' . json_encode($UID, JSON_PRETTY_PRINT));
+        // log_message('info', 'check stuck: ' . json_encode($input, JSON_PRETTY_PRINT));
+        // log_message('info', 'check uid: ' . json_encode($UID, JSON_PRETTY_PRINT));
 
         // ตรวจสอบหรือสร้างลูกค้า
         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
@@ -105,28 +105,27 @@ class FacebookHandler
     {
         return json_decode(
             '{
-  "field": "messages",
-  "value": {
-    "sender": {
-      "id": "9158866310814762"
-    },
-    "recipient": {
-      "id": "23245"
-    },
-    "timestamp": "1527459824",
-    "message": {
-      "mid": "test_message_id",
-      "text": "test_message",
-      "commands": [
+  "entry": [
         {
-          "name": "command123"
-        },
-        {
-          "name": "command456"
+            "time": 1733735932500,
+            "id": "436618552864074",
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "9158866310814762"
+                    },
+                    "recipient": {
+                        "id": "436618552864074"
+                    },
+                    "timestamp": 1733735447211,
+                    "message": {
+                        "mid": "m_ixUxEqTYyfCqkYFXfSTDivX7oe5Mk-1qL9AMvuUqedICKaaOOHzQGAHbfmoc3zQ3xjcyfJlUrF30SVsi6ww7Sw",
+                        "text": "AAA"
+                    }
+                }
+            ]
         }
-      ]
-    }
-  }
+    ]
 }'
         );
     }
