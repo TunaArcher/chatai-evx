@@ -34,6 +34,8 @@ class ChatController extends BaseController
      */
     public function index()
     {
+        // echo(hashidsEncrypt(8));
+        // exit;
         // TODO:: HANDLE
         // NOTE:: ต้องจัดการ ID, Refactor foreach
 
