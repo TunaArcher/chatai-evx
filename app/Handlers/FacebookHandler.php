@@ -57,6 +57,7 @@ class FacebookHandler
 
     public function handleReplyByManual($input)
     {
+        log_message('info', 'check input reply chat: ' . json_encode($input, JSON_PRETTY_PRINT));
         $userID = session()->get('userID');
         $messageReplyToCustomer = $input->message;
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
