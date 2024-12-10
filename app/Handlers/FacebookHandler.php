@@ -32,7 +32,7 @@ class FacebookHandler
         $UID = $input->entry->messaging->sender->id ?? null;
 
         log_message('info', 'check stucture: ' . json_encode($input, JSON_PRETTY_PRINT));
-        // log_message('info', 'check uid: ' . json_encode($UID, JSON_PRETTY_PRINT));
+        log_message('info', 'check uid: ' . json_encode($UID, JSON_PRETTY_PRINT));
 
         // ตรวจสอบหรือสร้างลูกค้า
         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
