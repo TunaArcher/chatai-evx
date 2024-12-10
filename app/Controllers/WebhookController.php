@@ -41,7 +41,7 @@ class WebhookController extends BaseController
     {
         $input = $this->request->getJSON();
         $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
-        log_message('info', "check user : " . json_encode($input, JSON_PRETTY_PRINT));
+        log_message('info', "check user : " . json_encode($userSocialID, JSON_PRETTY_PRINT));
         return $this->response->setJSON(['status' => 'success']);
 
         try {
