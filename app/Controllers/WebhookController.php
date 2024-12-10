@@ -41,13 +41,12 @@ class WebhookController extends BaseController
     {
         $input = $this->request->getJSON();
         $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
-        log_message('info', "check user : " . json_encode($userSocial, JSON_PRETTY_PRINT));
-        return $this->response->setJSON(['status' => 'success']);
-
+  
         try {
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
             $handler->handleWebhook($input, $userSocial);
+            return $this->response->setJSON(['status' => 'success']);
 
             // กรณีเปิดใช้งานให้ AI ช่วยตอบ
             if ($userSocial->ai === 'on') $handler->handleReplyByAI($input, $userSocial); // TODO:: HANDLE
