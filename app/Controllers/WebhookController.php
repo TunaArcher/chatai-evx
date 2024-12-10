@@ -43,7 +43,6 @@ class WebhookController extends BaseController
         $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
 
         try {
-            log_message('info', "ID เข้า {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
             $handler->handleWebhook($input, $userSocial);
