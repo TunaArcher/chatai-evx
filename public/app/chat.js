@@ -182,7 +182,7 @@ ws.onerror = (error) => console.error("WebSocket error:", error);
 function getPlatformIcon(platform) {
   switch (platform) {
     case "Facebook":
-      return "ic-Facebook.svg";
+      return "ic-Facebook.png";
     case "Line":
       return "ic-Line.png";
     case "WhatsApp":

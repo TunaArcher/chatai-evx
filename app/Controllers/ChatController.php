@@ -34,7 +34,7 @@ class ChatController extends BaseController
      */
     public function index()
     {
-        // echo(hashidsEncrypt(8));
+        // echo(hashidsEncrypt(10)); exit();
         // exit;
         // TODO:: HANDLE
         // NOTE:: ต้องจัดการ ID, Refactor foreach
@@ -127,7 +127,7 @@ class ChatController extends BaseController
     private function getPlatformIcon(string $platform): string
     {
         return match ($platform) {
-            'Facebook' => 'ic-Facebook.svg',
+            'Facebook' => 'ic-Facebook.png',
             'Line' => 'ic-Line.png',
             'WhatsApp' => 'ic-WhatsApp.png',
             default => '',
