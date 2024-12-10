@@ -89,9 +89,6 @@ class FacebookClient
     {
         try {
 
-            log_message('UID UserInfo', "UIDI: " . json_encode($UID));
-            exit;
-
             $endPoint = $this->baseURL . $UID . '?fields=first_name,last_name,profile_pic&access_token=' . $this->facebookToken;
 
             // $headers = [
