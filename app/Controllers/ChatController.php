@@ -107,12 +107,13 @@ class ChatController extends BaseController
         $input = $this->request->getJSON();
         $messageRoomModel = $this->messageRoomModel->getMessageRoomByID($input->room_id);
         $userSocial = $this->userSocialModel->getUserSocialByID($messageRoomModel->user_social_id);
+        $customer = $this->customerModel->getCustomerByID($messageRoomModel->customer_id);
 
         try {
 
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
 
-            $handler->handleReplyByManual($input, $userSocial);
+            $handler->handleReplyByManual($input, $customer);
 
             return $this->response->setJSON(['status' => 'success']);
         } catch (\InvalidArgumentException $e) {

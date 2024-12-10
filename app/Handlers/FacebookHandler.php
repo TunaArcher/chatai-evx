@@ -55,9 +55,8 @@ class FacebookHandler
         ]);
     }
 
-    public function handleReplyByManual($input)
+    public function handleReplyByManual($input, $customer)
     {
-        log_message('info', 'check input reply chat: ' . json_encode($input, JSON_PRETTY_PRINT));
         $userID = session()->get('userID');
         $messageReplyToCustomer = $input->message;
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
@@ -68,7 +67,10 @@ class FacebookHandler
             $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+            $UID = $customer->uid;
             $facebookToken = $userSocial->fb_token;
+
+            log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
         }
 
         $facebookAPI = new FacebookClient([
