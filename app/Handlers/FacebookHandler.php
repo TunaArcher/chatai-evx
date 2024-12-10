@@ -70,7 +70,7 @@ class FacebookHandler
             $UID = $customer->uid;
             $facebookToken = $userSocial->fb_token;
 
-            log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
+            // log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
         }
 
         $facebookAPI = new FacebookClient([
