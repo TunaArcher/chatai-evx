@@ -52,4 +52,62 @@ class UserSocialModel
 
         return $builder->where('id', $id)->delete();
     }
+
+    public function getUserSocialByUserID($userID)
+    {
+        $builder = $this->db->table('user_socials');
+
+        return $builder
+            ->where('deleted_at', null) // เพิ่มเงื่อนไขสำหรับ deleted_at เป็น NULL
+            ->orderBy('created_at', 'DESC')
+            ->get()
+            ->getResult();
+    }
+
+    public function getUserSocialByPlatformAndToken($platform, $data)
+    {
+
+        $builder = $this->db->table('user_socials');
+
+        switch ($platform) {
+            case 'Facebook':
+
+                return $builder
+                    ->where('platform', $platform)
+                    ->where('fb_token', $data['fb_token'])
+                    ->get()
+                    ->getRow();
+
+                break;
+
+            case 'Line':
+
+                return $builder
+                    ->where('platform', $platform)
+                    ->where('line_channel_id', $data['line_channel_id'])
+                    ->where('line_channel_secret', $data['line_channel_secret'])
+                    ->get()
+                    ->getRow();
+
+                break;
+
+            case 'WhatsApp':
+
+                return $builder
+                    ->where('platform', $platform)
+                    ->where('whatsapp_token', $data['whatsapp_token'])
+                    ->where('whatsapp_phone_number_id', $data['whatsapp_phone_number_id'])
+                    ->get()
+                    ->getRow();
+
+                break;
+
+            case 'Instagram':
+                break;
+
+            case 'Tiktok':
+                break;
+        }
+    }
+
 }

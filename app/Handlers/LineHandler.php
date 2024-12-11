@@ -66,13 +66,24 @@ class LineHandler
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
             $UID = 'U0434fa7d7cfef4a035f9dce7c0253def';
-            $channelAccessToken = 'UUvglmk7qWbUBSAzM2ThjtAtV+8ipnI1KabsWobuQt8VqFgizLGi91+eVfpZ86i9YRU/oWrmHSBFtACvAwZ/Z6rynrfHU4tWEQi6Yi/HhHzBjCeD5pMdPODqLaEbfCO5bX7rlAbD5swrrhQPljjhTgdB04t89/1O/w1cDnyilFU=';
+            $userSocialID = '2';
+            $accessToken = '';
+            $channelID = '2006619676';
+            $channelSecret = 'a5925643557a8ce364d47f2162257f30';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $channelAccessToken = $userSocial->line_channel_access_token;
+            $userSocialID =  $userSocial->id;
+            $accessToken = $userSocial->line_channel_access_token;
+            $channelID = $userSocial->line_channel_id;
+            $channelSecret = $userSocial->line_channel_secret;
         }
 
-        $lineAPI = new LineClient(['channelAccessToken' => $channelAccessToken]);
+        $lineAPI = new LineClient([
+            'userSocialID' => $userSocialID,
+            'accessToken' => $accessToken,
+            'channelID' => $channelID,
+            'channelSecret' => $channelSecret,
+        ]);
         $send = $lineAPI->pushMessage($UID, $messageReplyToCustomer);
         log_message('info', 'ข้อความตอบไปที่ลูกค้า Line: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
 

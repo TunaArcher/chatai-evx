@@ -66,7 +66,12 @@ class MessageService
                     ]);
                     break;
                 case 'Line':
-                    $lineAPI = new LineClient(['channelAccessToken' => $userSocial->line_channel_access_token]);
+                    $lineAPI = new LineClient([
+                        'userSocialID' => $userSocial->id,
+                        'accessToken' => $userSocial->line_channel_access_token,
+                        'channelID' => $userSocial->line_channel_id,
+                        'channelSecret' => $userSocial->line_channel_secret,
+                    ]);
                     $profile = $lineAPI->getUserProfile($UID);
 
                     $customerID = $this->customerModel->insertCustomer([
