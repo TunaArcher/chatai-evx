@@ -13,6 +13,8 @@
 <!-- <script src="assets/js/pages/index.init.js"></script> -->
 <script src="assets/js/app.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
 <?php if (isset($js_critical)) {
     echo $js_critical;
 }; ?>

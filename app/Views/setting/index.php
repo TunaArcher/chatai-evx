@@ -35,14 +35,15 @@
                             <div class="text-center border-dashed-bottom pb-3">
                                 <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
                                 <h5 class="fw-bold my-2 fs-20"><?php echo $user_social->name; ?></h5>
-                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?></p>
+                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
 
                                 <?php if ($user_social->platform == 'Facebook') { ?>
-                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Facebook Developer</p>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Facebook Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
                                     <p class="text-muted mt-0 mb-0">2. แล้วจะได้ Token จาก Facebook ให้นำมาใส่ที่ ปุ่มระบุ Token</p>
                                     <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                 <?php } else { ?>
                                     <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Platform นั้น ๆ </p>
+                                    <p class="text-muted mt-0 mb-0">2. หากต้องยืนยันให้ใส่คำว่า HAPPY</p>
                                     <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                 <?php } ?>
                             </div>
@@ -153,7 +154,7 @@
                             <div class="step2-facebook-wrapper" style="display: none;">
                                 <img src="https://i0.wp.com/saixiii.com/wp-content/uploads/2017/04/messaging-api.png?fit=720%2C346&ssl=1" alt="" class="img-fluid rounded w-100">
                                 <hr>
-                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer</p>
+                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></p>
                                 <p class="mb-0">2. เลือก Facebook Messaging API</p>
                                 <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
                             </div>
@@ -182,7 +183,7 @@
                                         <p class="mb-0">8. กลับมา แล้วกดปุ่ม ‘ถัดไป’</p>
                                     </div>
                                     <div class="tab-pane py-3" id="profile-1" role="tabpanel">
-                                        <p class="text-muted mb-0">5. ตรวจสอบว่า Messaging API มีข้อมูลแชนแนล ID (Channel ID) และ ความลับแชนแนล (Channel Secret) หรือไม่</p>
+                                        <p class="mb-0">5. ตรวจสอบว่า Messaging API มีข้อมูลแชนแนล ID (Channel ID) และ ความลับแชนแนล (Channel Secret) หรือไม่</p>
                                         <img src="https://chat.bloxchats.com/messaging-api.png" alt="" class="img-fluid">
                                         <p class="mb-0">6. หากมีข้อมูลครบถ้วน กดปุ่ม ‘ถัดไป’</p>
                                     </div>
@@ -193,7 +194,7 @@
                             <div class="step2-whatsapp-wrapper" style="display: none;">
                                 <img src="https://www.zenvia.com/wp-content/uploads/2022/02/API20oficial20de20Whatsapp.jpgwidth600nameAPI20oficial20de20Whatsapp.jpg" alt="" class="img-fluid rounded w-100">
                                 <hr>
-                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer</p>
+                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></p>
                                 <p class="mb-0">2. เลือก Whats App API</p>
                                 <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
                             </div>
@@ -212,7 +213,7 @@
                             <!-- Facebook -->
                             <div class="step3-facebook-wrapper">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
+                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
                                     <input type="text" name="facebook_social_name" class="form-control" id="" aria-describedby="" placeholder="">
                                 </div>
                                 <!-- <div class="mb-3">
@@ -223,7 +224,7 @@
                             <!-- Line -->
                             <div class="step3-line-wrapper">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
+                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
                                     <input type="text" name="line_social_name" class="form-control" id="" aria-describedby="" placeholder="">
                                 </div>
                                 <div class="mb-3">
@@ -238,17 +239,17 @@
                             <!-- WhatsApp -->
                             <div class="step3-whatsapp-wrapper">
                                 <div class="mb-3">
-                                    <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
+                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
                                     <input type="text" name="whatsapp_social_name" class="form-control" id="" aria-describedby="" placeholder="">
                                 </div>
                                 <div class="mb-3">
                                     <label for="" class="form-label">Token <span class="text-denger">*</span></label>
                                     <input type="text" name="whatsapp_token" class="form-control" id="" aria-describedby="" placeholder="">
                                 </div>
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label for="" class="form-label">Phone Number ID <span class="text-denger">*</span></label>
                                     <input type="text" name="whatsapp_phone_number_id" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div>
+                                </div> -->
                             </div>
                             <!-- Instagram -->
                             <div></div>

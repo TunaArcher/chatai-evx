@@ -28,6 +28,155 @@ const steps = {
 let selectedPlatform = "";
 
 // Utility Functions
+
+function copyToClipboard(url) {
+  // สร้าง Element ชั่วคราวสำหรับคัดลอก
+  const tempInput = document.createElement("input");
+  tempInput.value = url;
+  document.body.appendChild(tempInput);
+
+  // เลือกและคัดลอกข้อความ
+  tempInput.select();
+  tempInput.setSelectionRange(0, 99999); // รองรับบนมือถือ
+  document.execCommand("copy");
+
+  // ลบ Element ชั่วคราว
+  document.body.removeChild(tempInput);
+
+  // แสดงข้อความแจ้งเตือน
+  notyf("คัดลอกแล้ว", "success");
+}
+
+function notyf(message, type) {
+  const notyf = new Notyf({
+    position: {
+      x: "right",
+      y: "top",
+    },
+  });
+
+  if (type == "success") {
+    const notification = notyf.success(message);
+  }
+
+  if (type == "error") {
+    const notification = notyf.error(message);
+  }
+
+  notyf.dismiss(notification);
+}
+
+function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
+  if (actionBy != null) actionBy.prop("disabled", true);
+
+  $.ajax({
+    url: `${serverUrl}/check/connection`,
+    type: "POST",
+    data: {
+      platform: $platform,
+      userSocialID: $userSocialID,
+    },
+    success: function (response) {
+      let $data = response;
+
+      if (response.success == 1) {
+        if (actionBy != null) {
+          let $wrapper = $("#userSocialWrapper-" + $userSocialID);
+
+          // เปิดสถานะได้
+          if ($data.data == "1") {
+            actionBy.prop("disabled", false);
+            $wrapper
+              .find(".userSocialStatus")
+              .html(
+                '<span class="badge rounded text-success bg-transparent border border-primary ms-1 p-1">เชื่อมต่อแล้ว</span>'
+              );
+
+            notyf("เชื่อมต่อสำเร็จ", "success");
+          }
+
+          // เชื่อมต่อไม่ติด
+          else {
+            console.log("เชื่อมต่อไม่ติด");
+            actionBy.prop("disabled", false);
+            $wrapper
+              .find(".userSocialStatus")
+              .html(
+                '<span class="badge rounded text-danger bg-transparent border border-danger ms-1 p-1">หลุดการเชื่อมต่อ</span>'
+              );
+
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด!",
+              text: response.message,
+              icon: "error",
+              confirmButtonText: "ตกลง",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // location.reload(); // รีโหลดหน้าเว็บ
+              }
+            });
+
+            notyf("Token หรือ API มีปัญหา กรุณาติดต่อทีมงาน", "error");
+          }
+
+          actionBy.prop("disabled", false);
+        } else {
+          location.reload(); // รีโหลดหน้าเมื่อผู้ใช้ปิดข้อความแจ้งเตือน
+        }
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+    },
+  });
+}
+
+function validatePlatformInputs(platform) {
+  const platformValidators = {
+    Facebook: () => {
+      return validateField(
+        'input[name="facebook_social_name"]',
+        "กรุณาใส่ชื่อ"
+      );
+      // validateField('input[name="fb_token"]', "กรุณาใส่ Token")
+    },
+    Line: () => {
+      return (
+        validateField('input[name="line_social_name"]', "กรุณาใส่ชื่อ") &&
+        validateField('input[name="line_channel_id"]', "กรุณาใส่ Channel ID") &&
+        validateField(
+          'input[name="line_channel_secret"]',
+          "กรุณาใส่ Channel Secret"
+        )
+      );
+    },
+    WhatsApp: () => {
+      return (
+        validateField('input[name="whatsapp_social_name"]', "กรุณาใส่ชื่อ") &&
+        validateField('input[name="whatsapp_token"]', "กรุณาใส่ Token")
+        // validateField(
+        //   'input[name="whatsapp_phone_number_id"]',
+        //   "กรุณาใส่ Phone Number ID"
+        // )
+      );
+    },
+    Instagram: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Instagram
+    Tiktok: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
+  };
+
+  // เรียกฟังก์ชันตรวจสอบข้อมูลตามแพลตฟอร์ม
+  return platformValidators[platform] ? platformValidators[platform]() : true;
+}
+
+function validateField(selector, errorMessage) {
+  const $field = $(selector);
+  if ($field.val().trim() === "") {
+    alert(errorMessage);
+    return false;
+  }
+  return true;
+}
+
 function activateStep(fromStep, toStep) {
   fromStep.tab.removeClass("active");
   fromStep.content.removeClass("active");
@@ -114,6 +263,8 @@ steps.step3.finish.on("click", function () {
             // location.reload(); // รีโหลดหน้าเว็บ
           }
         });
+
+        $me.prop("disabled", false);
       }
     },
     error: function (xhr, status, error) {
@@ -132,187 +283,6 @@ $(".btnCheckConnect").on("click", function () {
 
   ajaxCheckConnect($platform, $userSocialID, $me);
 });
-
-$(".btnDelete").on("click", function () {
-  let $me = $(this);
-
-  $me.prop("disabled", true);
-
-  let dataObj = {};
-
-  let $platform = $me.data("platform"),
-    $userSocialID = $me.data("user-social-id");
-
-  $me.attr("disabled", true);
-
-  Swal.fire({
-    title: "คุณต้องการลบ ?",
-    text: "กรุณาระบุเหตุผล",
-    icon: "warning",
-    input: "text",
-    inputPlaceholder: "กรุณาระบุเหตุผลที่ต้องการยกเลิก",
-    showCancelButton: true,
-    confirmButtonText: "ตกลง",
-    cancelButtonText: "ยกเลิก",
-    dangerMode: true,
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      dataObj = {
-        platform: $platform,
-        userSocialID: $userSocialID,
-        description: result.value,
-      };
-
-      $.ajax({
-        type: "POST",
-        url: `${serverUrl}/remove-social`,
-        data: JSON.stringify(dataObj),
-        contentType: "application/json; charset=utf-8",
-      })
-        .done(function (res) {
-          if (res.success) {
-            Swal.fire({
-              title: "สำเร็จ",
-              icon: "success",
-              timer: 2000,
-              showConfirmButton: false,
-            });
-
-            location.reload(); // รีโหลดหน้าเว็บ
-          } else {
-            Swal.fire({
-              title: res.messages,
-              text: "Redirecting...",
-              icon: "warning",
-              timer: 2000,
-              showConfirmButton: false,
-            });
-          }
-        })
-        .fail(function (err) {
-          const message =
-            err.responseJSON?.messages ||
-            "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
-          Swal.fire({
-            title: message,
-            text: "Redirecting...",
-            icon: "warning",
-            timer: 2000,
-            showConfirmButton: false,
-          });
-        });
-    } else {
-      $me.attr("disabled", false);
-    }
-  });
-});
-
-function validatePlatformInputs(platform) {
-  const platformValidators = {
-    Facebook: () => {
-      return validateField(
-        'input[name="facebook_social_name"]',
-        "กรุณาใส่ชื่อ"
-      );
-      // validateField('input[name="fb_token"]', "กรุณาใส่ Token")
-    },
-    Line: () => {
-      return (
-        validateField('input[name="line_social_name"]', "กรุณาใส่ชื่อ") &&
-        validateField('input[name="line_channel_id"]', "กรุณาใส่ Channel ID") &&
-        validateField(
-          'input[name="line_channel_secret"]',
-          "กรุณาใส่ Channel Secret"
-        )
-      );
-    },
-    WhatsApp: () => {
-      return (
-        validateField('input[name="whatsapp_social_name"]', "กรุณาใส่ชื่อ") &&
-        validateField('input[name="whatsapp_token"]', "กรุณาใส่ Token") &&
-        validateField(
-          'input[name="whatsapp_phone_number_id"]',
-          "กรุณาใส่ Phone Number ID"
-        )
-      );
-    },
-    Instagram: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Instagram
-    Tiktok: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
-  };
-
-  // เรียกฟังก์ชันตรวจสอบข้อมูลตามแพลตฟอร์ม
-  return platformValidators[platform] ? platformValidators[platform]() : true;
-}
-
-function validateField(selector, errorMessage) {
-  const $field = $(selector);
-  if ($field.val().trim() === "") {
-    alert(errorMessage);
-    return false;
-  }
-  return true;
-}
-
-function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
-  if (actionBy != null) {
-    actionBy.prop("disabled", true);
-  }
-
-  $.ajax({
-    url: `${serverUrl}/check/connection`,
-    type: "POST",
-    data: {
-      platform: $platform,
-      userSocialID: $userSocialID,
-    },
-    success: function (response) {
-      let $data = response;
-
-      if (response.success == 1) {
-        if (actionBy != null) {
-          let $wrapper = $("#userSocialWrapper-" + $userSocialID);
-
-          // เปิดสถานะได้
-          if ($data.data == "1") {
-            actionBy.prop("disabled", false);
-            $wrapper
-              .find(".userSocialStatus")
-              .html(
-                '<span class="badge rounded text-success bg-transparent border border-primary ms-1 p-1">เชื่อมต่อแล้ว</span>'
-              );
-          }
-
-          // เชื่อมต่อไม่ติด
-          else {
-            console.log("เชื่อมต่อไม่ติด");
-            actionBy.prop("disabled", false);
-            $wrapper
-              .find(".userSocialStatus")
-              .html(
-                '<span class="badge rounded text-danger bg-transparent border border-danger ms-1 p-1">หลุดการเชื่อมต่อ</span>'
-              );
-
-            Swal.fire({
-              title: "เกิดข้อผิดพลาด!",
-              text: response.message,
-              icon: "error",
-              confirmButtonText: "ตกลง",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // location.reload(); // รีโหลดหน้าเว็บ
-              }
-            });
-          }
-        } else {
-          location.reload(); // รีโหลดหน้าเมื่อผู้ใช้ปิดข้อความแจ้งเตือน
-        }
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
-    },
-  });
-}
 
 // Tab click prevention for disabled tabs
 [steps.step1.tab, steps.step2.tab, steps.step3.tab].forEach((tab) => {
@@ -419,6 +389,80 @@ $("#btnSaveFbToken").on("click", function () {
         showConfirmButton: false,
       });
     });
+});
+
+$(".btnDelete").on("click", function () {
+  let $me = $(this);
+
+  $me.prop("disabled", true);
+
+  let dataObj = {};
+
+  let $platform = $me.data("platform"),
+    $userSocialID = $me.data("user-social-id");
+
+  $me.attr("disabled", true);
+
+  Swal.fire({
+    title: "คุณต้องการลบ ?",
+    text: "กรุณาระบุเหตุผล",
+    icon: "warning",
+    input: "text",
+    inputPlaceholder: "กรุณาระบุเหตุผลที่ต้องการยกเลิก",
+    showCancelButton: true,
+    confirmButtonText: "ตกลง",
+    cancelButtonText: "ยกเลิก",
+    dangerMode: true,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      dataObj = {
+        platform: $platform,
+        userSocialID: $userSocialID,
+        description: result.value,
+      };
+
+      $.ajax({
+        type: "POST",
+        url: `${serverUrl}/remove-social`,
+        data: JSON.stringify(dataObj),
+        contentType: "application/json; charset=utf-8",
+      })
+        .done(function (res) {
+          if (res.success) {
+            Swal.fire({
+              title: "สำเร็จ",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            location.reload(); // รีโหลดหน้าเว็บ
+          } else {
+            Swal.fire({
+              title: res.messages,
+              text: "Redirecting...",
+              icon: "warning",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }
+        })
+        .fail(function (err) {
+          const message =
+            err.responseJSON?.messages ||
+            "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+          Swal.fire({
+            title: message,
+            text: "Redirecting...",
+            icon: "warning",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        });
+    } else {
+      $me.attr("disabled", false);
+    }
+  });
 });
 
 // Run initialization

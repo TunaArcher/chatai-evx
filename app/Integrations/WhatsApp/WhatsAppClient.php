@@ -14,14 +14,14 @@ class WhatsAppClient
     private $http;
     private $baseURL;
     private $phoneNumberID;
-    private $whatsAppToken;
+    private $accessToken;
     private $debug = false;
 
     public function __construct($config)
     {
         $this->baseURL = 'https://graph.facebook.com/v21.0/';
-        $this->phoneNumberID = $config['phoneNumberID'];
-        $this->whatsAppToken = $config['whatsAppToken'];
+        $this->phoneNumberID = $config['phoneNumberID'] ?? '';
+        $this->accessToken = $config['whatsAppToken'] ?? '';
         $this->http = new Client();
     }
 
@@ -41,7 +41,7 @@ class WhatsAppClient
             $endPoint = $this->baseURL . $this->phoneNumberID . '/messages/';
 
             $headers = [
-                'Authorization' => "Bearer " . $this->whatsAppToken,
+                'Authorization' => "Bearer " . $this->accessToken,
                 'Content-Type' => 'application/json',
             ];
 
@@ -91,7 +91,7 @@ class WhatsAppClient
             $endPoint = $this->baseURL . $UID . '/phone_numbers/';
 
             $headers = [
-                'Authorization' => "Bearer " . $this->whatsAppToken,
+                'Authorization' => "Bearer " . $this->accessToken,
             ];
 
             // ส่งคำขอ GET ไปยัง API
@@ -115,6 +115,82 @@ class WhatsAppClient
             // จัดการข้อผิดพลาด
             log_message('error', 'WhatsAppAPI::getProfile error {message}', ['message' => $e->getMessage()]);
             return false;
+        }
+    }
+
+    /*********************************************************************
+     * 1. Get Phone Number ID | ดึง Phone ID ใช้ในการ Request
+     */
+
+    public function getWhatsAppBusinessAccountId()
+    {
+        try {
+
+            $endPoint = $this->baseURL . '/me/';
+
+            // เรียก API เพื่อดึง WhatsApp Business Account ID
+            $response = $this->http->request('GET', $endPoint, [
+                'query' => [
+                    'fields' => 'id,name,accounts',
+                    'access_token' => $this->accessToken,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+
+            if (isset($data['accounts']['data'][0]['whatsapp_business_account']['id'])) {
+                return $data['accounts']['data'][0]['whatsapp_business_account']['id'];
+            } else {
+                // กรณีส่งข้อความล้มเหลว
+                log_message('error', "Failed to get WhatsAppBusiness Account ID to WhatsApp API: " . json_encode($data));
+                throw new Exception("ไม่พบ WhatsApp Business Account ID");
+            }
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppAPI::getWhatsAppBusinessAccountId error {message}', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    public function getPhoneNumberId($whatsappBusinessAccountId)
+    {
+        try {
+
+            $endPoint = $this->baseURL . $whatsappBusinessAccountId . '/phone_numbers/';
+
+            // เรียก API เพื่อดึง Phone Number ID
+            $response = $$this->http->request('GET', $endPoint, [
+                'query' => [
+                    'access_token' => $this->accessToken,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+
+            if (isset($data['data'][0]['id'])) {
+                return $data['data'][0]['id'];
+            } else {
+                log_message('error', "Failed to get PhoneNumber ID to WhatsApp API: " . json_encode($data));
+                throw new Exception("ไม่พบ Phone Number ID");
+            }
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppAPI::getPhoneNumberId error {message}', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    public function getWhatsAppBusinessAccountIdForPhoneNumberID()
+    {
+
+        $whatsappBusinessAccountId = $this->getWhatsAppBusinessAccountId();
+
+        if ($whatsappBusinessAccountId) {
+
+            // ดึง Phone Number ID
+            $phoneNumberId = $this->getPhoneNumberId($whatsappBusinessAccountId);
+
+            if ($phoneNumberId) return $phoneNumberId;
         }
     }
 }

@@ -92,7 +92,7 @@ class UserSocialModel
                 return $builder
                     ->where('platform', $platform)
                     ->where('whatsapp_token', $data['whatsapp_token'])
-                    ->where('whatsapp_phone_number_id', $data['whatsapp_phone_number_id'])
+                    // ->where('whatsapp_phone_number_id', $data['whatsapp_phone_number_id'])
                     ->get()
                     ->getRow();
 
@@ -105,5 +105,4 @@ class UserSocialModel
                 break;
         }
     }
-
 }

@@ -3,11 +3,11 @@
 namespace App\Controllers;
 
 use App\Integrations\Line\LineClient;
+use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\UserSocialModel;
 
 class SettingController extends BaseController
 {
-
     private UserSocialModel $userSocialModel;
 
     public function __construct()
@@ -17,324 +17,202 @@ class SettingController extends BaseController
 
     public function index()
     {
-        session()->set(['userID' => 1]);
-        $userID = session()->get('userID');
+        $userID = $this->initializeSession();
 
-        $user_socials = $this->userSocialModel->getUserSocialByUserID($userID);
+        $userSocials = $this->userSocialModel->getUserSocialByUserID($userID);
 
-        // ส่งข้อมูลไปยัง View
         return view('/app', [
-            'content' => 'setting/index', // ชื่อไฟล์ View
-            'title' => 'Chat', // ชื่อหน้า
+            'content' => 'setting/index',
+            'title' => 'Chat',
             'css_critical' => '
                 <link href="assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
                 <link href="assets/libs/animate.css/animate.min.css" rel="stylesheet" type="text/css">
             ',
             'js_critical' => '
                 <script src="assets/libs/sweetalert2/sweetalert2.min.js"></script>
-                <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+                <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
                 <script src="app/setting.js"></script>
-            ', // ไฟล์ JS
-            'user_socials' => $user_socials // ข้อมูลห้องสนทนา
+            ',
+            'user_socials' => $userSocials,
         ]);
-    }
-
-    public function connection()
-    {
-        $response = [
-            'success' => 0,
-            'message' => '',
-        ];
-        $status = 500;
-
-        try {
-            session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
-
-            $requestPayload = $this->request->getPost();
-            $data = json_decode(json_encode($requestPayload));
-
-            $platform = $data->platform;
-            $userSocialID = $data->userSocialID;
-
-            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
-
-            $statusConnection = '0';
-
-            switch ($platform) {
-                case 'Facebook':
-
-                    if ($userSocial->fb_token != '') {
-                        // TODO:: HANDLE
-                        $statusConnection = '1';
-                    }
-
-                    $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
-                        'is_connect' => $statusConnection,
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $response['success'] = 1;
-                    $response['data'] = $statusConnection;
-
-                    break;
-
-                case 'Line':
-
-                    $lineAPI = new LineClient([
-                        'userSocialID' => $userSocial->id,
-                        'accessToken' => $userSocial->line_channel_access_token,
-                        'channelID' => $userSocial->line_channel_id,
-                        'channelSecret' => $userSocial->line_channel_secret,
-                    ]);
-                    $getAccessToken = $lineAPI->accessToken();
-
-                    if ($getAccessToken) {
-                        $statusConnection = '1';
-                    }
-
-                    $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
-                        'line_channel_access_token' => $getAccessToken ? $getAccessToken->access_token : '',
-                        'is_connect' => $statusConnection,
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $response['success'] = 1;
-                    $response['data'] = $statusConnection;
-
-                    break;
-
-                case 'WhatsApp':
-
-                    // TODO:: HANDLE
-                    $statusConnection = '1';
-
-                    $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
-                        'is_connect' => $statusConnection,
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    if ($update) {
-                        $response['success'] = 1;
-                        $response['data'] = $statusConnection;
-                    }
-
-                    break;
-
-                case 'Instagram':
-                    break;
-
-                case 'Tiktok':
-                    break;
-            }
-
-            $status = 200;
-        } catch (\Exception $e) {
-            $response['message'] = $e->getMessage();
-        }
-
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
-    }
-
-    public function saveToken()
-    {
-        $response = [
-            'success' => 0,
-            'message' => '',
-        ];
-        $status = 500;
-
-        try {
-            session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
-
-            $data = $this->request->getJSON();
-
-            // $platform = $data->platform;
-            $platform = 'Facebook';
-            $userSocialID = $data->userSocialID;
-
-            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
-
-            switch ($platform) {
-                case 'Facebook':
-
-                    $this->userSocialModel->updateUserSocialByID($userSocialID, [
-                        'fb_token' => $data->fbToken,
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $response['success'] = 1;
-
-                    break;
-
-                case 'Line':
-                    break;
-                case 'WhatsApp':
-                    break;
-                case 'Instagram':
-                    break;
-                case 'Tiktok':
-                    break;
-            }
-
-            $status = 200;
-        } catch (\Exception $e) {
-            $response['message'] = $e->getMessage();
-        }
-
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
     }
 
     public function setting()
     {
-        $response = [
-            'success' => 0,
-            'message' => '',
-        ];
-        $status = 500;
+        $response = $this->handleResponse(function () {
 
-        try {
-            session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
+            $userID = $this->initializeSession();
 
-            $requestPayload = $this->request->getPost();
-            $data = json_decode(json_encode($requestPayload));
-            $platform = $data->btnradio;
+            $data = $this->getRequestData();
 
-            if (!$platform) {
-                throw new \Exception('No platform specified');
-            }
+            return $this->processPlatformData($data->btnradio, $data, $userID);
+        });
 
-            $response = $this->processPlatformData($platform, $data, $userID);
-            $status = 200;
-        } catch (\Exception $e) {
-            $response['message'] = $e->getMessage();
-        }
-
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
+        return $response;
     }
 
-    // -----------------------------------------------------------------------------
-    // Helper
-    // -----------------------------------------------------------------------------
-
-    private function processPlatformData(string $platform, object $data, int $userID): array
+    public function connection()
     {
-        $tokenFields = $this->getTokenFields($platform);
-        $insertData = $this->getInsertData($platform, $data, $userID);
+        $response = $this->handleResponse(function () {
 
-        // ตรวจสอบว่ามีข้อมูลในระบบหรือยัง
-        $isHaveToken = $this->userSocialModel->getUserSocialByPlatformAndToken($platform, $tokenFields);
-        if ($isHaveToken) {
+            $userID = $this->initializeSession();
+
+            $data = $this->getRequestData();
+            $userSocial = $this->userSocialModel->getUserSocialByID($data->userSocialID);
+
+            $statusConnection = $this->processPlatformConnection($data->platform, $userSocial, $data->userSocialID);
+
             return [
-                'success' => 0,
-                'message' => 'มีข้อมูลในระบบแล้ว',
+                'success' => 1,
+                'data' => $statusConnection,
+                'message' => '',
             ];
-        }
+        });
 
-        // บันทึกข้อมูลลงฐานข้อมูล
-        $userSocialID = $this->userSocialModel->insertUserSocial($insertData);
-
-        return [
-            'success' => 1,
-            'message' => 'ข้อมูลถูกบันทึกเรียบร้อย',
-            'data' => [],
-            'userSocialID' => $userSocialID,
-            'platform' => $platform
-        ];
+        return $response;
     }
 
-    private function getTokenFields(string $platform): array
+    public function saveToken()
     {
-        switch ($platform) {
-            case 'Facebook':
-            case 'Line':
-                return [
-                    'line_channel_id' => $this->request->getPost('line_channel_id'),
-                    'line_channel_secret' => $this->request->getPost('line_channel_secret'),
-                ];
-            case 'WhatsApp':
-                return [
-                    'whatsapp_token' => $this->request->getPost('whatsapp_token'),
-                    'whatsapp_phone_number_id' => $this->request->getPost('whatsapp_phone_number_id'),
-                ];
-            default:
-                return [];
-        }
-    }
+        $response = $this->handleResponse(function () {
 
-    private function getInsertData(string $platform, object $data, int $userID): array
-    {
-        $baseData = [
-            'user_id' => $userID,
-            'platform' => $platform,
-            'name' => $data->{mb_strtolower($platform) . '_social_name'} ?? '',
-        ];
+            $userID = $this->initializeSession();
 
-        switch ($platform) {
-            case 'Facebook':
-                return $baseData;
-            case 'Line':
-                return array_merge($baseData, [
-                    'line_channel_id' => $data->line_channel_id,
-                    'line_channel_secret' => $data->line_channel_secret,
-                ]);
-            case 'WhatsApp':
-                return array_merge($baseData, [
-                    'whatsapp_token' => $data->whatsapp_token,
-                    'whatsapp_phone_number_id' => $data->whatsapp_phone_number_id,
-                ]);
-            default:
-                throw new \Exception('Unsupported platform');
-        }
+            $data = $this->getRequestData();
+            $this->updateToken($data->platform, $data);
+
+            return ['success' => 1];
+        });
+
+        return $response;
     }
 
     public function removeSocial()
     {
-        $response = [
-            'success' => 0,
-            'message' => '',
-        ];
-        $status = 500;
+        $response = $this->handleResponse(function () {
 
-        try {
-            session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
+            $userID = $this->initializeSession();
 
-            $data = $this->request->getJSON();
-
-            $platform = $data->platform;
-            $userSocialID = $data->userSocialID;
-
-            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+            $data = $this->getRequestData();
+            $userSocial = $this->userSocialModel->getUserSocialByID($data->userSocialID);
 
             if ($userSocial) {
                 $this->userSocialModel->updateUserSocialByID($userSocial->id, [
-                    'deleted_at' => date('Y-m-d H:i:s')
+                    'deleted_at' => date('Y-m-d H:i:s'),
                 ]);
 
-                $response['success'] = 1;
-                $response['message'] = 'ลบสำเร็จ';
+                return ['success' => 1, 'message' => 'ลบสำเร็จ'];
             }
 
-            $status = 200;
+            throw new \Exception('Social data not found');
+        });
+
+        return $response;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    private function initializeSession(): int
+    {
+        session()->set(['userID' => 1]);
+        return session()->get('userID');
+    }
+
+    private function getRequestData(): object
+    {
+        $requestPayload = $this->request->getPost();
+        return json_decode(json_encode($requestPayload));
+    }
+
+    private function handleResponse(callable $callback)
+    {
+        try {
+
+            $response = $callback();
+
+            return $this->response
+                ->setStatusCode(200)
+                ->setContentType('application/json')
+                ->setJSON($response);
         } catch (\Exception $e) {
-            $response['message'] = $e->getMessage();
+            return $this->response
+                ->setStatusCode(500)
+                ->setContentType('application/json')
+                ->setJSON(['success' => 0, 'message' => $e->getMessage()]);
+        }
+    }
+
+    private function processPlatformConnection(string $platform, object $userSocial, int $userSocialID): string
+    {
+        $statusConnection = '0';
+
+        switch ($platform) {
+            case 'Facebook':
+                if (!empty($userSocial->fb_token)) {
+                    $statusConnection = '1';
+                }
+                break;
+
+            case 'Line':
+                $lineAPI = new LineClient([
+                    'userSocialID' => $userSocial->id,
+                    'accessToken' => $userSocial->line_channel_access_token,
+                    'channelID' => $userSocial->line_channel_id,
+                    'channelSecret' => $userSocial->line_channel_secret,
+                ]);
+                $accessToken = $lineAPI->accessToken();
+
+                if ($accessToken) {
+                    $statusConnection = '1';
+                    $this->updateUserSocial($userSocialID, [
+                        'line_channel_access_token' => $accessToken->access_token,
+                    ]);
+                }
+                break;
+
+            case 'WhatsApp':
+                $whatsAppAPI = new WhatsAppClient([
+                    'phoneNumberID' => $userSocial->whatsapp_phone_number_id,
+                    'whatsAppToken' => $userSocial->whatsapp_token,
+                ]);
+                $phoneNumberID = $whatsAppAPI->getWhatsAppBusinessAccountIdForPhoneNumberID();
+
+                if ($phoneNumberID) {
+                    $statusConnection = '1';
+                    $this->updateUserSocial($userSocialID, [
+                        'whatsapp_phone_number_id' => $phoneNumberID,
+                    ]);
+                }
+                break;
         }
 
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
+        $this->updateUserSocial($userSocialID, [
+            'is_connect' => $statusConnection,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return $statusConnection;
+    }
+
+    private function updateUserSocial(int $userSocialID, array $data)
+    {
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $this->userSocialModel->updateUserSocialByID($userSocialID, $data);
+    }
+
+    private function updateToken(string $platform, object $data)
+    {
+        $fields = match ($platform) {
+            'Facebook' => ['fb_token' => $data->fbToken],
+            'Line' => [], // Add Line token fields
+            'WhatsApp' => [], // Add WhatsApp token fields
+            default => throw new \Exception('Unsupported platform'),
+        };
+
+        if ($fields) {
+            $this->updateUserSocial($data->userSocialID, $fields);
+        }
     }
 }
