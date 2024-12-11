@@ -72,11 +72,7 @@ class UserSocialModel
         switch ($platform) {
             case 'Facebook':
 
-                return $builder
-                    ->where('platform', $platform)
-                    ->where('fb_token', $data['fb_token'])
-                    ->get()
-                    ->getRow();
+                return false;
 
                 break;
 

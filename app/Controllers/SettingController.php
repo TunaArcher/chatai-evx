@@ -64,18 +64,18 @@ class SettingController extends BaseController
             switch ($platform) {
                 case 'Facebook':
 
-                    // TODO:: HANDLE
-                    $statusConnection = '1';
+                    if ($userSocial->fb_token != '') {
+                        // TODO:: HANDLE
+                        $statusConnection = '1';
+                    }
 
                     $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
                         'is_connect' => $statusConnection,
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    if ($update) {
-                        $response['success'] = 1;
-                        $response['data'] = $statusConnection;
-                    }
+                    $response['success'] = 1;
+                    $response['data'] = $statusConnection;
 
                     break;
 
@@ -90,18 +90,17 @@ class SettingController extends BaseController
                     $getAccessToken = $lineAPI->accessToken();
 
                     if ($getAccessToken) {
-
                         $statusConnection = '1';
-
-                        $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
-                            'line_channel_access_token' => $getAccessToken->access_token,
-                            'is_connect' => $statusConnection,
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
-
-                        $response['success'] = 1;
-                        $response['data'] = $statusConnection;
                     }
+
+                    $update = $this->userSocialModel->updateUserSocialByID($userSocialID, [
+                        'line_channel_access_token' => $getAccessToken ? $getAccessToken->access_token : '',
+                        'is_connect' => $statusConnection,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $response['success'] = 1;
+                    $response['data'] = $statusConnection;
 
                     break;
 
@@ -125,6 +124,59 @@ class SettingController extends BaseController
                 case 'Instagram':
                     break;
 
+                case 'Tiktok':
+                    break;
+            }
+
+            $status = 200;
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function saveToken()
+    {
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            session()->set(['userID' => 1]);
+            $userID = session()->get('userID');
+
+            $data = $this->request->getJSON();
+
+            // $platform = $data->platform;
+            $platform = 'Facebook';
+            $userSocialID = $data->userSocialID;
+
+            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+
+            switch ($platform) {
+                case 'Facebook':
+
+                    $this->userSocialModel->updateUserSocialByID($userSocialID, [
+                        'fb_token' => $data->fbToken,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $response['success'] = 1;
+
+                    break;
+
+                case 'Line':
+                    break;
+                case 'WhatsApp':
+                    break;
+                case 'Instagram':
+                    break;
                 case 'Tiktok':
                     break;
             }
@@ -172,6 +224,10 @@ class SettingController extends BaseController
             ->setJSON($response);
     }
 
+    // -----------------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------------
+
     private function processPlatformData(string $platform, object $data, int $userID): array
     {
         $tokenFields = $this->getTokenFields($platform);
@@ -202,9 +258,6 @@ class SettingController extends BaseController
     {
         switch ($platform) {
             case 'Facebook':
-                return [
-                    'fb_token' => $this->request->getPost('fb_token'),
-                ];
             case 'Line':
                 return [
                     'line_channel_id' => $this->request->getPost('line_channel_id'),
@@ -225,14 +278,12 @@ class SettingController extends BaseController
         $baseData = [
             'user_id' => $userID,
             'platform' => $platform,
-            'name' => $data->{$platform . '_social_name'} ?? '',
+            'name' => $data->{mb_strtolower($platform) . '_social_name'} ?? '',
         ];
 
         switch ($platform) {
             case 'Facebook':
-                return array_merge($baseData, [
-                    'fb_token' => $data->fb_token,
-                ]);
+                return $baseData;
             case 'Line':
                 return array_merge($baseData, [
                     'line_channel_id' => $data->line_channel_id,
@@ -246,5 +297,44 @@ class SettingController extends BaseController
             default:
                 throw new \Exception('Unsupported platform');
         }
+    }
+
+    public function removeSocial()
+    {
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            session()->set(['userID' => 1]);
+            $userID = session()->get('userID');
+
+            $data = $this->request->getJSON();
+
+            $platform = $data->platform;
+            $userSocialID = $data->userSocialID;
+
+            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+
+            if ($userSocial) {
+                $this->userSocialModel->updateUserSocialByID($userSocial->id, [
+                    'deleted_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $response['success'] = 1;
+                $response['message'] = 'ลบสำเร็จ';
+            }
+
+            $status = 200;
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
     }
 }

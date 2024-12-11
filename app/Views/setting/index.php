@@ -35,11 +35,26 @@
                             <div class="text-center border-dashed-bottom pb-3">
                                 <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
                                 <h5 class="fw-bold my-2 fs-20"><?php echo $user_social->name; ?></h5>
-                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL WEB HOOK : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?></p>
+                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?></p>
+
+                                <?php if ($user_social->platform == 'Facebook') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Facebook Developer</p>
+                                    <p class="text-muted mt-0 mb-0">2. แล้วจะได้ Token จาก Facebook ให้นำมาใส่ที่ ปุ่มระบุ Token</p>
+                                    <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } else { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Platform นั้น ๆ </p>
+                                    <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } ?>
                             </div>
                             <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">
-                                <button type="button" class="btn bg-secondary-subtle text-dark btn-sm px-3 btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>">เชื่อมต่อใหม่</button>
-                                <button type="button" class="btn bg-secondary-subtle text-dark btn-sm px-3">ลบ</button>
+                                <div>
+                                    <?php if ($user_social->platform == 'Facebook') { ?>
+                                        <button type="button" class="btn bg-info-subtle text-dark btn-sm px-3 btnInputToken" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>" data-bs-toggle="modal" data-bs-target="#formModalDefault">ระบุ Token</button>
+                                    <?php } ?>
+
+                                    <button type="button" class="btn bg-warning-subtle text-dark btn-sm px-3 btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>">เชื่อมต่อใหม่</button>
+                                </div>
+                                <button type="button" class="btn bg-secondary-subtle text-dark btn-sm px-3 btnDelete" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>">ลบ</button>
                             </div>
                         </div><!--end card-body-->
                     </div>
@@ -108,24 +123,24 @@
                             <a class="nav-link py-2" id="step3-tab" data-bs-toggle="tab" href="#step3">ขั้นตอนที่ 3 กรอกข้อมูลการเชื่อมต่อ</a>
                         </div>
                     </nav>
-                    <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-content mt-3" id="nav-tabContent">
                         <!-- tab 1 -->
                         <div class="tab-pane active" id="step1">
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                                 <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked="" value="Facebook">
-                                <label class="btn btn-outline-secondary" for="btnradio1">Facebook</label>
+                                <label class="btn btn-outline-info" for="btnradio1">Facebook</label>
 
                                 <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" value="Line">
-                                <label class="btn btn-outline-secondary" for="btnradio2">Line</label>
+                                <label class="btn btn-outline-primary" for="btnradio2">Line</label>
 
                                 <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" value="WhatsApp">
-                                <label class="btn btn-outline-secondary" for="btnradio3">Whats App</label>
+                                <label class="btn btn-outline-primary" for="btnradio3">Whats App</label>
 
-                                <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off" value="Instagram">
-                                <label class="btn btn-outline-secondary" for="btnradio4">Instagram</label>
+                                <input type="radio" class="btn-check disabled" name="btnradio" id="btnradio4" autocomplete="off" value="Instagram">
+                                <label class="btn btn-outline-secondary disabled" for="btnradio4">Instagram</label>
 
-                                <input type="radio" class="btn-check" name="btnradio" id="btnradio5" autocomplete="off" value="Tiktok">
-                                <label class="btn btn-outline-secondary" for="btnradio5">Tiktok</label>
+                                <input type="radio" class="btn-check disabled" name="btnradio" id="btnradio5" autocomplete="off" value="Tiktok">
+                                <label class="btn btn-outline-secondary disabled" for="btnradio5">Tiktok</label>
                             </div>
                             <div class="mt-2">
                                 <button type="button" id="step1Next" class="btn btn-primary float-end">Next</button>
@@ -196,21 +211,17 @@
                         <div class="tab-pane" id="step3">
                             <!-- Facebook -->
                             <div class="step3-facebook-wrapper">
-                                <img src="https://i0.wp.com/saixiii.com/wp-content/uploads/2017/04/messaging-api.png?fit=720%2C346&ssl=1" alt="" class="img-fluid rounded w-100">
-                                <hr>
                                 <div class="mb-3">
                                     <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
-                                    <input type="text" name="fb_social_name" class="form-control" id="" aria-describedby="" placeholder="">
+                                    <input type="text" name="facebook_social_name" class="form-control" id="" aria-describedby="" placeholder="">
                                 </div>
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label for="" class="form-label">Token <span class="text-denger">*</span></label>
                                     <input type="text" name="fb_token" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div>
+                                </div> -->
                             </div>
                             <!-- Line -->
                             <div class="step3-line-wrapper">
-                                <img src="https://cdn6.aptoide.com/imgs/6/c/b/6cb90ef28865cb7d4dcc94450cb24c6a_fgraphic.png" alt="" class="img-fluid rounded">
-                                <hr>
                                 <div class="mb-3">
                                     <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
                                     <input type="text" name="line_social_name" class="form-control" id="" aria-describedby="" placeholder="">
@@ -226,8 +237,6 @@
                             </div>
                             <!-- WhatsApp -->
                             <div class="step3-whatsapp-wrapper">
-                                <img src="https://www.zenvia.com/wp-content/uploads/2022/02/API20oficial20de20Whatsapp.jpgwidth600nameAPI20oficial20de20Whatsapp.jpg" alt="" class="img-fluid rounded w-100">
-                                <hr>
                                 <div class="mb-3">
                                     <label for="" class="form-label">ชื่อ <span class="text-denger">*</span></label>
                                     <input type="text" name="whatsapp_social_name" class="form-control" id="" aria-describedby="" placeholder="">
@@ -252,6 +261,27 @@
                             </div>
                         </div>
                     </div>
+                </form>
+            </div><!--end modal-body-->
+        </div><!--end modal-content-->
+    </div><!--end modal-dialog-->
+</div><!--end modal-->
+
+<div class="modal fade" id="formModalDefault" tabindex="-1" role="dialog" aria-labelledby="exampleModalDefaultLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="formModalDefaultLabel">ระบุ Token</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form action="" method="post" id="form-fb-token">
+                    <input type="hidden" name="user_social_id" value="">
+                    <div class="mb-3">
+                        <label for="" class="form-label">Token FB</label>
+                        <input type="text" class="form-control" id="" placeholder="" name="fb_token">
+                    </div>
+                    <button class="btn btn-primary w-100" id="btnSaveFbToken">บันทึก</button>
                 </form>
             </div><!--end modal-body-->
         </div><!--end modal-content-->

@@ -133,13 +133,88 @@ $(".btnCheckConnect").on("click", function () {
   ajaxCheckConnect($platform, $userSocialID, $me);
 });
 
+$(".btnDelete").on("click", function () {
+  let $me = $(this);
+
+  $me.prop("disabled", true);
+
+  let dataObj = {};
+
+  let $platform = $me.data("platform"),
+    $userSocialID = $me.data("user-social-id");
+
+  $me.attr("disabled", true);
+
+  Swal.fire({
+    title: "คุณต้องการลบ ?",
+    text: "กรุณาระบุเหตุผล",
+    icon: "warning",
+    input: "text",
+    inputPlaceholder: "กรุณาระบุเหตุผลที่ต้องการยกเลิก",
+    showCancelButton: true,
+    confirmButtonText: "ตกลง",
+    cancelButtonText: "ยกเลิก",
+    dangerMode: true,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      dataObj = {
+        platform: $platform,
+        userSocialID: $userSocialID,
+        description: result.value,
+      };
+
+      $.ajax({
+        type: "POST",
+        url: `${serverUrl}/remove-social`,
+        data: JSON.stringify(dataObj),
+        contentType: "application/json; charset=utf-8",
+      })
+        .done(function (res) {
+          if (res.success) {
+            Swal.fire({
+              title: "สำเร็จ",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            location.reload(); // รีโหลดหน้าเว็บ
+          } else {
+            Swal.fire({
+              title: res.messages,
+              text: "Redirecting...",
+              icon: "warning",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }
+        })
+        .fail(function (err) {
+          const message =
+            err.responseJSON?.messages ||
+            "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+          Swal.fire({
+            title: message,
+            text: "Redirecting...",
+            icon: "warning",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        });
+    } else {
+      $me.attr("disabled", false);
+    }
+  });
+});
+
 function validatePlatformInputs(platform) {
   const platformValidators = {
     Facebook: () => {
-      return (
-        validateField('input[name="fb_social_name"]', "กรุณาใส่ชื่อ") &&
-        validateField('input[name="fb_token"]', "กรุณาใส่ Token")
+      return validateField(
+        'input[name="facebook_social_name"]',
+        "กรุณาใส่ชื่อ"
       );
+      // validateField('input[name="fb_token"]', "กรุณาใส่ Token")
     },
     Line: () => {
       return (
@@ -207,8 +282,9 @@ function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
               );
           }
 
-          // เปิดไม่ติด
+          // เชื่อมต่อไม่ติด
           else {
+            console.log("เชื่อมต่อไม่ติด");
             actionBy.prop("disabled", false);
             $wrapper
               .find(".userSocialStatus")
@@ -269,6 +345,80 @@ steps.step3.tab.on("click", function (e) {
   e.preventDefault();
   activateStep(steps.step2, steps.step3);
   setPlatformWrappers(steps.step3.wrappers, selectedPlatform);
+});
+
+$(".btnInputToken").on("click", function () {
+  let $me = $(this);
+
+  let $userSocialID = $me.data("user-social-id");
+
+  let $form = $("#form-fb-token");
+
+  $inputUserSocialID = $form.find('input[name="user_social_id"]');
+  $inputUserSocialID.val($userSocialID);
+});
+
+$("#btnSaveFbToken").on("click", function () {
+  let $me = $(this);
+
+  let $userSocialID = $('input[name="user_social_id"]').val(),
+    $fbToken = $('input[name="fb_token"]').val();
+
+  dataObj = {
+    userSocialID: $userSocialID,
+    fbToken: $fbToken,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    type: "POST",
+    url: `${serverUrl}/setting/save-token`,
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+  })
+    .done(function (res) {
+      if (res.success) {
+        Swal.fire({
+          title: "สำเร็จ",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        $me.prop("disabled", false);
+
+        $btn = $("#userSocialWrapper-" + $userSocialID);
+
+        ajaxCheckConnect(
+          "Facebook",
+          $userSocialID,
+          $btn.find(".btnCheckConnect")
+        );
+
+        $("#formModalDefault").modal("hide");
+      } else {
+        Swal.fire({
+          title: res.messages,
+          text: "Redirecting...",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    })
+    .fail(function (err) {
+      const message =
+        err.responseJSON?.messages ||
+        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+      Swal.fire({
+        title: message,
+        text: "Redirecting...",
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    });
 });
 
 // Run initialization

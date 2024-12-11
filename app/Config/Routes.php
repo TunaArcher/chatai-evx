@@ -46,9 +46,11 @@ $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข�
 // -----------------------------------------------------------------------------
 // Setting
 // -----------------------------------------------------------------------------
-$routes->get('/setting', 'SettingController::index'); // หน้าแสดงรายการห้องสนทนา
-$routes->post('/setting', 'SettingController::setting'); // หน้าแสดงรายการห้องสนทนา
-$routes->post('/check/connection', 'SettingController::connection'); // หน้าแสดงรายการห้องสนทนา
+$routes->get('/setting', 'SettingController::index');
+$routes->post('/setting', 'SettingController::setting');
+$routes->post('/check/connection', 'SettingController::connection');
+$routes->post('/remove-social', 'SettingController::removeSocial');
+$routes->post('/setting/save-token', 'SettingController::saveToken');
 
 // -----------------------------------------------------------------------------
 // Webhook
