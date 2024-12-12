@@ -27,8 +27,17 @@ const steps = {
 
 let selectedPlatform = "";
 
-// Utility Functions
+$(".radio-item").click(function () {
+  // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
+  $(".radio-icon").removeClass("selected");
+  // เพิ่ม class 'selected' ในไอคอนที่คลิก
+  $(this).find(".radio-icon").addClass("selected");
+  // ดึงค่าที่เลือก (value)
+  selectedPlatform = $(this).data("value");
+  console.log("Selected:", selectedPlatform);
+});
 
+// Utility Functions
 function copyToClipboard(url) {
   // สร้าง Element ชั่วคราวสำหรับคัดลอก
   const tempInput = document.createElement("input");
@@ -57,13 +66,13 @@ function notyf(message, type) {
 
   if (type == "success") {
     const notification = notyf.success(message);
+    // notyf.dismiss(notification);
   }
 
   if (type == "error") {
     const notification = notyf.error(message);
+    // notyf.dismiss(notification);
   }
-
-  notyf.dismiss(notification);
 }
 
 function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
@@ -203,7 +212,7 @@ function initialize() {
 
 // Event Handlers
 steps.step1.next.on("click", function () {
-  selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
+  // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
   console.log("คุณเลือก " + selectedPlatform);
 
   activateStep(steps.step1, steps.step2);
@@ -228,7 +237,9 @@ steps.step3.prev.on("click", function () {
 
 steps.step3.finish.on("click", function () {
   const $me = $(this);
-  const formData = $("#custom-step").serialize(); // ดึงข้อมูลจากฟอร์มในรูปแบบ URL-encoded
+  // const formData = $("#custom-step").serialize();
+  let formData = new FormData($("#custom-step")[0]);
+  formData.append('platform', selectedPlatform); // เพิ่มข้อมูลแบบ Dynamic
 
   $me.prop("disabled", true);
 
@@ -243,6 +254,8 @@ steps.step3.finish.on("click", function () {
     url: `${serverUrl}/setting`,
     type: "POST",
     data: formData,
+    processData: false,
+    contentType: false,
     success: function (response) {
       console.log("ข้อมูลถูกส่งเรียบร้อย:", response);
 
@@ -303,7 +316,7 @@ steps.step1.tab.on("click", function (e) {
 
 steps.step2.tab.on("click", function (e) {
   e.preventDefault();
-  selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
+  // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
   console.log("คุณเลือก " + selectedPlatform);
 
   activateStep(steps.step1, steps.step2);
@@ -351,7 +364,7 @@ $("#btnSaveFbToken").on("click", function () {
       if (res.success) {
         Swal.fire({
           title: "สำเร็จ",
-          icon: "success",
+          // icon: "success",
           timer: 2000,
           showConfirmButton: false,
         });

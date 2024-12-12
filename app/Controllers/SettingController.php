@@ -45,7 +45,7 @@ class SettingController extends BaseController
 
             $data = $this->getRequestData();
 
-            return $this->processPlatformData($data->btnradio, $data, $userID);
+            return $this->processPlatformData($data->platform, $data, $userID);
         });
 
         return $response;
@@ -72,28 +72,14 @@ class SettingController extends BaseController
         return $response;
     }
 
-    public function saveToken()
-    {
-        $response = $this->handleResponse(function () {
-
-            $userID = $this->initializeSession();
-
-            $data = $this->getRequestData();
-            $this->updateToken($data->platform, $data);
-
-            return ['success' => 1];
-        });
-
-        return $response;
-    }
-
     public function removeSocial()
     {
         $response = $this->handleResponse(function () {
 
             $userID = $this->initializeSession();
 
-            $data = $this->getRequestData();
+            // $data = $this->getRequestData();
+            $data = $this->request->getJSON();
             $userSocial = $this->userSocialModel->getUserSocialByID($data->userSocialID);
 
             if ($userSocial) {
@@ -108,6 +94,59 @@ class SettingController extends BaseController
         });
 
         return $response;
+    }
+
+    public function saveToken()
+    {
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            session()->set(['userID' => 1]);
+            $userID = session()->get('userID');
+
+            $data = $this->request->getJSON();
+
+            // $platform = $data->platform;
+            $platform = 'Facebook';
+            $userSocialID = $data->userSocialID;
+
+            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+
+            switch ($platform) {
+                case 'Facebook':
+
+                    $this->userSocialModel->updateUserSocialByID($userSocialID, [
+                        'fb_token' => $data->fbToken,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $response['success'] = 1;
+
+                    break;
+
+                case 'Line':
+                    break;
+                case 'WhatsApp':
+                    break;
+                case 'Instagram':
+                    break;
+                case 'Tiktok':
+                    break;
+            }
+
+            $status = 200;
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
     }
 
     // -------------------------------------------------------------------------
@@ -141,6 +180,77 @@ class SettingController extends BaseController
                 ->setStatusCode(500)
                 ->setContentType('application/json')
                 ->setJSON(['success' => 0, 'message' => $e->getMessage()]);
+        }
+    }
+
+    private function processPlatformData(string $platform, object $data, int $userID): array
+    {
+        $tokenFields = $this->getTokenFields($platform);
+        $insertData = $this->getInsertData($platform, $data, $userID);
+
+        // ตรวจสอบว่ามีข้อมูลในระบบหรือยัง
+        $isHaveToken = $this->userSocialModel->getUserSocialByPlatformAndToken($platform, $tokenFields);
+        if ($isHaveToken) {
+            return [
+                'success' => 0,
+                'message' => 'มีข้อมูลในระบบแล้ว',
+            ];
+        }
+
+        // บันทึกข้อมูลลงฐานข้อมูล
+        $userSocialID = $this->userSocialModel->insertUserSocial($insertData);
+
+        return [
+            'success' => 1,
+            'message' => 'ข้อมูลถูกบันทึกเรียบร้อย',
+            'data' => [],
+            'userSocialID' => $userSocialID,
+            'platform' => $platform
+        ];
+    }
+
+    private function getTokenFields(string $platform): array
+    {
+        switch ($platform) {
+            case 'Facebook':
+            case 'Line':
+                return [
+                    'line_channel_id' => $this->request->getPost('line_channel_id'),
+                    'line_channel_secret' => $this->request->getPost('line_channel_secret'),
+                ];
+            case 'WhatsApp':
+                return [
+                    'whatsapp_token' => $this->request->getPost('whatsapp_token'),
+                    // 'whatsapp_phone_number_id' => $this->request->getPost('whatsapp_phone_number_id'),
+                ];
+            default:
+                return [];
+        }
+    }
+
+    private function getInsertData(string $platform, object $data, int $userID): array
+    {
+        $baseData = [
+            'user_id' => $userID,
+            'platform' => $platform,
+            'name' => $data->{mb_strtolower($platform) . '_social_name'} ?? '',
+        ];
+
+        switch ($platform) {
+            case 'Facebook':
+                return $baseData;
+            case 'Line':
+                return array_merge($baseData, [
+                    'line_channel_id' => $data->line_channel_id,
+                    'line_channel_secret' => $data->line_channel_secret,
+                ]);
+            case 'WhatsApp':
+                return array_merge($baseData, [
+                    'whatsapp_token' => $data->whatsapp_token,
+                    // 'whatsapp_phone_number_id' => $data->whatsapp_phone_number_id,
+                ]);
+            default:
+                throw new \Exception('Unsupported platform');
         }
     }
 
@@ -200,19 +310,5 @@ class SettingController extends BaseController
     {
         $data['updated_at'] = date('Y-m-d H:i:s');
         $this->userSocialModel->updateUserSocialByID($userSocialID, $data);
-    }
-
-    private function updateToken(string $platform, object $data)
-    {
-        $fields = match ($platform) {
-            'Facebook' => ['fb_token' => $data->fbToken],
-            'Line' => [], // Add Line token fields
-            'WhatsApp' => [], // Add WhatsApp token fields
-            default => throw new \Exception('Unsupported platform'),
-        };
-
-        if ($fields) {
-            $this->updateUserSocial($data->userSocialID, $fields);
-        }
     }
 }
