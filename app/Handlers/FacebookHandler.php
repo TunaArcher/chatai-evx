@@ -105,7 +105,6 @@ class FacebookHandler
         $GPTToken = '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';
         // CONNECT TO GPT
         $userID = session()->get('userID');
-        $messageReplyToCustomer = $input->message;
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
