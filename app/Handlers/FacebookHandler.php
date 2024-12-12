@@ -109,7 +109,7 @@ class FacebookHandler
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
-        log_message('info', 'AI ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
+        log_message('info', 'AI ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($input, JSON_PRETTY_PRINT));
         // $messageReplyToCustomer = $chatGPT->askChatGPT($input->message);
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
 
