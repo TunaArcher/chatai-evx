@@ -237,7 +237,8 @@ steps.step3.prev.on("click", function () {
 
 steps.step3.finish.on("click", function () {
   const $me = $(this);
-  const formData = $("#custom-step").serialize(); // ดึงข้อมูลจากฟอร์มในรูปแบบ URL-encoded
+  // const formData = $("#custom-step").serialize();
+  let formData = new FormData($("#custom-step")[0]);
   formData.append('platform', selectedPlatform); // เพิ่มข้อมูลแบบ Dynamic
 
   $me.prop("disabled", true);
