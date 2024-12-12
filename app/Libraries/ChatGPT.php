@@ -88,7 +88,7 @@ class ChatGPT
                     'Content-Type'  => 'application/json',
                 ],
                 'json' => [
-                    'model' => 'gpt-4-turbo',
+                    'model' => 'gpt-3.5-turbo',
                     'messages' => [
                         [
                             'role' => 'user',
