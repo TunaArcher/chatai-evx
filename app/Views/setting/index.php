@@ -127,7 +127,7 @@
                     <div class="tab-content mt-3" id="nav-tabContent">
                         <!-- tab 1 -->
                         <div class="tab-pane active" id="step1">
-                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <!-- <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                                 <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked="" value="Facebook">
                                 <label class="btn btn-outline-info" for="btnradio1">Facebook</label>
 
@@ -142,6 +142,109 @@
 
                                 <input type="radio" class="btn-check disabled" name="btnradio" id="btnradio5" autocomplete="off" value="Tiktok">
                                 <label class="btn btn-outline-secondary disabled" for="btnradio5">Tiktok</label>
+                            </div> -->
+                            <style>
+                                .radio-group {
+                                    display: flex;
+                                    justify-content: center;
+                                    gap: 30px;
+                                    margin-top: 20px;
+                                }
+
+                                .radio-item {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    cursor: pointer;
+                                }
+
+                                .radio-icon {
+                                    width: 60px;
+                                    height: 60px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    border-radius: 50%;
+                                    position: relative;
+                                    border: 2px solid transparent;
+                                    transition: border-color 0.3s ease;
+                                }
+
+                                .radio-icon.selected {
+                                    border-color: #007bff;
+                                }
+
+                                .radio-icon img {
+                                    width: 40px;
+                                    height: 40px;
+                                }
+
+                                .radio-item span {
+                                    margin-top: 10px;
+                                    font-size: 14px;
+                                    color: #333;
+                                }
+
+                                .radio-icon .checkmark {
+                                    position: absolute;
+                                    bottom: -5px;
+                                    right: -5px;
+                                    background-color: #007bff;
+                                    color: white;
+                                    font-size: 12px;
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 50%;
+                                    display: none;
+                                    justify-content: center;
+                                    align-items: center;
+                                }
+
+                                .radio-icon.selected .checkmark {
+                                    display: flex;
+                                }
+                            </style>
+                            <div class="radio-group">
+                                <!-- LINE -->
+                                <div class="radio-item" data-value="Line">
+                                    <div class="radio-icon">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="Line">
+                                        <div class="checkmark"><i class="fas fa-check"></i></div>
+                                    </div>
+                                    <span>LINE</span>
+                                </div>
+                                <!-- Facebook -->
+                                <div class="radio-item" data-value="Facebook">
+                                    <div class="radio-icon">
+                                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/512px-Facebook_f_logo_%282021%29.svg.png?20210818083032" alt="Facebook">
+                                        <div class="checkmark"><i class="fas fa-check"></i></div>
+                                    </div>
+                                    <span>Facebook</span>
+                                </div>
+                                <!-- WhatsApp -->
+                                <div class="radio-item" data-value="WhatsApp">
+                                    <div class="radio-icon">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png" alt="WhatsApp">
+                                        <div class="checkmark"><i class="fas fa-check"></i></div>
+                                    </div>
+                                    <span>WhatsApp</span>
+                                </div>
+                                <!-- Instagram -->
+                                <div class="radio-item disabled" data-value="instagram">
+                                    <div class="radio-icon">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
+                                        <div class="checkmark"><i class="fas fa-check"></i></div>
+                                    </div>
+                                    <span>Instagram</span>
+                                </div>
+                                <!-- Tiktok -->
+                                <div class="radio-item disabled" data-value="Tiktok">
+                                    <div class="radio-icon">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ionicons_logo-tiktok.svg/512px-Ionicons_logo-tiktok.svg.png" alt="Tiktok">
+                                        <div class="checkmark"><i class="fas fa-check"></i></div>
+                                    </div>
+                                    <span>Tiktok</span>
+                                </div>
                             </div>
                             <div class="mt-2">
                                 <button type="button" id="step1Next" class="btn btn-primary float-end">Next</button>
@@ -162,7 +265,7 @@
                             <div class="step2-line-wrapper" style="display: none;">
                                 <img src="https://cdn6.aptoide.com/imgs/6/c/b/6cb90ef28865cb7d4dcc94450cb24c6a_fgraphic.png" alt="" class="img-fluid rounded">
                                 <hr>
-                                <p class="mb-0">1. เปิด https://manager.line.biz</p>
+                                <p class="mb-0">1. เปิด <a href="https://manager.line.biz" target="_blank">https://manager.line.biz</a></p>
                                 <p class="mb-0">2. เลือกบัญชี LINE OA ที่คุณต้องการเชื่อมต่อ และไปที่หน้าการตั้งค่า</p>
                                 <p class="mb-0">3. เลือก Messaging API ในเมนูด้านซ้ายมือ</p>
                                 <p class="mb-0">4. กดปุ่ม Messaging API</p>

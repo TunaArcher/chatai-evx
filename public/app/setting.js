@@ -27,8 +27,17 @@ const steps = {
 
 let selectedPlatform = "";
 
-// Utility Functions
+$(".radio-item").click(function () {
+  // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
+  $(".radio-icon").removeClass("selected");
+  // เพิ่ม class 'selected' ในไอคอนที่คลิก
+  $(this).find(".radio-icon").addClass("selected");
+  // ดึงค่าที่เลือก (value)
+  selectedPlatform = $(this).data("value");
+  console.log("Selected:", selectedPlatform);
+});
 
+// Utility Functions
 function copyToClipboard(url) {
   // สร้าง Element ชั่วคราวสำหรับคัดลอก
   const tempInput = document.createElement("input");
@@ -203,7 +212,7 @@ function initialize() {
 
 // Event Handlers
 steps.step1.next.on("click", function () {
-  selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
+  // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
   console.log("คุณเลือก " + selectedPlatform);
 
   activateStep(steps.step1, steps.step2);
