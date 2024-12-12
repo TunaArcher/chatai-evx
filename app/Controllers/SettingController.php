@@ -78,7 +78,8 @@ class SettingController extends BaseController
 
             $userID = $this->initializeSession();
 
-            $data = $this->getRequestData();
+            // $data = $this->getRequestData();
+            $data = $this->request->getJSON();
             $this->updateToken($data->platform, $data);
 
             return ['success' => 1];
