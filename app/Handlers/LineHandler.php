@@ -5,6 +5,7 @@ namespace App\Handlers;
 use App\Models\UserSocialModel;
 use App\Models\MessageRoomModel;
 use App\Integrations\Line\LineClient;
+use App\Models\CustomerModel;
 use App\Services\MessageService;
 
 class LineHandler
@@ -12,12 +13,14 @@ class LineHandler
     private $platform = 'Line';
 
     private MessageService $messageService;
+    private CustomerModel $customerModel;
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
+        $this->customerModel = new CustomerModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
     }
@@ -72,6 +75,10 @@ class LineHandler
             $channelSecret = 'a5925643557a8ce364d47f2162257f30';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+
+            $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+            $UID = $customer->uid;
+
             $userSocialID =  $userSocial->id;
             $accessToken = $userSocial->line_channel_access_token;
             $channelID = $userSocial->line_channel_id;

@@ -66,13 +66,13 @@ function notyf(message, type) {
 
   if (type == "success") {
     const notification = notyf.success(message);
+    notyf.dismiss(notification);
   }
 
   if (type == "error") {
     const notification = notyf.error(message);
+    notyf.dismiss(notification);
   }
-
-  notyf.dismiss(notification);
 }
 
 function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
