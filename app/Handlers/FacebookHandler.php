@@ -100,20 +100,43 @@ class FacebookHandler
         }
     }
 
-    public function handleReplyByAI($input, $customer)
+    public function handleReplyByAI($input, $userSocial)
     {
         $GPTToken = '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';
         // CONNECT TO GPT
         $userID = session()->get('userID');
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
         $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
+
+         // ตรวจสอบหรือสร้างลูกค้า
+         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
+
+         // ตรวจสอบหรือสร้างห้องสนทนา
+         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
+ 
+         // บันทึกข้อความในฐานข้อมูล
+         $this->messageService->saveMessage($messageRoom->id, $customer->id, $message, $this->platform, 'Customer');
+ 
+         // ส่งข้อความไปยัง WebSocket Server
+         $this->messageService->sendToWebSocket([
+             'room_id' => $messageRoom->id,
+             'send_by' => 'Customer',
+             'sender_id' => $customer->id,
+             'message' => $message,
+             'platform' => $this->platform,
+             'sender_name' => $customer->name,
+             'created_at' => date('Y-m-d H:i:s'),
+             'sender_avatar' => $customer->profile,
+         ]);
+
+        
         
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
 
         $messageReplyToCustomer = $chatGPT->askChatGPT($message);
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($messageRoom->id);
 
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
