@@ -102,7 +102,7 @@ class FacebookHandler
 
     public function handleReplyByAI($input, $userSocial)
     {
-        $GPTToken = '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';
+        $GPTToken = getenv('GPT_TOKEN');
         // CONNECT TO GPT
         $userID = session()->get('userID');
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
