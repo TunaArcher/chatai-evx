@@ -105,11 +105,14 @@ class FacebookHandler
         $GPTToken = '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';
         // CONNECT TO GPT
         $userID = session()->get('userID');
+        $message = $input->entry[0]->messaging[0]->message->text ?? null;
+        $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
+        
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
-        log_message('info', 'AI ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($input, JSON_PRETTY_PRINT));
-        // $messageReplyToCustomer = $chatGPT->askChatGPT($input->message);
+
+        $messageReplyToCustomer = $chatGPT->askChatGPT($message);
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
 
         // ข้อมูล Mock สำหรับ Development
