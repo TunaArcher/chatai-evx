@@ -252,10 +252,6 @@ class SettingController extends BaseController
             ];
         }
 
-        echo '<pre>';
-        print_r($insertData);
-        exit();
-
         // บันทึกข้อมูลลงฐานข้อมูล
         $userSocialID = $this->userSocialModel->insertUserSocial($insertData);
 

@@ -45,7 +45,7 @@ class SettingController extends BaseController
 
             $data = $this->getRequestData();
 
-            return $this->processPlatformData($data->btnradio, $data, $userID);
+            return $this->processPlatformData($data->platform, $data, $userID);
         });
 
         return $response;
@@ -142,6 +142,32 @@ class SettingController extends BaseController
                 ->setContentType('application/json')
                 ->setJSON(['success' => 0, 'message' => $e->getMessage()]);
         }
+    }
+
+    private function processPlatformData(string $platform, object $data, int $userID): array
+    {
+        $tokenFields = $this->getTokenFields($platform);
+        $insertData = $this->getInsertData($platform, $data, $userID);
+
+        // ตรวจสอบว่ามีข้อมูลในระบบหรือยัง
+        $isHaveToken = $this->userSocialModel->getUserSocialByPlatformAndToken($platform, $tokenFields);
+        if ($isHaveToken) {
+            return [
+                'success' => 0,
+                'message' => 'มีข้อมูลในระบบแล้ว',
+            ];
+        }
+
+        // บันทึกข้อมูลลงฐานข้อมูล
+        $userSocialID = $this->userSocialModel->insertUserSocial($insertData);
+
+        return [
+            'success' => 1,
+            'message' => 'ข้อมูลถูกบันทึกเรียบร้อย',
+            'data' => [],
+            'userSocialID' => $userSocialID,
+            'platform' => $platform
+        ];
     }
 
     private function processPlatformConnection(string $platform, object $userSocial, int $userSocialID): string

@@ -254,6 +254,8 @@ steps.step3.finish.on("click", function () {
     url: `${serverUrl}/setting`,
     type: "POST",
     data: formData,
+    processData: false,
+    contentType: false,
     success: function (response) {
       console.log("ข้อมูลถูกส่งเรียบร้อย:", response);
 
