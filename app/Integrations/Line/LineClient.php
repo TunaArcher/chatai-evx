@@ -144,7 +144,7 @@ class LineClient
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'LineAPI::pushMessage error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'LineClient::pushMessage error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }
@@ -178,11 +178,11 @@ class LineClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to get profile to Line API: " . json_encode($responseData));
+            log_message('error', "Failed to get profile from Line API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'LineAPI::getProfile error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'LineClient::getProfile error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }
@@ -222,11 +222,11 @@ class LineClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to get access token to Line API: " . json_encode($responseData));
+            log_message('error', "Failed to get access token from Line API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
-            log_message('error', 'LineAPI::accessToken error {message}', ['message' => $e->getMessage()]);
+            log_message('error', 'LineClient::accessToken error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }

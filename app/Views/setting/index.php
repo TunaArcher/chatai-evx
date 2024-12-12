@@ -230,7 +230,7 @@
                                     <span>WhatsApp</span>
                                 </div>
                                 <!-- Instagram -->
-                                <div class="radio-item disabled" data-value="instagram">
+                                <div class="radio-item" data-value="Instagram">
                                     <div class="radio-icon">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
@@ -238,7 +238,7 @@
                                     <span>Instagram</span>
                                 </div>
                                 <!-- Tiktok -->
-                                <div class="radio-item disabled" data-value="Tiktok">
+                                <div class="radio-item" data-value="Tiktok">
                                     <div class="radio-icon">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ionicons_logo-tiktok.svg/512px-Ionicons_logo-tiktok.svg.png" alt="Tiktok">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
@@ -302,9 +302,25 @@
                                 <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
                             </div>
                             <!-- Instagram -->
-                            <div></div>
+                            <div>
+                                <div class="step2-instagram-wrapper" style="display: none;">
+                                    <img src="https://kait.ai/static/images/website/blog/instagram-api-banner.webp" alt="" class="img-fluid rounded w-100">
+                                    <hr>
+                                    <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></p>
+                                    <p class="mb-0">2. เลือก Instagram Messaging API</p>
+                                    <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
+                                </div>
+                            </div>
                             <!-- Tiktok -->
-                            <div></div>
+                            <div>
+                                <div class="step2-tiktok-wrapper" style="display: none;">
+                                    <img src="https://media.bazaarvoice.com/Shutterstock_1757132165-1030x541.png" alt="" class="img-fluid rounded w-100">
+                                    <hr>
+                                    <p class="mb-0">1. เข้าไปจัดการที่ TikA API <a href="https://tikapi.io/" target="_blank">https://tikapi.io/</a></p>
+                                    <p class="mb-0">2. เลือก Tiktok Messaging API</p>
+                                    <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
+                                </div>
+                            </div>
                             <div>
                                 <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                                 <button type="button" id="step2Next" class="btn btn-primary float-end mt-2">Next</button>
@@ -355,10 +371,27 @@
                                 </div> -->
                             </div>
                             <!-- Instagram -->
-                            <div></div>
+                            <div class="step3-instagram-wrapper">
+                                <div class="mb-3">
+                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
+                                    <input type="text" name="instagram_social_name" class="form-control" id="" aria-describedby="" placeholder="">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="" class="form-label">Token <span class="text-denger">*</span></label>
+                                    <input type="text" name="instagram_token" class="form-control" id="" aria-describedby="" placeholder="">
+                                </div>
+                            </div>
                             <!-- Tiktok -->
-                            <div></div>
-
+                            <div class="step3-tiktok-wrapper">
+                                <div class="mb-3">
+                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
+                                    <input type="text" name="tiktok_social_name" class="form-control" id="" aria-describedby="" placeholder="">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="" class="form-label">Token <span class="text-denger">*</span></label>
+                                    <input type="text" name="tiktok_token" class="form-control" id="" aria-describedby="" placeholder="">
+                                </div>
+                            </div>
                             <div>
                                 <button type="button" id="step3Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                                 <button type="button" id="step3Finish" class="btn btn-danger float-end mt-2">Finish</button>

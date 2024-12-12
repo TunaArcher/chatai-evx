@@ -10,6 +10,8 @@ const steps = {
       Facebook: $(".step2-facebook-wrapper"),
       Line: $(".step2-line-wrapper"),
       WhatsApp: $(".step2-whatsapp-wrapper"),
+      Instagram: $(".step2-instagram-wrapper"),
+      Tiktok: $(".step2-tiktok-wrapper"),
     },
   },
   step3: {
@@ -21,6 +23,8 @@ const steps = {
       Facebook: $(".step3-facebook-wrapper"),
       Line: $(".step3-line-wrapper"),
       WhatsApp: $(".step3-whatsapp-wrapper"),
+      Instagram: $(".step3-instagram-wrapper"),
+      Tiktok: $(".step3-tiktok-wrapper"),
     },
   },
 };
@@ -169,8 +173,18 @@ function validatePlatformInputs(platform) {
         // )
       );
     },
-    Instagram: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Instagram
-    Tiktok: () => true, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
+    Instagram: () => {
+      return (
+        validateField('input[name="instagram_social_name"]', "กรุณาใส่ชื่อ") &&
+        validateField('input[name="instagram_token"]', "กรุณาใส่ Token")
+      );
+    }, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Instagram
+    Tiktok: () => {
+      return (
+        validateField('input[name="tiktok_social_name"]', "กรุณาใส่ชื่อ") &&
+        validateField('input[name="tiktok_token"]', "กรุณาใส่ Token")
+      )
+    } // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
   };
 
   // เรียกฟังก์ชันตรวจสอบข้อมูลตามแพลตฟอร์ม

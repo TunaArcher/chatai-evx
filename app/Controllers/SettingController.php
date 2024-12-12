@@ -223,6 +223,14 @@ class SettingController extends BaseController
                     'whatsapp_token' => $this->request->getPost('whatsapp_token'),
                     // 'whatsapp_phone_number_id' => $this->request->getPost('whatsapp_phone_number_id'),
                 ];
+            case 'Instagram':
+                return [
+                    'ig_token' => $this->request->getPost('instagram_token'),
+                ];
+            case 'Tiktok':
+                return [
+                    'tiktok_token' => $this->request->getPost('tiktok_token'),
+                ];
             default:
                 return [];
         }
@@ -248,6 +256,15 @@ class SettingController extends BaseController
                 return array_merge($baseData, [
                     'whatsapp_token' => $data->whatsapp_token,
                     // 'whatsapp_phone_number_id' => $data->whatsapp_phone_number_id,
+                ]);
+            case 'Instagram':
+                return array_merge($baseData, [
+                    'ig_token' => $data->instagram_token,
+                ]);
+            case 'Tiktok':
+                return array_merge($baseData, [
+                    'tiktok_token' => $data->tiktok_token,
+
                 ]);
             default:
                 throw new \Exception('Unsupported platform');
