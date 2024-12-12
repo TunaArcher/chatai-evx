@@ -143,7 +143,7 @@ class WhatsAppClient
             } else {
                 // กรณีส่งข้อความล้มเหลว
                 log_message('error', "Failed to get WhatsAppBusiness Account ID to WhatsApp API: " . json_encode($data));
-                throw new Exception("ไม่พบ WhatsApp Business Account ID");
+                return false;
             }
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
