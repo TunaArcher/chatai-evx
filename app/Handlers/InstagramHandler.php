@@ -3,9 +3,10 @@
 namespace App\Handlers;
 
 use App\Integrations\InstagramClient\InstagramClient;
-use App\Models\UserSocialModel;
+use App\Libraries\ChatGPT;
+use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
-use App\Integrations\WhatsApp\WhatsAppClient;
+use App\Models\UserSocialModel;
 use App\Services\MessageService;
 
 class InstagramHandler
@@ -13,22 +14,23 @@ class InstagramHandler
     private $platform = 'Instagram';
 
     private MessageService $messageService;
+    private CustomerModel $customerModel;
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
+        $this->customerModel = new CustomerModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
     }
 
-    public function handleWebhook($input, $userSocial): void
+    public function handleWebhook($input, $userSocial)
     {
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->getMockInstagramWebhookData();
+        $input = $this->prepareWebhookInput($input, $userSocial);
 
-        // ดึงข้อมูลเหตุการณ์จาก Whats App
+        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $entry = $input->entry[0] ?? null;
         $messaging = $entry->messaging[0] ?? null;
         $UID = $messaging->sender->id ?? null;
@@ -40,13 +42,61 @@ class InstagramHandler
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
-        // บันทึกข้อความในฐานข้อมูล
-        $this->messageService->saveMessage($messageRoom->id, $customer->id, $message, $this->platform, 'Customer');
+        // บันทึกข้อความและส่งต่อ WebSocket
+        $this->processIncomingMessage($messageRoom, $customer, $message, 'Customer');
+    }
 
-        // ส่งข้อความไปยัง WebSocket Server
+    public function handleReplyByManual($input)
+    {
+        $userID = session()->get('userID');
+
+        // ข้อความตอบกลับ
+        $messageReply = $input->message;
+
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $UID = $this->getCustomerUID($messageRoom);
+
+        $platformClient = $this->preparePlatformClient($messageRoom);
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin');
+    }
+
+    public function handleReplyByAI($input, $userSocial)
+    {
+        $input = $this->prepareWebhookInput($input, $userSocial);
+
+        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
+        $event = $input->events[0];
+        $UID = $event->source->userId;
+        $message = $event->message->text;
+
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        // ข้อความตอบกลับ
+        $messageReply = $chatGPT->askChatGPT($message);
+
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
+
+        $platformClient = $this->preparePlatformClient($messageRoom);
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, session()->get('userID'), 'Admin');
+    }
+
+    // -----------------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------------
+
+    private function processIncomingMessage($messageRoom, $customer, $message, $sender)
+    {
+        $this->messageService->saveMessage(
+            $messageRoom->id,
+            $customer->id,
+            $message,
+            $this->platform,
+            $sender
+        );
+
         $this->messageService->sendToWebSocket([
             'room_id' => $messageRoom->id,
-            'send_by' => 'Customer',
+            'send_by' => $sender,
             'sender_id' => $customer->id,
             'message' => $message,
             'platform' => $this->platform,
@@ -56,49 +106,53 @@ class InstagramHandler
         ]);
     }
 
-    public function handleReplyByManual($input)
+    private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender)
     {
-        $userID = session()->get('userID');
-        $messageReplyToCustomer = $input->message;
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
-
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') {
-            $UID = '1090651699462050';
-            $instagramToken = 'IGQWRQTkpFUThOVUlLZAkgxMXJVbFkxc1FCbjFRaXRoMWMzbk9yS1RVQ1RWaWZAJR1ZAscXRUdzdadm9pVjJZAa3hoRm5vaExweFBRUThUdmdyQkt6QlJlTFNtd2tIQ05Ed3d2Wm13bnRNUEwybVBtc2tGYjczM29qSW8ZD';
-        } else {
-            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $instagramToken = $userSocial->whatsapp_token;
-        }
-
-        $instagrampAPI = new InstagramClient([
-            'accessToken' => $instagramToken
-        ]);
-        $send = $instagrampAPI->pushMessage($UID, $messageReplyToCustomer);
-        log_message('info', 'ข้อความตอบไปที่ลูกค้า Instagram: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
+        $send = $platformClient->pushMessage($UID, $message);
+        log_message('info', "ข้อความตอบไปที่ลูกค้า $this->platform: " . json_encode($message, JSON_PRETTY_PRINT));
 
         if ($send) {
 
-            // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
+            $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender);
 
-            // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([
                 'room_id' => $messageRoom->id,
-                'send_by' => 'Admin',
+                'send_by' => $sender,
                 'sender_id' => $userID,
-                'message' => $messageReplyToCustomer,
+                'message' => $message,
                 'platform' => $this->platform,
-                // 'sender_name' => $customer->name,
                 'created_at' => date('Y-m-d H:i:s'),
                 'sender_avatar' => '',
             ]);
         }
     }
 
-    public function handleReplyByAI($input)
+    private function prepareWebhookInput($input, $userSocial)
     {
-        // CONNECT TO GPT
+        if (getenv('CI_ENVIRONMENT') === 'development') {
+            $input = $this->getMockInstagramWebhookData();
+            $userSocial->ig_token = 'IGQWRQTkpFUThOVUlLZAkgxMXJVbFkxc1FCbjFRaXRoMWMzbk9yS1RVQ1RWaWZAJR1ZAscXRUdzdadm9pVjJZAa3hoRm5vaExweFBRUThUdmdyQkt6QlJlTFNtd2tIQ05Ed3d2Wm13bnRNUEwybVBtc2tGYjczM29qSW8ZD';
+        }
+
+        return $input;
+    }
+
+    private function preparePlatformClient($messageRoom)
+    {
+        $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+
+        return new InstagramClient([
+            'accessToken' => $userSocial->ig_token
+        ]);
+    }
+
+    private function getCustomerUID($messageRoom)
+    {
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+
+        if (getenv('CI_ENVIRONMENT') == 'development') return '1090651699462050';
+
+        return $customer->uid;
     }
 
     private function getMockInstagramWebhookData()

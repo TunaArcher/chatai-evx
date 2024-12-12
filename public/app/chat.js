@@ -34,17 +34,20 @@ let currentChatGroup = null; // กลุ่มข้อความปัจจ
 // -----------------------------------------------------------------------------
 roomsList.addEventListener("click", (event) => {
   const chatBoxEmpty = document.getElementById("chat-box-emtry");
-  const chatBoxRight = document.querySelector(".chat-box-right");
+  const chatBoxRight = document.getElementById("chat-box-right");
+  const chatBoxPreloader = document.getElementById("chat-box-preloader");
   const preloader = document.getElementById("preloader"); // เพิ่ม preloader (สร้าง element นี้ใน HTML)
 
   // ซ่อน chat-box-emtry
   chatBoxEmpty.style.display = "none";
+  chatBoxRight.style.display = "none";
 
   const roomItem = event.target.closest(".room-item");
   if (!roomItem) return; // หากไม่ได้คลิกที่รายการห้องให้หยุดทำงาน
 
   // แสดง preloader
   preloader.style.display = "block";
+  chatBoxPreloader.style.display = "block";
 
   // อัปเดตสถานะห้องปัจจุบัน
   currentRoomId = roomItem.getAttribute("data-room-id");
@@ -74,15 +77,21 @@ roomsList.addEventListener("click", (event) => {
 
       // วนลูปข้อความและเพิ่มลงในหน้าจอ
       messages.forEach((msg) => renderMessage(msg));
-      scrollToBottom();
+
+      // จัดการปุ่ม AI
+      if (data.userSocial.ai == "on") $(".btnAI").show();
+      else $(".btnAI").hide();
 
       // ซ่อน preloader เมื่อโหลดเสร็จ
       preloader.style.display = "none";
+      chatBoxPreloader.style.display = "none";
+
+      // แสดง chat-box-right
+      chatBoxRight.style.display = "block";
+
+      scrollToBottom();
     })
     .catch((err) => console.error("Error loading messages:", err));
-
-  // แสดง chat-box-right
-  chatBoxRight.style.display = "block";
 });
 
 // -----------------------------------------------------------------------------

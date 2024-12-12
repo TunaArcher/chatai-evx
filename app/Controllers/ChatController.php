@@ -69,7 +69,10 @@ class ChatController extends BaseController
         return view('/app', [
             'content' => 'chat/index', // ชื่อไฟล์ View
             'title' => 'Chat', // ชื่อหน้า
-            'js_critical' => '<script src="app/chat.js"></script>', // ไฟล์ JS
+            'js_critical' => '
+                <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>    
+                <script src="app/chat.js"></script>
+            ', // ไฟล์ JS
             'rooms' => $rooms // ข้อมูลห้องสนทนา
         ]);
     }
@@ -81,12 +84,14 @@ class ChatController extends BaseController
     public function fetchMessages($roomID)
     {
         $room = $this->messageRoomModel->getMessageRoomByID($roomID);
+        $userSocial = $this->userSocialModel->getUserSocialByID($room->user_social_id);
         $customer = $this->customerModel->getCustomerByID($room->customer_id);
         $messages = $this->messageModel->getMessageRoomByRoomID($roomID);
         $data = [
             'room' => $room,
             'customer' => $customer,
-            'messages' => $messages
+            'messages' => $messages,
+            'userSocial' => $userSocial
         ];
 
         return $this->response->setJSON(json_encode($data));

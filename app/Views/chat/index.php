@@ -160,7 +160,7 @@
                                 </div>
                             </div><!-- end media-body -->
                         </a><!--end media-->
-                        <button type="button" class="btn-gradient btn rounded-pill btn-outline-primary" onclick="alert('in devlopment')">เปิดฟังก์ชั่นให้ AI ช่วยตอบ</button>
+                        <button type="button" class="btn-gradient btn rounded-pill btn-outline-primary btnAI"><a href="<?php echo base_url('/setting'); ?>" class="text-white">คุณกำลังเปิดใช้ฟังก์ชั่นให้ AI ช่วยตอบอยู่</a></button>
                         <div class="d-none d-sm-inline-block align-self-center disabled">
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Call" data-bs-custom-class="tooltip-primary"><i class="iconoir-phone"></i></a>
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Video call" data-bs-custom-class="tooltip-primary"><i class="iconoir-video-camera"></i></a>

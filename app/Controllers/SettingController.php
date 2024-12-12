@@ -4,14 +4,17 @@ namespace App\Controllers;
 
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
+use App\Models\MessageRoomModel;
 use App\Models\UserSocialModel;
 
 class SettingController extends BaseController
 {
+    private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct()
     {
+        $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
     }
 
@@ -147,6 +150,46 @@ class SettingController extends BaseController
             ->setStatusCode($status)
             ->setContentType('application/json')
             ->setJSON($response);
+    }
+
+
+    public function settingAI()
+    {
+        $response = $this->handleResponse(function () {
+
+            $userID = $this->initializeSession();
+
+            // $data = $this->getRequestData();
+            $data = $this->request->getJSON();
+            $userSocialID = $data->userSocialID;
+            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+
+            if ($userSocial) {
+
+                $oldStatus = $userSocial->ai;
+                $newStatus = $userSocial->ai === 'on' ? 'off' : 'on';
+
+                $this->userSocialModel->updateUserSocialByID($userSocial->id, [
+                    'ai' => $newStatus,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+
+                log_message('info', "ปรับการใช้งาน Social User ID $userSocial->id จาก $oldStatus เป็น $newStatus ");
+            }
+
+            return [
+                'success' => 1,
+                'message' => 'สำเร็จ',
+                'data' => [
+                    'oldStatus' => $oldStatus,
+                    'newStatus' => $newStatus,
+                ]
+            ];
+
+            throw new \Exception('Social data not found');
+        });
+
+        return $response;
     }
 
     // -------------------------------------------------------------------------
@@ -311,6 +354,20 @@ class SettingController extends BaseController
                     $this->updateUserSocial($userSocialID, [
                         'whatsapp_phone_number_id' => $phoneNumberID,
                     ]);
+                }
+                break;
+
+            case 'Instagram':
+                // TODO:: HANDLE CHECK
+                if (!empty($userSocial->ig_token)) {
+                    $statusConnection = '1';
+                }
+                break;
+
+            case 'Tiktok':
+                // TODO:: HANDLE CHECK
+                if (!empty($userSocial->tiktok_token)) {
+                    $statusConnection = '1';
                 }
                 break;
         }

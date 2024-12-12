@@ -31,6 +31,67 @@ const steps = {
 
 let selectedPlatform = "";
 
+$(".btnAI").on("click", function () {
+  let $me = $(this);
+
+  let $platform = $me.data("platform"),
+    $userSocialID = $me.data("user-social-id");
+
+  dataObj = {
+    platform: $platform,
+    userSocialID: $userSocialID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    type: "POST",
+    url: `${serverUrl}/setting/ai`,
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+  })
+    .done(function (res) {
+      if (res.success) {
+        Swal.fire({
+          title: "สำเร็จ",
+          // icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        if (res.data.newStatus == "on") {
+          $me.html(`<i class="fas fa-robot me-1"></i> กำลังใช้งาน AI`);
+          $me.prop("disabled", false);
+        } else {
+          $me.html(`<i class="fas fa-robot me-1"></i> เปิดใช้ AI`);
+          $me.prop("disabled", false);
+        }
+
+        // TODO:: HANDLE
+      } else {
+        Swal.fire({
+          title: res.messages,
+          text: "Redirecting...",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    })
+    .fail(function (err) {
+      const message =
+        err.responseJSON?.messages ||
+        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+      Swal.fire({
+        title: message,
+        text: "Redirecting...",
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    });
+});
+
 $(".radio-item").click(function () {
   // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
   $(".radio-icon").removeClass("selected");
@@ -183,8 +244,8 @@ function validatePlatformInputs(platform) {
       return (
         validateField('input[name="tiktok_social_name"]', "กรุณาใส่ชื่อ") &&
         validateField('input[name="tiktok_token"]', "กรุณาใส่ Token")
-      )
-    } // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
+      );
+    }, // ไม่มีฟิลด์ต้องตรวจสอบสำหรับ Tiktok
   };
 
   // เรียกฟังก์ชันตรวจสอบข้อมูลตามแพลตฟอร์ม
@@ -229,6 +290,11 @@ steps.step1.next.on("click", function () {
   // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
   console.log("คุณเลือก " + selectedPlatform);
 
+  if (!selectedPlatform) {
+    alert('เลือก Social ที่จะเชื่อมต่อ')
+    return false
+  }
+
   activateStep(steps.step1, steps.step2);
   setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
   disableTab(steps.step3.tab, false); // Enable step3 tab
@@ -253,7 +319,7 @@ steps.step3.finish.on("click", function () {
   const $me = $(this);
   // const formData = $("#custom-step").serialize();
   let formData = new FormData($("#custom-step")[0]);
-  formData.append('platform', selectedPlatform); // เพิ่มข้อมูลแบบ Dynamic
+  formData.append("platform", selectedPlatform); // เพิ่มข้อมูลแบบ Dynamic
 
   $me.prop("disabled", true);
 
@@ -329,13 +395,20 @@ steps.step1.tab.on("click", function (e) {
 });
 
 steps.step2.tab.on("click", function (e) {
+
   e.preventDefault();
-  // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
+
   console.log("คุณเลือก " + selectedPlatform);
 
-  activateStep(steps.step1, steps.step2);
-  setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
-  disableTab(steps.step3.tab, false);
+  if (!selectedPlatform) {
+    alert('เลือก Social ที่จะเชื่อมต่อ')
+    activateStep(steps.step2, steps.step1);
+    disableTab(steps.step3.tab, true);
+  } else {
+    activateStep(steps.step1, steps.step2);
+    setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
+    disableTab(steps.step3.tab, false);
+  }
 });
 
 steps.step3.tab.on("click", function (e) {

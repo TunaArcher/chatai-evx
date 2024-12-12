@@ -48,14 +48,15 @@ $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข�
 // -----------------------------------------------------------------------------
 $routes->get('/setting', 'SettingController::index');
 $routes->post('/setting', 'SettingController::setting');
-$routes->post('/check/connection', 'SettingController::connection');
-$routes->post('/remove-social', 'SettingController::removeSocial');
-$routes->post('/setting/save-token', 'SettingController::saveToken');
+$routes->post('/check/connection', 'SettingController::connection'); // เช็คการเชื่อมต่อ
+$routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ User Social
+$routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
+$routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
-$routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+$routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับยืนยัน Meta Developer
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 /*

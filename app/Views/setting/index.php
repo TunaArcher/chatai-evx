@@ -52,10 +52,14 @@
                                     <?php if ($user_social->platform == 'Facebook') { ?>
                                         <button type="button" class="btn bg-info-subtle text-dark btn-sm px-3 btnInputToken" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>" data-bs-toggle="modal" data-bs-target="#formModalDefault">ระบุ Token</button>
                                     <?php } ?>
-
-                                    <button type="button" class="btn bg-warning-subtle text-dark btn-sm px-3 btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>">เชื่อมต่อใหม่</button>
+                                    <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
+                                    <?php if ($user_social->ai == 'on') { ?>
+                                        <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> กำลังใช้งาน AI</button>
+                                    <?php } else { ?>
+                                        <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> เปิดใช้ AI</button>
+                                    <?php } ?>
                                 </div>
-                                <button type="button" class="btn bg-secondary-subtle text-dark btn-sm px-3 btnDelete" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>">ลบ</button>
+                                <button type="button" class="btn btn-sm btn-danger px-2 d-inline-flex align-items-center btnDelete" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-trash me-1"></i>*</button>
                             </div>
                         </div><!--end card-body-->
                     </div>

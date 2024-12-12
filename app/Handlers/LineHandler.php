@@ -2,10 +2,11 @@
 
 namespace App\Handlers;
 
-use App\Models\UserSocialModel;
-use App\Models\MessageRoomModel;
 use App\Integrations\Line\LineClient;
+use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
+use App\Models\MessageRoomModel;
+use App\Models\UserSocialModel;
 use App\Services\MessageService;
 
 class LineHandler
@@ -27,13 +28,9 @@ class LineHandler
 
     public function handleWebhook($input, $userSocial)
     {
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') {
-            $input = $this->getMockLineWebhookData();
-            $userSocial->line_channel_access_token = 'UUvglmk7qWbUBSAzM2ThjtAtV+8ipnI1KabsWobuQt8VqFgizLGi91+eVfpZ86i9YRU/oWrmHSBFtACvAwZ/Z6rynrfHU4tWEQi6Yi/HhHzBjCeD5pMdPODqLaEbfCO5bX7rlAbD5swrrhQPljjhTgdB04t89/1O/w1cDnyilFU=';
-        }
+        $input = $this->prepareWebhookInput($input, $userSocial);
 
-        // ดึงข้อมูลเหตุการณ์จาก Line API
+        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
         $UID = $event->source->userId;
         $message = $event->message->text;
@@ -44,13 +41,61 @@ class LineHandler
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
-        // บันทึกข้อความในฐานข้อมูล
-        $this->messageService->saveMessage($messageRoom->id, $customer->id, $message, $this->platform, 'Customer');
+        // บันทึกข้อความและส่งต่อ WebSocket
+        $this->processIncomingMessage($messageRoom, $customer, $message, 'Customer');
+    }
 
-        // ส่งข้อความไปยัง WebSocket Server
+    public function handleReplyByManual($input)
+    {
+        $userID = session()->get('userID');
+
+        // ข้อความตอบกลับ
+        $messageReply = $input->message;
+
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $UID = $this->getCustomerUID($messageRoom);
+
+        $platformClient = $this->preparePlatformClient($messageRoom);
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin');
+    }
+
+    public function handleReplyByAI($input, $userSocial)
+    {
+        $input = $this->prepareWebhookInput($input, $userSocial);
+
+        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
+        $event = $input->events[0];
+        $UID = $event->source->userId;
+        $message = $event->message->text;
+
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        // ข้อความตอบกลับ
+        $messageReply = $chatGPT->askChatGPT($message);
+
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
+
+        $platformClient = $this->preparePlatformClient($messageRoom);
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, session()->get('userID'), 'Admin');
+    }
+
+    // -----------------------------------------------------------------------------
+    // Helper
+    // -----------------------------------------------------------------------------
+
+    private function processIncomingMessage($messageRoom, $customer, $message, $sender)
+    {
+        $this->messageService->saveMessage(
+            $messageRoom->id,
+            $customer->id,
+            $message,
+            $this->platform,
+            $sender
+        );
+
         $this->messageService->sendToWebSocket([
             'room_id' => $messageRoom->id,
-            'send_by' => 'Customer',
+            'send_by' => $sender,
             'sender_id' => $customer->id,
             'message' => $message,
             'platform' => $this->platform,
@@ -60,86 +105,79 @@ class LineHandler
         ]);
     }
 
-    public function handleReplyByManual($input)
+    private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender)
     {
-        $userID = session()->get('userID');
-        $messageReplyToCustomer = $input->message;
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
-
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') {
-            $UID = 'U0434fa7d7cfef4a035f9dce7c0253def';
-            $userSocialID = '2';
-            $accessToken = '';
-            $channelID = '2006619676';
-            $channelSecret = 'a5925643557a8ce364d47f2162257f30';
-        } else {
-            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-
-            $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
-            $UID = $customer->uid;
-
-            $userSocialID =  $userSocial->id;
-            $accessToken = $userSocial->line_channel_access_token;
-            $channelID = $userSocial->line_channel_id;
-            $channelSecret = $userSocial->line_channel_secret;
-        }
-
-        $lineAPI = new LineClient([
-            'userSocialID' => $userSocialID,
-            'accessToken' => $accessToken,
-            'channelID' => $channelID,
-            'channelSecret' => $channelSecret,
-        ]);
-        $send = $lineAPI->pushMessage($UID, $messageReplyToCustomer);
-        log_message('info', 'ข้อความตอบไปที่ลูกค้า Line: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
+        $send = $platformClient->pushMessage($UID, $message);
+        log_message('info', "ข้อความตอบไปที่ลูกค้า $this->platform: " . $message);
 
         if ($send) {
 
-            // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
+            $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender);
 
-            // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([
                 'room_id' => $messageRoom->id,
-                'send_by' => 'Admin',
+                'send_by' => $sender,
                 'sender_id' => $userID,
-                'message' => $messageReplyToCustomer,
+                'message' => $message,
                 'platform' => $this->platform,
-                // 'sender_name' => $customer->name,
                 'created_at' => date('Y-m-d H:i:s'),
                 'sender_avatar' => '',
             ]);
         }
     }
 
-    public function handleReplyByAI($input)
+    private function prepareWebhookInput($input, $userSocial)
     {
-        // CONNECT TO GPT
+        if (getenv('CI_ENVIRONMENT') === 'development') {
+            $input = $this->getMockLineWebhookData();
+            $userSocial->line_channel_access_token = 'z7HhG1tz7PyWrRTt5kg79J2OZ7WZEKyA4wuyHzK65GoO/MnFugfaow/ob0iKSlFjr4U9+UVPpWY5xsNSPZznX2Z7KlPqAq8v/SJ1XiW8kgWmWw3gBINye4HU7yX+jWUuZlb8riafqfp5K7eUXqI1yY9PbdgDzCFqoOLOYbqAITQ=';
+        }
+
+        return $input;
+    }
+
+    private function preparePlatformClient($messageRoom)
+    {
+        $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+
+        return new LineClient([
+            'userSocialID' => $userSocial->id,
+            'accessToken' => $userSocial->line_channel_access_token,
+            'channelID' => $userSocial->line_channel_id,
+            'channelSecret' => $userSocial->line_channel_secret,
+        ]);
+    }
+
+    private function getCustomerUID($messageRoom)
+    {
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        return $customer->uid;
     }
 
     private function getMockLineWebhookData()
     {
         return json_decode(
             '{
-                "destination": "Uebfcefae558f36b52310a78674602ef1",
+                "destination": "Udaa84d69ccfb66dc5144c24fc0bd9fa8",
                 "events": [
                     {
                         "type": "message",
                         "message": {
                             "type": "text",
-                            "id": "537640104437743685",
-                            "quoteToken": "YjpCuVg0NaKnHYNYbdyFIfUY4dBolOvHmRVc4mbvKxxwMD73WbGS4CmSTn139cz7bWfLO9wMDyclaa34qFBw3nJwy7RVIxP2ogHAc2elrPm8RGtzLXtCriv_KV2c5f8XtXYqz1NirIOhDphNTjdzag",
-                            "text": "ข้อความทดสอบจาก Mockup"
+                            "id": "538866510690255010",
+                            "quoteToken": "ZvhrKXFTGXHIlM2_Tgu6yqlBiOzH1CsdVor_IUNcJ4RGlwzcRxcdmNSjR5UANOHIhH-bFEwBrMGoMetWbdGR7TaFvyFVwiE7UQ6X5FLPNFxWb6JozzZ0-TZAbABTp7SiIlKgnbt8dBBEPHXPAIOFWg",
+                            "text": "สวัสดี ทดสอบ"
                         },
-                        "webhookEventId": "01JE81Y7QRESCF081NGE7TTESX",
-                        "deliveryContext": { "isRedelivery": false },
-                        "timestamp": 1733289778596,
+                        "webhookEventId": "01JEXV2DVAHPZVC91Y9XPJ47JV",
+                        "deliveryContext": {
+                            "isRedelivery": false
+                        },
+                        "timestamp": 1734020773556,
                         "source": {
                             "type": "user",
-                            "userId": "U0434fa7d7cfef4a035f9dce7c0253def"
+                            "userId": "Ua03aec3ae1aeb9aa4c704aa69e14a966"
                         },
-                        "replyToken": "54fc984b6d054cc391d47b0f7ef2b902",
+                        "replyToken": "ac51a9fa11664ac68ae81855b14db6d3",
                         "mode": "active"
                     }
                 ]
