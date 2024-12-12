@@ -2,6 +2,7 @@
 
 namespace App\Handlers;
 
+use App\Integrations\InstagramClient\InstagramClient;
 use App\Models\UserSocialModel;
 use App\Models\MessageRoomModel;
 use App\Integrations\WhatsApp\WhatsAppClient;
@@ -29,17 +30,12 @@ class InstagramHandler
 
         // ดึงข้อมูลเหตุการณ์จาก Whats App
         $entry = $input->entry[0] ?? null;
-        $changes = $entry->changes[0] ?? null;
-        $value = $changes->value ?? null;
-        $whatAppMessage = $value->messages[0] ?? null;
-        $UID = $whatAppMessage->from ?? null; // เบอร์ของคนที่ส่งมา
-        $message = $whatAppMessage->text->body ?? null; // ข้อความที่ส่งมา
-        $contact = $value->contacts[0] ?? null;
-        $name = $contact->profile->name ?? null;
-        $waID = $contact->wa_id[0] ?? null;
+        $messaging = $entry->messaging[0] ?? null;
+        $UID = $messaging->sender->id ?? null;
+        $message = $messaging->message->text ?? null;
 
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial, $name);
+        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
@@ -68,21 +64,18 @@ class InstagramHandler
 
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
-            $phoneNumberID = '513951735130592';
-            $UID = '66611188669';
-            $whatsAppToken = 'EAAPwTXFKRgoBO3m1wcmZBUa92023EjuTrvFe5rAHKSO9se0pPoMyeQgZCxyvu3dQGLj8wyM0lXN8iuyvtzUCYinTRnfTKRrfYZCQYQ8EEdwlrB0rT6PjIOAlZCLN0dxernIo4SyWRY0p4IjsWFGpr34Y4KSMTUqwWVVFFWoUsvbxMB7NwTcZBvxd67nsW42ZA3rtrvtVFZAHG6VWfkiKMZB3DAqbpkUZD';
+            $UID = '1090651699462050';
+            $instagramToken = 'IGQWRQTkpFUThOVUlLZAkgxMXJVbFkxc1FCbjFRaXRoMWMzbk9yS1RVQ1RWaWZAJR1ZAscXRUdzdadm9pVjJZAa3hoRm5vaExweFBRUThUdmdyQkt6QlJlTFNtd2tIQ05Ed3d2Wm13bnRNUEwybVBtc2tGYjczM29qSW8ZD';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $phoneNumberID = $userSocial->whatsapp_phone_number_id;
-            $whatsAppToken = $userSocial->whatsapp_token;
+            $instagramToken = $userSocial->whatsapp_token;
         }
 
-        $whatsAppAPI = new WhatsAppClient([
-            'phoneNumberID' => $phoneNumberID,
-            'whatsAppToken' => $whatsAppToken
+        $instagrampAPI = new InstagramClient([
+            'accessToken' => $instagramToken
         ]);
-        $send = $whatsAppAPI->pushMessage($UID, $messageReplyToCustomer);
-        log_message('info', 'ข้อความตอบไปที่ลูกค้า WhatsApp: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
+        $send = $instagrampAPI->pushMessage($UID, $messageReplyToCustomer);
+        log_message('info', 'ข้อความตอบไปที่ลูกค้า Instagram: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
 
         if ($send) {
 
@@ -112,39 +105,24 @@ class InstagramHandler
     {
         return json_decode(
             '{
-                "object": "whatsapp_business_account",
+                "object": "instagram",
                 "entry": [
                     {
-                        "id": "520204877839971",
-                        "changes": [
+                        "time": 1734002587325,
+                        "id": "17841471550633446",
+                        "messaging": [
                             {
-                                "value": {
-                                    "messaging_product": "whatsapp",
-                                    "metadata": {
-                                        "display_phone_number": "15551868121",
-                                        "phone_number_id": "513951735130592"
-                                    },
-                                    "contacts": [
-                                        {
-                                            "profile": {
-                                                "name": "0611188669"
-                                            },
-                                            "wa_id": "66611188669"
-                                        }
-                                    ],
-                                    "messages": [
-                                        {
-                                            "from": "66611188669",
-                                            "id": "wamid.HBgLNjY2MTExODg2NjkVAgASGCA2RTdFNDY1NDYwQzlERjI2NjYyNjhCNTc5NzUwRkI0MgA=",
-                                            "timestamp": "1733391693",
-                                            "text": {
-                                                "body": "."
-                                            },
-                                            "type": "text"
-                                        }
-                                    ]
+                                "sender": {
+                                    "id": "1090651699462050"
                                 },
-                                "field": "messages"
+                                "recipient": {
+                                    "id": "17841471550633446"
+                                },
+                                "timestamp": 1734002586774,
+                                "message": {
+                                    "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDcxNTUwNjMzNDQ2OjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI3NjAxNzM1NDQ3NjQ3MTk5ODozMTk4NjcwMTk0MTM3NTg1MTA1MTMxNzc4NDc5MjI2ODgwMAZDZD",
+                                    "text": "Nj"
+                                }
                             }
                         ]
                     }

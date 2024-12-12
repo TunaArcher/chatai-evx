@@ -13,15 +13,13 @@ class InstagramClient
 {
     private $http;
     private $baseURL;
-    private $phoneNumberID;
     private $accessToken;
     private $debug = false;
 
     public function __construct($config)
     {
         $this->baseURL = 'https://graph.facebook.com/v21.0/';
-        $this->phoneNumberID = $config['phoneNumberID'] ?? '';
-        $this->accessToken = $config['whatsAppToken'] ?? '';
+        $this->accessToken = $config['accessToken'] ?? '';
         $this->http = new Client();
     }
 
@@ -38,7 +36,7 @@ class InstagramClient
     {
         try {
 
-            $endPoint = $this->baseURL . $this->phoneNumberID . '/messages/';
+            $endPoint = $this->baseURL . '/messages/';
 
             $headers = [
                 'Authorization' => "Bearer " . $this->accessToken,
@@ -47,11 +45,9 @@ class InstagramClient
 
             // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
-                'messaging_product' => 'whatsapp',
-                'to' => $to,
-                'type' => 'text',
-                'text' => [
-                    'body' => $messages
+                'recipient' => $to,
+                'message' => [
+                    'text' => $messages,
                 ],
             ];
 
@@ -88,7 +84,7 @@ class InstagramClient
     {
         try {
 
-            $endPoint = $this->baseURL . $UID . '/phone_numbers/';
+            $endPoint = $this->baseURL . $UID;
 
             $headers = [
                 'Authorization' => "Bearer " . $this->accessToken,
@@ -96,7 +92,11 @@ class InstagramClient
 
             // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
-                'headers' => $headers
+                // 'headers' => $headers,
+                'query' => [
+                    'access_token' => $this->accessToken,
+                    'fields' => 'id, name, profile_picture_url',
+                ]
             ]);
 
             // แปลง Response กลับมาเป็น Object
@@ -109,7 +109,7 @@ class InstagramClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to send message to Instagram API: " . json_encode($responseData));
+            log_message('error', "Failed to profile from Instagram API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด

@@ -8,6 +8,7 @@ use App\Models\MessageRoomModel;
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Integrations\Facebook\FacebookClient;
+use App\Integrations\InstagramClient\InstagramClient;
 
 class MessageService
 {
@@ -89,8 +90,27 @@ class MessageService
                         'profile' => 'https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-and-shapes-3/177800/129-512.png',
                     ]);
                     break;
-            }
 
+                case 'Instagram':
+                    $instagramAPI = new InstagramClient(['accessToken' => $userSocial->ig_token]);
+                    $profile = $instagramAPI->getUserProfile($UID);
+                    $customerID = $this->customerModel->insertCustomer([
+                        'platform' => $platform,
+                        'uid' => $UID,
+                        'name' => $profile->name,
+                        'profile' => $profile->profile_picture_url,
+                    ]);
+                    break;
+
+                case 'Tiktok':
+                    $customerID = $this->customerModel->insertCustomer([
+                        'platform' => $platform,
+                        'uid' => $UID,
+                        'name' => $name,
+                        'profile' => 'https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-and-shapes-3/177800/129-512.png',
+                    ]);
+                    break;
+            }
 
             return $this->customerModel->getCustomerByID($customerID);
         }
