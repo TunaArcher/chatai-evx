@@ -18,8 +18,8 @@ class ChatGPT
 
     public function __construct($config)
     {
-        $this->baseURL = 'https://____';
-        $this->accessToekn = '';
+        $this->baseURL = 'https://api.openai.com/v1/chat/completions';
+        $this->accessToekn = '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';
         $this->http = new Client();
     }
 
@@ -74,6 +74,33 @@ class ChatGPT
             // จัดการข้อผิดพลาด
             log_message('error', 'ChatGPT::message error {message}', ['message' => $e->getMessage()]);
             return false;
+        }
+    }
+
+    public function askChatGPT($question)
+    {
+
+        try {
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4-turbo',
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
         }
     }
 }
