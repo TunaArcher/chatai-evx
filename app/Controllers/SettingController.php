@@ -170,6 +170,51 @@ class SettingController extends BaseController
         ];
     }
 
+    private function getTokenFields(string $platform): array
+    {
+        switch ($platform) {
+            case 'Facebook':
+            case 'Line':
+                return [
+                    'line_channel_id' => $this->request->getPost('line_channel_id'),
+                    'line_channel_secret' => $this->request->getPost('line_channel_secret'),
+                ];
+            case 'WhatsApp':
+                return [
+                    'whatsapp_token' => $this->request->getPost('whatsapp_token'),
+                    // 'whatsapp_phone_number_id' => $this->request->getPost('whatsapp_phone_number_id'),
+                ];
+            default:
+                return [];
+        }
+    }
+
+    private function getInsertData(string $platform, object $data, int $userID): array
+    {
+        $baseData = [
+            'user_id' => $userID,
+            'platform' => $platform,
+            'name' => $data->{mb_strtolower($platform) . '_social_name'} ?? '',
+        ];
+
+        switch ($platform) {
+            case 'Facebook':
+                return $baseData;
+            case 'Line':
+                return array_merge($baseData, [
+                    'line_channel_id' => $data->line_channel_id,
+                    'line_channel_secret' => $data->line_channel_secret,
+                ]);
+            case 'WhatsApp':
+                return array_merge($baseData, [
+                    'whatsapp_token' => $data->whatsapp_token,
+                    // 'whatsapp_phone_number_id' => $data->whatsapp_phone_number_id,
+                ]);
+            default:
+                throw new \Exception('Unsupported platform');
+        }
+    }
+
     private function processPlatformConnection(string $platform, object $userSocial, int $userSocialID): string
     {
         $statusConnection = '0';
