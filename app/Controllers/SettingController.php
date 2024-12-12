@@ -93,7 +93,8 @@ class SettingController extends BaseController
 
             $userID = $this->initializeSession();
 
-            $data = $this->getRequestData();
+            // $data = $this->getRequestData();
+            $data = $this->request->getJSON();
             $userSocial = $this->userSocialModel->getUserSocialByID($data->userSocialID);
 
             if ($userSocial) {
