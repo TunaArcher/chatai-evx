@@ -364,7 +364,7 @@ $("#btnSaveFbToken").on("click", function () {
       if (res.success) {
         Swal.fire({
           title: "สำเร็จ",
-          icon: "success",
+          // icon: "success",
           timer: 2000,
           showConfirmButton: false,
         });

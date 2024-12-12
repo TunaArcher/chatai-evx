@@ -72,22 +72,6 @@ class SettingController extends BaseController
         return $response;
     }
 
-    public function saveToken()
-    {
-        $response = $this->handleResponse(function () {
-
-            $userID = $this->initializeSession();
-
-            // $data = $this->getRequestData();
-            $data = $this->request->getJSON();
-            $this->updateToken($data->platform, $data);
-
-            return ['success' => 1];
-        });
-
-        return $response;
-    }
-
     public function removeSocial()
     {
         $response = $this->handleResponse(function () {
@@ -110,6 +94,59 @@ class SettingController extends BaseController
         });
 
         return $response;
+    }
+
+    public function saveToken()
+    {
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            session()->set(['userID' => 1]);
+            $userID = session()->get('userID');
+
+            $data = $this->request->getJSON();
+
+            // $platform = $data->platform;
+            $platform = 'Facebook';
+            $userSocialID = $data->userSocialID;
+
+            $userSocial = $this->userSocialModel->getUserSocialByID($userSocialID);
+
+            switch ($platform) {
+                case 'Facebook':
+
+                    $this->userSocialModel->updateUserSocialByID($userSocialID, [
+                        'fb_token' => $data->fbToken,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $response['success'] = 1;
+
+                    break;
+
+                case 'Line':
+                    break;
+                case 'WhatsApp':
+                    break;
+                case 'Instagram':
+                    break;
+                case 'Tiktok':
+                    break;
+            }
+
+            $status = 200;
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
     }
 
     // -------------------------------------------------------------------------
@@ -273,19 +310,5 @@ class SettingController extends BaseController
     {
         $data['updated_at'] = date('Y-m-d H:i:s');
         $this->userSocialModel->updateUserSocialByID($userSocialID, $data);
-    }
-
-    private function updateToken(string $platform, object $data)
-    {
-        $fields = match ($platform) {
-            'Facebook' => ['fb_token' => $data->fbToken],
-            'Line' => [], // Add Line token fields
-            'WhatsApp' => [], // Add WhatsApp token fields
-            default => throw new \Exception('Unsupported platform'),
-        };
-
-        if ($fields) {
-            $this->updateUserSocial($data->userSocialID, $fields);
-        }
     }
 }
