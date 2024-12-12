@@ -117,7 +117,7 @@ class FacebookHandler
 
         $messageReplyToCustomer = $chatGPT->askChatGPT($message);
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($customer->id);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
