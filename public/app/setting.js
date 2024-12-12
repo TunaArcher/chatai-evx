@@ -238,6 +238,7 @@ steps.step3.prev.on("click", function () {
 steps.step3.finish.on("click", function () {
   const $me = $(this);
   const formData = $("#custom-step").serialize(); // ดึงข้อมูลจากฟอร์มในรูปแบบ URL-encoded
+  formData.append('platform', selectedPlatform); // เพิ่มข้อมูลแบบ Dynamic
 
   $me.prop("disabled", true);
 
@@ -312,7 +313,7 @@ steps.step1.tab.on("click", function (e) {
 
 steps.step2.tab.on("click", function (e) {
   e.preventDefault();
-  selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
+  // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
   console.log("คุณเลือก " + selectedPlatform);
 
   activateStep(steps.step1, steps.step2);
