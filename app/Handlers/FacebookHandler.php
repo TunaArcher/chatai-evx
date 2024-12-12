@@ -6,6 +6,8 @@ use App\Models\UserSocialModel;
 use App\Models\MessageRoomModel;
 use App\Integrations\Facebook\FacebookClient;
 use App\Services\MessageService;
+use App\Libraries\ChatGPT;
+use CodeIgniter\HTTP\Message;
 
 class FacebookHandler
 {
@@ -98,9 +100,53 @@ class FacebookHandler
         }
     }
 
-    public function handleReplyByAI($input)
+    public function handleReplyByAI($input, $customer)
     {
+        $GPTToken = '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';
         // CONNECT TO GPT
+        $userID = session()->get('userID');
+        $chatGPT = new ChatGPT([
+            'GPTToken' => $GPTToken
+        ]);
+        $messageReplyToCustomer = $chatGPT->askChatGPT($input->message);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+
+        // ข้อมูล Mock สำหรับ Development
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            $UID = '9158866310814762';
+            $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
+        } else {
+            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+            $UID = $customer->uid;
+            $facebookToken = $userSocial->fb_token;
+
+            // log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
+        }
+
+        $facebookAPI = new FacebookClient([
+            'facebookToken' => $facebookToken
+        ]);
+        $send = $facebookAPI->pushMessage($UID, $messageReplyToCustomer);
+        log_message('info', 'ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
+
+        if ($send) {
+
+            // บันทึกข้อความในฐานข้อมูล
+            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
+
+            // ส่งข้อความไปยัง WebSocket Server
+            $this->messageService->sendToWebSocket([
+                'room_id' => $messageRoom->id,
+                'send_by' => 'Admin',
+                'sender_id' => $userID,
+                'message' => $messageReplyToCustomer,
+                'platform' => $this->platform,
+                // 'sender_name' => $customer->name,
+                'created_at' => date('Y-m-d H:i:s'),
+                'sender_avatar' => '',
+            ]);
+        }
+
     }
 
     private function getMockFacebookWebhookData()
