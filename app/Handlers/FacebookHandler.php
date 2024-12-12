@@ -4,6 +4,7 @@ namespace App\Handlers;
 
 use App\Models\UserSocialModel;
 use App\Models\MessageRoomModel;
+use App\Models\CustomerModel;
 use App\Integrations\Facebook\FacebookClient;
 use App\Services\MessageService;
 use App\Libraries\ChatGPT;
@@ -16,12 +17,14 @@ class FacebookHandler
     private MessageService $messageService;
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
+    private CustomerModel $customerModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
+        $this->customerModel = new CustomerModel();
     }
 
     public function handleWebhook($input, $userSocial): void
@@ -107,36 +110,14 @@ class FacebookHandler
         $userID = session()->get('userID');
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
         $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
-
-         // ตรวจสอบหรือสร้างลูกค้า
-         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
-
-         // ตรวจสอบหรือสร้างห้องสนทนา
-         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
- 
-         // บันทึกข้อความในฐานข้อมูล
-         $this->messageService->saveMessage($messageRoom->id, $customer->id, $message, $this->platform, 'Customer');
- 
-         // ส่งข้อความไปยัง WebSocket Server
-         $this->messageService->sendToWebSocket([
-             'room_id' => $messageRoom->id,
-             'send_by' => 'Customer',
-             'sender_id' => $customer->id,
-             'message' => $message,
-             'platform' => $this->platform,
-             'sender_name' => $customer->name,
-             'created_at' => date('Y-m-d H:i:s'),
-             'sender_avatar' => $customer->profile,
-         ]);
-
-        
-        
+    
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
 
         $messageReplyToCustomer = $chatGPT->askChatGPT($message);
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($messageRoom->id);
+        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($customer->id);
 
         // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
@@ -144,15 +125,15 @@ class FacebookHandler
             $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
         } else {
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $UID = $customer->uid;
+            $UID = $UID;
             $facebookToken = $userSocial->fb_token;
 
-            // log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
         }
 
         $facebookAPI = new FacebookClient([
             'facebookToken' => $facebookToken
         ]);
+
         $send = $facebookAPI->pushMessage($UID, $messageReplyToCustomer);
         log_message('info', 'ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
 
