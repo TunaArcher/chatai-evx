@@ -102,7 +102,7 @@ class FacebookHandler
 
     public function handleReplyByAI($input, $customer)
     {
-        $GPTToken = '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';
+        $GPTToken = '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';
         // CONNECT TO GPT
         $userID = session()->get('userID');
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
