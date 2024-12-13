@@ -259,7 +259,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ionicons_logo-tiktok.svg/512px-Ionicons_logo-tiktok.svg.png" alt="Tiktok">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>Tiktok</span>
+                                    <span>Tiktok (beta)</span>
                                 </div>
                             </div>
                             <div class="mt-2">
