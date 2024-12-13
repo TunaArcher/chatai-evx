@@ -36,16 +36,28 @@
                                 <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
                                 <h5 class="fw-bold my-2 fs-20"><?php echo $user_social->name; ?></h5>
                                 <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
-
-                                <?php if ($user_social->platform == 'Facebook') { ?>
-                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Facebook Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
+<div style="height: 96px;">
+                                <?php if ($user_social->platform == 'Line') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a></p>
+                                    <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } else if ($user_social->platform == 'Facebook') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
                                     <p class="text-muted mt-0 mb-0">2. แล้วจะได้ Token จาก Facebook ให้นำมาใส่ที่ ปุ่มระบุ Token</p>
-                                    <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                <?php } else { ?>
-                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Platform นั้น ๆ </p>
+                                    <p class="text-danger mt-0 mb-0">3. ต้องยื่นเรื่องขอ Permission กับ Meta</p>
+                                    <p class="text-muted mt-0 mb-0">4. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } else if ($user_social->platform == 'WhatsApp') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer</p>
                                     <p class="text-muted mt-0 mb-0">2. หากต้องยืนยันให้ใส่คำว่า HAPPY</p>
                                     <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } else if ($user_social->platform == 'Instagram') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
+                                    <p class="text-danger mt-0 mb-0">2. ต้องยื่นเรื่องขอ Permission (instagram_business_basic, instagram_business_manage_messages) กับ Meta เพื่อใช้ในการตอบข้อความ</p>
+                                    <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                <?php } else if ($user_social->platform == 'Tiktok') { ?>
+                                    <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Tiktok Developer</p>
+                                    <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                 <?php } ?>
+                                </div>
                             </div>
                             <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">
                                 <div>
