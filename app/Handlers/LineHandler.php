@@ -108,7 +108,7 @@ class LineHandler
     private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender)
     {
         $send = $platformClient->pushMessage($UID, $message);
-        log_message('info', "ข้อความตอบไปที่ลูกค้า $this->platform: " . $message);
+        log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
         if ($send) {
 

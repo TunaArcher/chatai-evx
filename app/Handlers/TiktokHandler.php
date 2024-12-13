@@ -108,7 +108,7 @@ class TiktokHandler
     private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender)
     {
         $send = $platformClient->pushMessage($UID, $message);
-        log_message('info', "ข้อความตอบไปที่ลูกค้า $this->platform: " . json_encode($message, JSON_PRETTY_PRINT));
+        log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . json_encode($message, JSON_PRETTY_PRINT));
 
         if ($send) {
 
