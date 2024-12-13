@@ -44,7 +44,7 @@
                                 <?php } else { ?>
                                     <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Platform นั้น ๆ </p>
                                     <p class="text-muted mt-0 mb-0">2. หากต้องยืนยันให้ใส่คำว่า HAPPY</p>
-                                    <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                    <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                 <?php } ?>
                             </div>
                             <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">

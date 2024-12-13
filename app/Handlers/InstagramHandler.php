@@ -2,7 +2,7 @@
 
 namespace App\Handlers;
 
-use App\Integrations\InstagramClient\InstagramClient;
+use App\Integrations\Instagram\InstagramClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
@@ -175,7 +175,7 @@ class InstagramHandler
                                 "timestamp": 1734002586774,
                                 "message": {
                                     "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDcxNTUwNjMzNDQ2OjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI3NjAxNzM1NDQ3NjQ3MTk5ODozMTk4NjcwMTk0MTM3NTg1MTA1MTMxNzc4NDc5MjI2ODgwMAZDZD",
-                                    "text": "Nj"
+                                    "text": "ข้อความทดสอบ"
                                 }
                             }
                         ]

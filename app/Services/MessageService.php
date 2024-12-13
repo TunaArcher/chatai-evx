@@ -8,7 +8,7 @@ use App\Models\MessageRoomModel;
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Integrations\Facebook\FacebookClient;
-use App\Integrations\InstagramClient\InstagramClient;
+use App\Integrations\Instagram\InstagramClient;
 
 class MessageService
 {
@@ -99,8 +99,8 @@ class MessageService
                     $customerID = $this->customerModel->insertCustomer([
                         'platform' => $platform,
                         'uid' => $UID,
-                        'name' => $profile->name,
-                        'profile' => $profile->profile_picture_url,
+                        'name' => $profile ? $profile->name : 'ไม่สามารถระบุยูสได้',
+                        'profile' => $profile ?? $profile->profile_picture_url,
                     ]);
                     break;
 

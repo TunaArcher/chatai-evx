@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Integrations\InstagramClient;
+namespace App\Integrations\Instagram;
 
 use \GuzzleHttp\Client;
 use \GuzzleHttp\Handler\CurlHandler;

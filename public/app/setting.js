@@ -291,8 +291,8 @@ steps.step1.next.on("click", function () {
   console.log("คุณเลือก " + selectedPlatform);
 
   if (!selectedPlatform) {
-    alert('เลือก Social ที่จะเชื่อมต่อ')
-    return false
+    alert("เลือก Social ที่จะเชื่อมต่อ");
+    return false;
   }
 
   activateStep(steps.step1, steps.step2);
@@ -395,13 +395,12 @@ steps.step1.tab.on("click", function (e) {
 });
 
 steps.step2.tab.on("click", function (e) {
-
   e.preventDefault();
 
   console.log("คุณเลือก " + selectedPlatform);
 
   if (!selectedPlatform) {
-    alert('เลือก Social ที่จะเชื่อมต่อ')
+    alert("เลือก Social ที่จะเชื่อมต่อ");
     activateStep(steps.step2, steps.step1);
     disableTab(steps.step3.tab, true);
   } else {
