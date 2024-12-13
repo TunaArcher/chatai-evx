@@ -139,6 +139,8 @@ class FacebookHandler
 
         if ($send) {
 
+            log_message('info', 'ส่งข้อความแล้ว ' . json_encode($send, JSON_PRETTY_PRINT));
+
             // บันทึกข้อความในฐานข้อมูล
             $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
 
