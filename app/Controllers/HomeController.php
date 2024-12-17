@@ -8,6 +8,7 @@ class HomeController extends BaseController
     {
         $data['content'] = 'home/index';
         $data['title'] = 'Home';
+        $data['rooms'] = [];
 
         echo view('/app', $data);
     }

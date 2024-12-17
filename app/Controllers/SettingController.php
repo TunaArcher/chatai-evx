@@ -36,6 +36,7 @@ class SettingController extends BaseController
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
                 <script src="app/setting.js"></script>
             ',
+            'rooms' => [], 
             'user_socials' => $userSocials,
         ]);
     }

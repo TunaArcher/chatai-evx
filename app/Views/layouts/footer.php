@@ -19,6 +19,14 @@
     echo $js_critical;
 }; ?>
 
+<script>
+    let bodyElement = document.body;
+    let bodySize = bodyElement.getAttribute("data-sidebar-size");
+    const messagecollapse = document.getElementById("message-collapse");
+    if (bodySize == "collapsed") {
+        messagecollapse.style.display = "none";
+    } 
+</script>
 </body>
 <!--end body-->
 

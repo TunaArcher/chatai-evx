@@ -38,7 +38,7 @@
     <div class="container-xxl">
         <div class="row">
             <div class="col-12">
-                <div class="chat-box-left">
+                <div class="chat-box-left" id="chat-box-left">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">Messages</a>
@@ -71,6 +71,9 @@
                                                     <a href="#" class="">
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative">
+                                                                <?php if (($room->profile == 0) || ($room->profile == null)) {
+                                                                    $room->profile = '/assets/images/'. $room->ic_platform;
+                                                                } ?>
                                                                 <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                 <span class="position-absolute bottom-0 end-0">
                                                                     <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
@@ -160,7 +163,7 @@
                                 </div>
                             </div><!-- end media-body -->
                         </a><!--end media-->
-                        <button type="button" class="btn-gradient btn rounded-pill btn-outline-primary btnAI"><a href="<?php echo base_url('/setting'); ?>" class="text-white">คุณกำลังเปิดใช้ฟังก์ชั่นให้ AI ช่วยตอบอยู่</a></button>
+                        <button type="button" class="btn-gradient btn rounded-pill sm-btn-outline-primary btnAI"><a href="<?php echo base_url('/setting'); ?>" class="text-white">คุณกำลังเปิดใช้ฟังก์ชั่นให้ AI ช่วยตอบอยู่</a></button>
                         <div class="d-none d-sm-inline-block align-self-center disabled">
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Call" data-bs-custom-class="tooltip-primary"><i class="iconoir-phone"></i></a>
                             <a href="javascript:void(0)" class="fs-22 me-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Video call" data-bs-custom-class="tooltip-primary"><i class="iconoir-video-camera"></i></a>
@@ -211,7 +214,7 @@
                             <div class="col-12">
                                 <div class="">
                                     <div class="card-header text-center">
-                                        <h4 class="card-title pt-2 fw-semibold mb-2 fs-18">ไม่มีข้อความจากลูกค้าของคุณในการเชื่อมต่อ</h4>
+                                        <h4 class="card-title pt-2 fw-semibold mb-2 fs-18">เลือกกล่องข้อความเพื่อเชื่อมต่อ</h4>
                                         <p> <i class="la la-grip-lines text-primary fs-18"></i> <i class="la la-question-circle text-primary fs-18"></i> <i class="la la-grip-lines text-primary fs-18"></i></p>
                                     </div><!--end card-header-->
                                 </div><!--end card-->
