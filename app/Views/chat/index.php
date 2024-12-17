@@ -72,7 +72,7 @@
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative">
                                                                 <?php if (($room->profile == 0) || ($room->profile == null)) {
-                                                                    $room->profile = '/assets/images/'. $room->ic_platform;
+                                                                    $room->profile = '/assets/images/' . $room->ic_platform;
                                                                 } ?>
                                                                 <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                 <span class="position-absolute bottom-0 end-0">
@@ -226,15 +226,14 @@
 
                 <div id="chat-box-preloader" class="chat-box-right cn" style="display: none;">
                     <div class="container-xxl">
-
-                        <div class="row justify-content-center inner">
+                        
+                            <div class="justify-content-center inner">
                             <div class="col-12">
                                 <div class="" style="height: 710px;">
                                     <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
                                 </div><!--end card-->
                             </div> <!--end col-->
                         </div><!--end row-->
-
                     </div>
                 </div>
             </div> <!-- end col -->

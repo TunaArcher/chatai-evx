@@ -112,6 +112,7 @@ roomsList.addEventListener("click", (event) => {
 });
 
 roomsListMenu.addEventListener("click", (event) => {
+  bodyElement.setAttribute("data-sidebar-size", "collapsed");
   const chatBoxEmpty = document.getElementById("chat-box-emtry");
   const chatBoxRight = document.getElementById("chat-box-right");
   const chatBoxPreloader = document.getElementById("chat-box-preloader");
