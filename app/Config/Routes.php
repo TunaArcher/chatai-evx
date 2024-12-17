@@ -40,6 +40,7 @@ $routes->get('/', 'HomeController::index');
 // Chat & Message
 // -----------------------------------------------------------------------------
 $routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
+$routes->get('/chatLeft', 'ChatController::messageLeft'); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
 $routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
 $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข้อความไปยัง WebSocket
 

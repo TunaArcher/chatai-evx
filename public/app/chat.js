@@ -12,11 +12,24 @@ const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("send-btn");
 const messagesDiv = document.getElementById("chat-detail");
 const roomsList = document.getElementById("rooms-list");
+const roomsListMenu = document.getElementById("rooms-list-menu");
 const chatHeader = document.getElementById("chat-header");
 const profilePic = document.getElementById("profile-pic");
 const chatTitle = document.getElementById("chat-title");
 const chatBoxProfile = document.getElementById("chat-box-profile");
 const chatBoxUsername = document.getElementById("chat-box-username");
+
+//link id chat message
+const bodyElement = document.body;
+const bodySize = bodyElement.getAttribute("data-sidebar-size");
+const messagecollapse = document.getElementById("message-collapse");
+const chatboxleft = document.getElementById("chat-box-left");
+if (bodySize == "collapsed") {
+  messagecollapse.style.display = "block";
+  chatboxleft.style.display = "none";
+} else {
+  messagecollapse.style.display = "none";
+}
 
 // ตัวแปรสถานะปัจจุบัน
 let currentRoomId = null; // ห้องปัจจุบันที่ใช้งาน
@@ -69,7 +82,77 @@ roomsList.addEventListener("click", (event) => {
       let messages = data.messages;
 
       // จัดการกล่องแชท
-      chatBoxProfile.src = customer.profile;
+      if (customer.profile == "0" || customer.profile == null) {
+        chatBoxProfile.src = "/assets/images/users/unknow_user.png";
+      } else {
+        chatBoxProfile.src = customer.profile;
+      }
+      chatBoxUsername.innerHTML = customer.name;
+
+      // เคลียร์ข้อความเก่าในหน้าจอ
+      messagesDiv.innerHTML = "";
+
+      // วนลูปข้อความและเพิ่มลงในหน้าจอ
+      messages.forEach((msg) => renderMessage(msg));
+
+      // จัดการปุ่ม AI
+      if (data.userSocial.ai == "on") $(".btnAI").show();
+      else $(".btnAI").hide();
+
+      // ซ่อน preloader เมื่อโหลดเสร็จ
+      preloader.style.display = "none";
+      chatBoxPreloader.style.display = "none";
+
+      // แสดง chat-box-right
+      chatBoxRight.style.display = "block";
+
+      scrollToBottom();
+    })
+    .catch((err) => console.error("Error loading messages:", err));
+});
+
+roomsListMenu.addEventListener("click", (event) => {
+  const chatBoxEmpty = document.getElementById("chat-box-emtry");
+  const chatBoxRight = document.getElementById("chat-box-right");
+  const chatBoxPreloader = document.getElementById("chat-box-preloader");
+  const preloader = document.getElementById("preloader"); // เพิ่ม preloader (สร้าง element นี้ใน HTML)
+
+  // ซ่อน chat-box-emtry
+  chatBoxEmpty.style.display = "none";
+  chatBoxRight.style.display = "none";
+
+  const roomItem = event.target.closest(".room-item");
+  if (!roomItem) return; // หากไม่ได้คลิกที่รายการห้องให้หยุดทำงาน
+
+  // แสดง preloader
+  preloader.style.display = "block";
+  chatBoxPreloader.style.display = "block";
+
+  // อัปเดตสถานะห้องปัจจุบัน
+  currentRoomId = roomItem.getAttribute("data-room-id");
+  currentPlatform = roomItem.getAttribute("data-platform");
+
+  console.log("Debug: ห้องที่กำลังใช้งาน:", currentRoomId);
+
+  // เน้นรายการห้องที่ถูกเลือก
+  document
+    .querySelectorAll(".room-item")
+    .forEach((item) => item.classList.remove("active"));
+  roomItem.classList.add("active");
+
+  // ดึงข้อความของห้องสนทนาจาก API
+  fetch(`/messages/${currentRoomId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      let customer = data.customer;
+      let messages = data.messages;
+
+      // จัดการกล่องแชท
+      if (customer.profile == "0" || customer.profile == null) {
+        chatBoxProfile.src = "/assets/images/users/unknow_user.png";
+      } else {
+        chatBoxProfile.src = customer.profile;
+      }
       chatBoxUsername.innerHTML = customer.name;
 
       // เคลียร์ข้อความเก่าในหน้าจอ
@@ -206,7 +289,7 @@ function getAvatar(data) {
     case "Customer":
       return chatBoxProfile.src;
     case "Admin":
-      return "";
+      return "/assets/images/openai-chatgpt-logo.png";
     default:
       return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
   }
@@ -313,10 +396,21 @@ function addOrUpdateRoom(data) {
     `.room-item[data-room-id="${data.room_id}"]`
   );
 
+  const roomsListMenu = document.getElementById("rooms-list");
+  const existingRoomMenu = roomsListMenu.querySelector(
+    `.room-item[data-room-id="${data.room_id}"]`
+  );
+
   // ถ้ามีห้องแล้ว
   if (existingRoom) {
     updateRoom(existingRoom, data);
     roomsList.prepend(existingRoom);
+  }
+
+  // ถ้ามีห้องแล้ว
+  if (existingRoomMenu) {
+    updateRoom(existingRoomMenu, data);
+    roomsListMenu.prepend(existingRoom);
   }
 
   // ถ้ายังไม่มี
@@ -380,4 +474,7 @@ function createNewRoom(data) {
     </a>`;
   document.getElementById("rooms-list").prepend(newRoom);
   console.log("เพิ่มห้องใหม่:", newRoom);
+  document.getElementById("rooms-list-menu").prepend(newRoom);
 }
+
+//check collapsed

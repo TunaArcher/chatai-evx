@@ -316,9 +316,133 @@
                         </li><!--end nav-item-->
                     </ul><!--end navbar-nav--->
                 </div>
-            </div><!--end startbar-collapse-->
-        </div><!--end startbar-menu-->
-    </div><!--end startbar-->
+
+                <div class="col-12" style="display:none;" id="message-collapse">
+                    <br />
+                    <ul class="navbar-nav mb-auto w-100">
+                        <li class="menu-label pt-0 mt-0">
+                            <!-- <small class="label-border">
+                                <div class="border_left hidden-xs"></div>
+                                <div class="border_right"></div>
+                            </small> -->
+                            <span>Message</span>
+                        </li>
+                    </ul>
+                    <div class="chat-box-left">
+                        <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">Messages</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link py-2" id="active_chat_tab" data-bs-toggle="tab" href="#active_chat" role="tab">Active</a>
+                            </li>
+                        </ul>
+                        <div class="chat-search p-3">
+                            <div class="p-1 bg-light rounded rounded-pill">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <button id="button-addon2" type="submit" class="btn btn-link text-secondary"><i class="fa fa-search"></i></button>
+                                    </div>
+                                    <input type="search" placeholder="Searching.." aria-describedby="button-addon2" class="form-control border-0 bg-light">
+                                </div>
+                            </div>
+                        </div><!--end chat-search-->
+
+                        <div class="chat-body-left px-3" data-simplebar>
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="messages_chat">
+                                    <div class="row">
+                                        <div class="col">
+
+                                            <div id="rooms-list-menu">
+                                                <?php foreach ($rooms as $room): ?>
+                                                    <div class="room-item p-2 border-dashed border-theme-color rounded mb-2" data-room-id="<?php echo $room->id ?>" data-platform="<?php echo $room->platform ?>">
+                                                        <a href="#" class="">
+                                                            <div class="d-flex align-items-start">
+                                                                <div class="position-relative">
+                                                                    <?php if (($room->profile == 0) || ($room->profile == null)) {
+                                                                        $room->profile = '/assets/images/' . $room->ic_platform;
+                                                                    } ?>
+                                                                    <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
+                                                                    <span class="position-absolute bottom-0 end-0">
+                                                                        <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
+                                                                    </span>
+                                                                </div>
+                                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                                    <h6 class="my-0 fw-medium text-dark fs-10"><?php echo $room->customer_name; ?>
+                                                                        <!-- <small class="float-end text-muted fs-5"><?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?></small> -->
+                                                                    </h6>
+                                                                    <p class="text-muted mb-0"><span class="text-primary"><?php echo $room->last_message; ?></span>
+                                                                    </p>
+                                                                </div><!--end media-body-->
+                                                            </div><!--end media-->
+                                                        </a> <!--end-->
+                                                    </div><!--end div-->
+                                                <?php endforeach; ?>
+
+                                            </div>
+                                        </div><!--end col-->
+                                    </div><!--end row-->
+                                </div><!--end general chat-->
+
+                                <div class="tab-pane fade" id="active_chat">
+                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                        <a href="" class="">
+                                            <div class="d-flex align-items-start">
+                                                <div class="position-relative">
+                                                    <img src="assets/images/users/avatar-3.jpg" alt="" class="thumb-lg rounded-circle">
+                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                </div>
+                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                    <h6 class="my-0 fw-medium text-dark fs-14">Shauna Jones
+                                                        <small class="float-end text-muted fs-11">15 Feb</small>
+                                                    </h6>
+                                                    <p class="text-muted mb-0">Congratulations!</p>
+                                                </div><!--end media-body-->
+                                            </div><!--end media-->
+                                        </a> <!--end-->
+                                    </div><!--end div-->
+                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                        <a href="" class="">
+                                            <div class="d-flex align-items-start">
+                                                <div class="position-relative">
+                                                    <img src="assets/images/users/avatar-5.jpg" alt="" class="thumb-lg rounded-circle">
+                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                </div>
+                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                    <h6 class="my-0 fw-medium text-dark fs-14">Frank Wei
+                                                        <small class="float-end text-muted fs-11">2 Mar</small>
+                                                    </h6>
+                                                    <p class="text-muted mb-0"><i class="iconoir-microphone"></i> Voice message!</p>
+                                                </div><!--end media-body-->
+                                            </div><!--end media-->
+                                        </a> <!--end-->
+                                    </div><!--end div-->
+                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                        <a href="" class="">
+                                            <div class="d-flex align-items-start">
+                                                <div class="position-relative">
+                                                    <img src="assets/images/users/avatar-6.jpg" alt="" class="thumb-lg rounded-circle">
+                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                </div>
+                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                    <h6 class="my-0 fw-medium text-dark fs-14">Carol Maier
+                                                        <small class="float-end text-muted fs-11">14 Mar</small>
+                                                    </h6>
+                                                    <p class="text-muted mb-0">Send a pic.!</p>
+                                                </div><!--end media-body-->
+                                            </div><!--end media-->
+                                        </a> <!--end-->
+                                    </div><!--end div-->
+                                </div><!--end group chat-->
+
+                            </div><!--end tab-content-->
+                        </div>
+                    </div><!--end chat-box-left -->
+                </div>
+            </div>
+        </div><!--end startbar-collapse-->
+    </div><!--end startbar-menu-->
     <div class="startbar-overlay d-print-none"></div>
     <!-- end leftbar-tab-menu-->
     <div class="page-wrapper">
