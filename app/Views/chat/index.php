@@ -210,7 +210,7 @@
                 <div id="chat-box-emtry" class="chat-box-right cn">
                     <div class="container-xxl">
 
-                        <div class="row justify-content-center inner">
+                        <div class="justify-content-center inner">
                             <div class="col-12">
                                 <div class="">
                                     <div class="card-header text-center">
