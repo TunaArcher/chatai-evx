@@ -92,7 +92,7 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => $question
+                            'content' => 'ตอบกระชับได้ใจความ ไม่นานแกินไป \n'.$question
                         ]
                     ]
                 ]
