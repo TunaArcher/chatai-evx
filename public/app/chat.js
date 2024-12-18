@@ -290,7 +290,7 @@ function getAvatar(data) {
     case "Customer":
       return chatBoxProfile.src;
     case "Admin":
-      return "/assets/images/openai-chatgpt-logo.png";
+      return "/assets/images/conX.png";
     default:
       return "unknown-icon.png"; // ค่าเริ่มต้นกรณีไม่ตรงกับเงื่อนไขใด
   }
