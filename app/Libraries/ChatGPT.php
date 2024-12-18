@@ -105,41 +105,4 @@ class ChatGPT
         }
     }
 
-
-    public function askChatGPTAsync($question)
-{
-    try {
-        $promise = $this->http->postAsync($this->baseURL, [
-            'headers' => [
-                'Authorization' => "Bearer " . $this->accessToekn,
-                'Content-Type'  => 'application/json',
-            ],
-            'json' => [
-                'model' => 'gpt-4-turbo',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $question
-                    ]
-                ]
-            ]
-        ]);
-
-        // Handle the response when the promise is resolved
-        $promise->then(
-            function ($response) {
-                $responseBody = json_decode($response->getBody(), true);
-                return $responseBody['choices'][0]['message']['content'];
-            },
-            function ($exception) {
-                return 'Error: ' . $exception->getMessage();
-            }
-        );
-
-        // Wait for the promise to complete
-        return $promise->wait();
-    } catch (Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-}
 }
