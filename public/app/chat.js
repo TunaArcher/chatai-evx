@@ -83,7 +83,7 @@ roomsList.addEventListener("click", (event) => {
 
       // จัดการกล่องแชท
       if (customer.profile == "0" || customer.profile == null) {
-        chatBoxProfile.src = "/assets/images/users/unknow_user.png";
+        chatBoxProfile.src = "/assets/images/conX.png";
       } else {
         chatBoxProfile.src = customer.profile;
       }
