@@ -331,10 +331,10 @@
                     <div class="chat-box-left">
                         <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">Messages</a>
+                                <a class="nav-link py-2 active" id="messages_chat_tab_menu" data-bs-toggle="tab" href="#messages_chat_menu" role="tab">Messages</a>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link py-2" id="active_chat_tab" data-bs-toggle="tab" href="#active_chat" role="tab">Active</a>
+                                <a class="nav-link py-2" id="active_chat_tab_menu" data-bs-toggle="tab" href="#active_chat_menu" role="tab">Active</a>
                             </li>
                         </ul>
                         <div class="chat-search p-3">
@@ -350,7 +350,7 @@
 
                         <div class="chat-body-left px-3" data-simplebar>
                             <div class="tab-content" id="pills-tabContent">
-                                <div class="tab-pane fade show active" id="messages_chat">
+                                <div class="tab-pane fade show active" id="messages_chat_menu">
                                     <div class="row">
                                         <div class="col">
 
@@ -385,7 +385,7 @@
                                     </div><!--end row-->
                                 </div><!--end general chat-->
 
-                                <div class="tab-pane fade" id="active_chat">
+                                <div class="tab-pane fade" id="active_chat_menu">
                                     <div class="p-2 border-dashed border-theme-color rounded mb-2">
                                         <a href="" class="">
                                             <div class="d-flex align-items-start">
