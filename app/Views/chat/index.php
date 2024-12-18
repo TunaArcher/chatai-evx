@@ -72,7 +72,7 @@
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative">
                                                                 <?php if (($room->profile == 0) || ($room->profile == null)) {
-                                                                    $room->profile = '/assets/images/users/unknow_user.png';
+                                                                    $room->profile = '/assets/images/conX.png';
                                                                 } ?>
                                                                 <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                 <span class="position-absolute bottom-0 end-0">

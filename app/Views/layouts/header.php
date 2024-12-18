@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <link rel="shortcut icon" href="assets/images/logo72x72.png">
 
     <link rel="stylesheet" href="assets/libs/jsvectormap/css/jsvectormap.min.css">
 
@@ -271,7 +271,7 @@
         <div class="brand">
             <a href="index.html" class="logo">
                 <span>
-                    <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-small" class="logo-sm">
+                    <img width="170" height="50" src="/assets/images/conXx.png" alt="logo-small" class="logo-sm">
                 </span>
                 <span class="">
                     <!-- <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-large" class="logo-lg logo-light"> -->
@@ -361,7 +361,7 @@
                                                             <div class="d-flex align-items-start">
                                                                 <div class="position-relative">
                                                                     <?php if (($room->profile == 0) || ($room->profile == null)) {
-                                                                        $room->profile = '/assets/images/users/unknow_user.png';
+                                                                        $room->profile = '/assets/images/conX.png';
                                                                     } ?>
                                                                     <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                     <span class="position-absolute bottom-0 end-0">
