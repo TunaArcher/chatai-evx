@@ -56,7 +56,7 @@ $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค
 
 $routes->get('/setting-new', 'SettingController::index');
 
-registration/channelConnection
+// registration/channelConnection
 
 // -----------------------------------------------------------------------------
 // Webhook
