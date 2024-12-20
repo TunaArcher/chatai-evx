@@ -21,7 +21,7 @@ class WebhookController extends BaseController
     /**
      * ตรวจสอบความถูกต้องของ Webhook ตามข้อกำหนดเฉพาะของแต่ละแพลตฟอร์ม
      */
-    public function verifyWebhook($userSocialID)
+    public function verifyWebhook()
     {
         $hubMode = $this->request->getGet('hub_mode');
         $hubVerifyToken = $this->request->getGet('hub_verify_token');
@@ -37,18 +37,21 @@ class WebhookController extends BaseController
     /**
      * จัดการข้อมูล Webhook จากแพลตฟอร์มต่าง ๆ
      */
-    public function webhook($userSocialID)
+    public function webhook()
     {
         $input = $this->request->getJSON();
-        $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
+        // $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
   
         try {
-            $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
-            log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
-            $handler->handleWebhook($input, $userSocial);      
 
-            // กรณีเปิดใช้งานให้ AI ช่วยตอบ
-            if ($userSocial->ai === 'on') $handler->handleReplyByAI($input, $userSocial); // TODO:: HANDLE
+            log_message('info', "ข้อความเข้า Webhook : " . json_encode($input, JSON_PRETTY_PRINT));
+
+            // $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+            // log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
+            // $handler->handleWebhook($input, $userSocial);      
+
+            // // กรณีเปิดใช้งานให้ AI ช่วยตอบ
+            // if ($userSocial->ai === 'on') $handler->handleReplyByAI($input, $userSocial); // TODO:: HANDLE
 
             return $this->response->setJSON(['status' => 'success']);
         } catch (\InvalidArgumentException $e) {

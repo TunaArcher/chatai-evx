@@ -61,8 +61,8 @@ $routes->get('/setting-new', 'SettingController::index');
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
-$routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับยืนยัน Meta Developer
-$routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+$routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
+$routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 
 $routes->get('/callback', 'OauthController::callback');
