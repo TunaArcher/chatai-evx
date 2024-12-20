@@ -56,6 +56,8 @@ function openOAuthPopup(platform) {
       state: state
   });
 
+  console.log(oauthUrl)
+
   const popupWidth = 500;
   const popupHeight = 600;
   const screenX = window.screenX ?? window.screenLeft;
@@ -346,7 +348,7 @@ steps.step1.next.on("click", function () {
   }
 
   if (selectedPlatform == 'Facebook') {
-    openOAuthPopup()
+    openOAuthPopup(selectedPlatform)
   }
 
   activateStep(steps.step1, steps.step2);
