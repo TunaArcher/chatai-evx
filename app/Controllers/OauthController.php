@@ -64,4 +64,9 @@ class OauthController extends BaseController
             'access_token_meta' => $accessToken
         ]);
     }
+
+    public function policy()
+    {
+        echo view('/policy');
+    }
 }
