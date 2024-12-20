@@ -31,6 +31,56 @@ const steps = {
 
 let selectedPlatform = "";
 
+function generateRandomState() {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array); // ใช้ API สำหรับสร้างตัวเลขสุ่มที่ปลอดภัย
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function openOAuthPopup(platform) {
+
+  // สร้างค่า state แบบสุ่ม
+  const state = generateRandomState();
+  localStorage.setItem('oauth_state', state); // บันทึก state ใน localStorage
+
+  let $scope = '';
+  if (platform == 'Facebook') {
+    $scope = 'pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content'
+  }
+
+  const oauthUrl = 'https://www.facebook.com/v21.0/dialog/oauth?' + new URLSearchParams({
+      client_id: '2356202511392731',
+      redirect_uri: 'https://influthai.ai/callback.php',
+      scope: $scope,
+      response_type: 'code',
+      state: state
+  });
+
+  const popupWidth = 500;
+  const popupHeight = 600;
+  const screenX = window.screenX ?? window.screenLeft;
+  const screenY = window.screenY ?? window.screenTop;
+  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
+  const screenHeight = window.innerHeight ?? document.documentElement.clientHeight;
+
+  const left = screenX + (screenWidth - popupWidth) / 2;
+  const top = screenY + (screenHeight - popupHeight) / 2;
+
+  const popup = window.open(
+      oauthUrl,
+      'oauthPopup',
+      `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  // ตรวจสอบว่า popup ถูกปิดหรือยัง
+  const popupInterval = setInterval(() => {
+      if (popup.closed) {
+          clearInterval(popupInterval);
+          alert('Login completed! Please check your session or token.');
+      }
+  }, 500);
+}
+
 $(".btnAI").on("click", function () {
   let $me = $(this);
 
@@ -293,6 +343,10 @@ steps.step1.next.on("click", function () {
   if (!selectedPlatform) {
     alert("เลือก Social ที่จะเชื่อมต่อ");
     return false;
+  }
+
+  if (selectedPlatform == 'Facebook') {
+    openOAuthPopup()
   }
 
   activateStep(steps.step1, steps.step2);
