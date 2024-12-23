@@ -63,6 +63,8 @@ class OauthController extends BaseController
         $this->userModel->updateUserByID(1, [
             'access_token_meta' => $accessToken
         ]);
+
+        echo "Access Token: $accessToken";
     }
 
     public function policy()

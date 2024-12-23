@@ -134,10 +134,14 @@
             <div class="modal-body">
                 <form action="" method="post" id="custom-step">
                     <nav>
-                        <div class="nav nav-tabs" id="nav-tab">
+
+                        <div class="nav nav-tabs" id="nav-tab" style="">
                             <a class="nav-link py-2 active" id="step1-tab" data-bs-toggle="tab" href="#step1">ขั้นตอนที่ 1 เลือกแฟลตฟอร์ม</a>
                             <a class="nav-link py-2" id="step2-tab" data-bs-toggle="tab" href="#step2">ขั้นตอนที่ 2 ตรวจสอบการใช้งาน Messaging API</a>
                             <a class="nav-link py-2" id="step3-tab" data-bs-toggle="tab" href="#step3">ขั้นตอนที่ 3 กรอกข้อมูลการเชื่อมต่อ</a>
+
+                            <a style="display: none;" class="nav-link py-2" id="fb-step2-tab" data-bs-toggle="tab" href="#fb-step2">ขั้นตอนที่ 2 เลือก Connect</a>
+
                         </div>
                     </nav>
                     <div class="tab-content mt-3" id="nav-tabContent">
@@ -269,14 +273,6 @@
 
                         <!-- tab 2 -->
                         <div class="tab-pane" id="step2">
-                            <!-- Facebook -->
-                            <div class="step2-facebook-wrapper" style="display: none;">
-                                <img src="https://i0.wp.com/saixiii.com/wp-content/uploads/2017/04/messaging-api.png?fit=720%2C346&ssl=1" alt="" class="img-fluid rounded w-100">
-                                <hr>
-                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></p>
-                                <p class="mb-0">2. เลือก Facebook Messaging API</p>
-                                <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
-                            </div>
                             <!-- Line -->
                             <div class="step2-line-wrapper" style="display: none;">
                                 <img src="https://cdn6.aptoide.com/imgs/6/c/b/6cb90ef28865cb7d4dcc94450cb24c6a_fgraphic.png" alt="" class="img-fluid rounded">
@@ -345,17 +341,6 @@
 
                         <!-- tab 3 -->
                         <div class="tab-pane" id="step3">
-                            <!-- Facebook -->
-                            <div class="step3-facebook-wrapper">
-                                <div class="mb-3">
-                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
-                                    <input type="text" name="facebook_social_name" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div>
-                                <!-- <div class="mb-3">
-                                    <label for="" class="form-label">Token <span class="text-denger">*</span></label>
-                                    <input type="text" name="fb_token" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div> -->
-                            </div>
                             <!-- Line -->
                             <div class="step3-line-wrapper">
                                 <div class="mb-3">
@@ -411,6 +396,16 @@
                             <div>
                                 <button type="button" id="step3Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                                 <button type="button" id="step3Finish" class="btn btn-danger float-end mt-2">Finish</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 -->
+                        <div class="tab-pane" id="fb-step2">
+                            <!-- Facebook -->
+                            <div class="step2-facebook-wrapper" style="display: none;"></div>
+
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                             </div>
                         </div>
                     </div>

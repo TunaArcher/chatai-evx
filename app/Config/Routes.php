@@ -66,6 +66,9 @@ $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหร
 
 
 $routes->get('/callback', 'OauthController::callback');
+$routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
+
+$routes->post('/connect/connectPageToApp', 'ConnectController::connectPageToApp');
 
 /*
  * --------------------------------------------------------------------

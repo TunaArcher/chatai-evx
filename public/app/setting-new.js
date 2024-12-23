@@ -27,6 +27,15 @@ const steps = {
       Tiktok: $(".step3-tiktok-wrapper"),
     },
   },
+
+  fbStep2: {
+    tab: $("#fb-step2-tab"),
+    content: $("#fb-step2"),
+    prev: $("#fbStep2Prev"),
+    wrappers: {
+      Facebook: $(".step2-facebook-wrapper"),
+    },
+  },
 };
 
 let selectedPlatform = "";
@@ -34,52 +43,57 @@ let selectedPlatform = "";
 function generateRandomState() {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array); // ใช้ API สำหรับสร้างตัวเลขสุ่มที่ปลอดภัย
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+    ""
+  );
 }
 
 function openOAuthPopup(platform) {
-
   // สร้างค่า state แบบสุ่ม
   const state = generateRandomState();
-  localStorage.setItem('oauth_state', state); // บันทึก state ใน localStorage
+  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope = '';
-  if (platform == 'Facebook') {
-    $scope = 'pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content'
+  let $scope = "";
+  if (platform == "Facebook") {
+    $scope =
+      "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement ";
   }
 
-  const oauthUrl = 'https://www.facebook.com/v21.0/dialog/oauth?' + new URLSearchParams({
-      client_id: '2356202511392731',
-      redirect_uri: 'https://influthai.ai/callback.php',
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: `${serverUrl}/callback`,
       scope: $scope,
-      response_type: 'code',
-      state: state
-  });
+      response_type: "code",
+      state: state,
+    });
 
-  console.log(oauthUrl)
+  console.log(oauthUrl);
 
   const popupWidth = 500;
   const popupHeight = 600;
   const screenX = window.screenX ?? window.screenLeft;
   const screenY = window.screenY ?? window.screenTop;
   const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
-  const screenHeight = window.innerHeight ?? document.documentElement.clientHeight;
+  const screenHeight =
+    window.innerHeight ?? document.documentElement.clientHeight;
 
   const left = screenX + (screenWidth - popupWidth) / 2;
   const top = screenY + (screenHeight - popupHeight) / 2;
 
   const popup = window.open(
-      oauthUrl,
-      'oauthPopup',
-      `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+    oauthUrl,
+    "oauthPopup",
+    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
   );
 
   // ตรวจสอบว่า popup ถูกปิดหรือยัง
   const popupInterval = setInterval(() => {
-      if (popup.closed) {
-          clearInterval(popupInterval);
-          alert('Login completed! Please check your session or token.');
-      }
+    if (popup.closed) {
+      clearInterval(popupInterval);
+      alert("Login completed! Please check your session or token.");
+    }
   }, 500);
 }
 
@@ -151,7 +165,18 @@ $(".radio-item").click(function () {
   $(this).find(".radio-icon").addClass("selected");
   // ดึงค่าที่เลือก (value)
   selectedPlatform = $(this).data("value");
+
   console.log("Selected:", selectedPlatform);
+
+  if (selectedPlatform == "Facebook") {
+    $("#fb-step2-tab").show();
+    $("#step2-tab").hide();
+    $("#step3-tab").hide();
+  } else {
+    $("#fb-step2-tab").hide();
+    $("#step2-tab").show();
+    $("#step3-tab").show();
+  }
 });
 
 // Utility Functions
@@ -337,6 +362,37 @@ function initialize() {
   setPlatformWrappers(steps.step3.wrappers, null); // Hide all wrappers in step3
 }
 
+$(".step2-facebook-wrapper").on("click", ".btnConnectPage", function () {
+  let $me = $(this);
+
+  let $pageID = $me.data("page-id");
+
+  dataObj = {
+    pageID: $pageID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    url: `${serverUrl}/connect/connectPageToApp`,
+    type: "POST",
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      if (response.success) {
+        $me.html("เชื่อมต่อแล้ว");
+      } else {
+        $me.prop("disabled", false);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
+      $me.prop("disabled", false);
+    },
+  });
+});
+
 // Event Handlers
 steps.step1.next.on("click", function () {
   // selectedPlatform = $("input[name=btnradio]:checked", "#custom-step").val();
@@ -347,13 +403,75 @@ steps.step1.next.on("click", function () {
     return false;
   }
 
-  if (selectedPlatform == 'Facebook') {
-    openOAuthPopup(selectedPlatform)
-  }
+  if (selectedPlatform == "Facebook") {
+    // openOAuthPopup(selectedPlatform)
 
-  activateStep(steps.step1, steps.step2);
-  setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
-  disableTab(steps.step3.tab, false); // Enable step3 tab
+    $.ajax({
+      type: "GET",
+      url: `${serverUrl}/auth/FbPagesList`,
+    })
+      .done(function (res) {
+        let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
+        let $wrapper = $(".step2-facebook-wrapper"); // div ที่เราจะใส่ข้อมูล
+
+        // เคลียร์ HTML เดิมใน wrapper
+        $wrapper.empty();
+
+        // วนลูปข้อมูลเพจ
+        $pages.forEach((page) => {
+          let $btnConnect = `<button type="button" class="btnConnectPage btn btn-primary btn-sm px-2" data-page-id="${page.id}">เชื่อมต่อ</button>`;
+          if (page.status == "connected") {
+            $btnConnect = `<button type="button" class="btnConnectPage btn btn-primary btn-sm px-2 disabled" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
+          }
+          let pageHtml = `
+                <div class="card">
+                  <div class="card-body py-0">
+                      <div class="row">
+                          <div class="col-md-10">
+                              <a href="#" class="">                                               
+                                  <div class="d-flex align-items-center">
+                                      <div class="flex-shrink-0">
+                                          <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
+                                      </div>
+                                      <div class="flex-grow-1 ms-2 text-truncate">
+                                          <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
+                                      </div><!--end media-body-->
+                                  </div><!--end media-->
+                              </a>
+                          </div> <!--end col--> 
+                          <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
+                              ${$btnConnect}
+                          </div> <!--end col-->                                                      
+                      </div><!--end row-->         
+                  </div><!--end card-body--> 
+              </div>
+              <hr>
+            `;
+
+          // ใส่ HTML ที่สร้างลงใน wrapper
+          $wrapper.append(pageHtml);
+        });
+      })
+      .fail(function (err) {
+        const message =
+          err.responseJSON?.messages ||
+          "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+        Swal.fire({
+          title: message,
+          text: "Redirecting...",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      });
+
+    activateStep(steps.step1, steps.fbStep2);
+    setPlatformWrappers(steps.fbStep2.wrappers, selectedPlatform);
+  } else {
+    activateStep(steps.step1, steps.step2);
+    setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
+    disableTab(steps.step3.tab, false); // Enable step3 tab
+  }
 });
 
 steps.step2.prev.on("click", function () {
@@ -448,6 +566,16 @@ steps.step1.tab.on("click", function (e) {
   e.preventDefault();
   activateStep(steps.step2, steps.step1);
   disableTab(steps.step3.tab, true);
+
+  if (selectedPlatform == "Facebook") {
+    $("#fb-step2-tab").show();
+    $("#step2-tab").hide();
+    $("#step3-tab").hide();
+  } else {
+    $("#fb-step2-tab").hide();
+    $("#step2-tab").show();
+    $("#step3-tab").show();
+  }
 });
 
 steps.step2.tab.on("click", function (e) {
@@ -463,6 +591,16 @@ steps.step2.tab.on("click", function (e) {
     activateStep(steps.step1, steps.step2);
     setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
     disableTab(steps.step3.tab, false);
+  }
+
+  if (selectedPlatform == "Facebook") {
+    $("#fb-step2-tab").show();
+    $("#step2-tab").hide();
+    $("#step3-tab").hide();
+  } else {
+    $("#fb-step2-tab").hide();
+    $("#step2-tab").show();
+    $("#step3-tab").show();
   }
 });
 
