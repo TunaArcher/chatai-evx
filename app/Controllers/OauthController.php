@@ -164,13 +164,13 @@ HTML;
             $client = new Client();
             $clientId = getenv('APP_ID');
             $clientSecret = getenv('APP_SECRET');
-            $redirectUri = rawurlencode(base_url('/callback?platform=Instagram'));
+            $redirectUri = base_url('/callback?platform=Instagram');
 
             $authCode = $code;
 
             log_message('debug', 'Authorization Code: ' . $authCode);
             log_message('debug', 'Redirect URI: ' . $redirectUri);
-            
+
             $response = $client->post('https://api.instagram.com/oauth/access_token', [
                 'form_params' => [
                     'client_id' => $clientId,
