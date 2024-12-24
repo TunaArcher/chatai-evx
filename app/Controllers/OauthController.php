@@ -12,7 +12,7 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Services\MessageService;
 use CodeIgniter\HTTP\ResponseInterface;
-
+use GuzzleHttp\Exception\ClientException;
 
 class OauthController extends BaseController
 {
@@ -160,31 +160,39 @@ HTML;
 
     private function handleInstagramCallback($code)
     {
+        try {
+            $client = new Client();
+            $clientId = getenv('APP_ID');
+            $clientSecret = getenv('APP_SECRET');
+            $redirectUri = rawurlencode(base_url('/callback?platform=Instagram'));
 
-        echo '1'; exit();
-        $client = new Client();
-        $clientId = getenv('APP_ID');
-        $clientSecret = getenv('APP_SECRET');
-        $redirectUri = base_url('/callback');
+            $authCode = $code;
 
-        $authCode = $code;
+            log_message('debug', 'Authorization Code: ' . $authCode);
+            log_message('debug', 'Redirect URI: ' . $redirectUri);
+            
+            $response = $client->post('https://api.instagram.com/oauth/access_token', [
+                'form_params' => [
+                    'client_id' => $clientId,
+                    'client_secret' => $clientSecret,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $redirectUri,
+                    'code' => $authCode,
+                ],
+            ]);
 
-        $response = $client->post('https://graph.facebook.com/v21.0/oauth/access_token', [
-            'form_params' => [
-                'client_id' => $clientId,
-                'client_secret' => $clientSecret,
-                'redirect_uri' => $redirectUri,
-                'code' => $authCode,
-            ],
-        ]);
+            $data = json_decode($response->getBody(), true);
+            $accessToken = $data['access_token'];
 
-        // TODO:: HANDLE REFACTOR
-        $data = json_decode($response->getBody(), true);
-        $accessToken = $data['access_token'];
-
-        $this->userModel->updateUserByID(session()->get('userID'), [
-            'access_token_meta' => $accessToken
-        ]);
+            $this->userModel->updateUserByID(session()->get('userID'), [
+                'access_token_instagram' => $accessToken
+            ]);
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $errorBody = $response->getBody()->getContents();
+            log_message('error', 'Instagram OAuth error: ' . $errorBody);
+            throw new \Exception('Instagram authentication failed. Please try again.');
+        }
     }
 
     private function handleWhatsAppCallback($code)

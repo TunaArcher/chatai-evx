@@ -54,20 +54,27 @@ function openOAuthInstagramPopup() {
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
   let $scope =
-    "instagram_business_basic,instagram_business_manage_comments,instagram_business_manage_messages";
+    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
 
-    let urlCallback = `${serverUrl}/callback?platform=Instagram`
-  const oauthUrl =
-    "https://www.instagram.com/oauth/authorize?" +
-    new URLSearchParams({
-      client_id: "561184920098888",
+    let urlCallback = encodeURIComponent(`${serverUrl}/callback?platform=Instagram`)
+
+    const oauthUrl =
+  `https://www.facebook.com/v21.0/dialog/oauth?` +
+  `client_id=2356202511392731&redirect_uri=${urlCallback}&scope=${$scope}&response_type=code&state=${state}`;
+  // const oauthUrl =
+  //   "https://www.facebook.com/v21.0/dialog/oauth?" +
+  //   new URLSearchParams({
+  //     client_id: "2356202511392731",
+  //     redirect_uri: urlCallback,
+  //     scope: $scope,
+  //     response_type: "code",
+  //     state: state,
+  //   });
+
+    testUrl = new URLSearchParams({
       redirect_uri: urlCallback,
-      scope: $scope,
-      response_type: "code",
-      state: state,
-    });
-
-    console.log(urlCallback)
+    })
+    console.log(testUrl)
   console.log(oauthUrl);
 
   const popupWidth = 800;
