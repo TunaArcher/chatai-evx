@@ -62,7 +62,7 @@ function openOAuthInstagramPopup() {
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
       client_id: "2356202511392731",
-      redirect_uri: encodeURIComponent(urlCallback),
+      redirect_uri: urlCallback,
       scope: $scope,
       response_type: "code",
       state: state,
