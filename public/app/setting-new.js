@@ -58,24 +58,22 @@ function openOAuthInstagramPopup() {
 
     let urlCallback = `${serverUrl}/callback?platform=Instagram`
 
-    const oauthUrl =
-  `https://www.facebook.com/v21.0/dialog/oauth?` +
-  `client_id=2356202511392731&redirect_uri=${urlCallback}&scope=${$scope}&response_type=code&state=${state}`;
-  // const oauthUrl =
-  //   "https://www.facebook.com/v21.0/dialog/oauth?" +
-  //   new URLSearchParams({
-  //     client_id: "2356202511392731",
-  //     redirect_uri: urlCallback,
-  //     scope: $scope,
-  //     response_type: "code",
-  //     state: state,
-  //   });
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: urlCallback,
+      scope: $scope,
+      response_type: "code",
+      state: state,
+    });
 
     testUrl = new URLSearchParams({
       redirect_uri: urlCallback,
     })
     console.log(testUrl)
   console.log(oauthUrl);
+  console.log(state)
 
   const popupWidth = 800;
   const popupHeight = 700;

@@ -86,6 +86,7 @@ HTML;
                 $this->handleFacebookCallback($code);
                 break;
             case 'Instagram':
+                log_message('debug', 'state: ' . $this->request->getGet('state'));
                 $this->handleInstagramCallback($code);
                 break;
             case 'WhatsApp':
