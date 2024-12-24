@@ -56,7 +56,7 @@ function openOAuthInstagramPopup() {
   let $scope =
     "instagram_basic,instagram_manage_comments,instagram_manage_messages";
 
-    let urlCallback = encodeURIComponent(`${serverUrl}/callback?platform=Instagram`)
+    let urlCallback = `${serverUrl}/callback?platform=Instagram`
 
     const oauthUrl =
   `https://www.facebook.com/v21.0/dialog/oauth?` +
