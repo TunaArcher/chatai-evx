@@ -36,8 +36,6 @@ class FacebookHandler
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
         $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
 
-        // log_message('info', 'check uid: ' . json_encode($UID, JSON_PRETTY_PRINT));
-
         // ตรวจสอบหรือสร้างลูกค้า
         $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
 

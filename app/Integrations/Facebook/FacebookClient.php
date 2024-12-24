@@ -114,6 +114,39 @@ class FacebookClient
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
+            log_message('error', 'FacebookClient::getUserProfileFacebook error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function getProfile()
+    {
+        try {
+
+            $endPoint = $this->baseURL . 'me';
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('GET', $endPoint, [
+                'query' => [
+                    'fields' => 'id,name,picture',
+                    'access_token' => $this->accessToken,
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get Profile from Facebook API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
             log_message('error', 'FacebookClient::getProfile error {message}', ['message' => $e->getMessage()]);
             return false;
         }
@@ -211,7 +244,12 @@ class FacebookClient
             ];
 
             $data = [
-                'subscribed_fields' => "messages", "messaging_postbacks", "messaging_optins", "message_deliveries", "message_reads", "message_reactio"
+                'subscribed_fields' => "messages",
+                "messaging_postbacks",
+                "messaging_optins",
+                "message_deliveries",
+                "message_reads",
+                "message_reactio"
             ];
 
             // ส่งคำขอ GET ไปยัง API

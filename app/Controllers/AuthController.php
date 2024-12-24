@@ -55,10 +55,13 @@ class AuthController extends BaseController
         ];
 
         foreach ($getFbPagesList->data as $page) {
+
+            $userSocial = $this->userSocialModel->getUserSocialByPageID($page->id);
+
             $data['data']['pages'][] = [
                 'id' => $page->id ?? '',
                 'name' => $page->name ?? '',
-                'status' => $this->userSocialModel->getUserSocialByPageID($page->id) ? 'connected' : 'not_connected',
+                'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
                 'identifier' => 'fb',
                 'ava' => $faceBookAPI->getPicturePage($page->id),
                 'account_owner' => null,

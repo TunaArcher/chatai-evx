@@ -59,4 +59,14 @@ class UserModel
         return $builder->where('Username', $Username)->get()->getResult();
     }
 
+    public function getUserByPlatFromAndID($platform, $platformUserID)
+    {
+        $builder = $this->db->table('users');
+
+        return $builder
+            ->where('sign_by_platform', $platform)
+            ->where('platform_user_id', $platformUserID)
+            ->get()
+            ->getRow();
+    }
 }

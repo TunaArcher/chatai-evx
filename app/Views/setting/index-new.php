@@ -35,16 +35,11 @@
                             <div class="text-center border-dashed-bottom pb-3">
                                 <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
                                 <h5 class="fw-bold my-2 fs-20"><?php echo $user_social->name; ?></h5>
-                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
                                 <div style="height: 96px;">
                                     <?php if ($user_social->platform == 'Line') { ?>
+                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
                                         <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a></p>
                                         <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } else if ($user_social->platform == 'Facebook') { ?>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
-                                        <p class="text-muted mt-0 mb-0">2. แล้วจะได้ Token จาก Facebook ให้นำมาใส่ที่ ปุ่มระบุ Token</p>
-                                        <p class="text-danger mt-0 mb-0">3. ต้องยื่นเรื่องขอ Permission กับ Meta</p>
-                                        <p class="text-muted mt-0 mb-0">4. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                     <?php } else if ($user_social->platform == 'WhatsApp') { ?>
                                         <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer</p>
                                         <p class="text-muted mt-0 mb-0">2. หากต้องยืนยันให้ใส่คำว่า HAPPY</p>
@@ -54,6 +49,7 @@
                                         <p class="text-danger mt-0 mb-0">2. ต้องยื่นเรื่องขอ Permission (instagram_business_basic, instagram_business_manage_messages) กับ Meta เพื่อใช้ในการตอบข้อความ</p>
                                         <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                     <?php } else if ($user_social->platform == 'Tiktok') { ?>
+                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
                                         <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Tiktok Developer</p>
                                         <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                     <?php } ?>
@@ -61,9 +57,6 @@
                             </div>
                             <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">
                                 <div>
-                                    <?php if ($user_social->platform == 'Facebook') { ?>
-                                        <button type="button" class="btn bg-info-subtle text-dark btn-sm px-3 btnInputToken" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>" data-bs-toggle="modal" data-bs-target="#formModalDefault">ระบุ Token</button>
-                                    <?php } ?>
                                     <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
                                     <?php if ($user_social->ai == 'on') { ?>
                                         <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> กำลังใช้งาน AI</button>

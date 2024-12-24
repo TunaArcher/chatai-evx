@@ -36,7 +36,7 @@ class SettingController extends BaseController
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
                 <script src="app/setting-new.js"></script>
             ',
-            'rooms' => [], 
+            'rooms' => [],
             'user_socials' => $userSocials,
         ]);
     }
@@ -88,6 +88,7 @@ class SettingController extends BaseController
 
             if ($userSocial) {
                 $this->userSocialModel->updateUserSocialByID($userSocial->id, [
+                    'is_connect' => 0,
                     'deleted_at' => date('Y-m-d H:i:s'),
                 ]);
 
@@ -109,7 +110,7 @@ class SettingController extends BaseController
         $status = 500;
 
         try {
-            session()->set(['userID' => 1]);
+            // session()->set(['userID' => 1]);
             $userID = session()->get('userID');
 
             $data = $this->request->getJSON();
@@ -199,7 +200,7 @@ class SettingController extends BaseController
 
     private function initializeSession(): int
     {
-        session()->set(['userID' => 1]);
+        // session()->set(['userID' => 1]);
         return session()->get('userID');
     }
 

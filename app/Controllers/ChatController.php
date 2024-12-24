@@ -40,7 +40,7 @@ class ChatController extends BaseController
         // NOTE:: ต้องจัดการ ID, Refactor foreach
 
         // Mock userID สำหรับ Session (สมมติว่าผู้ใช้ ID 1 กำลังล็อกอิน)
-        session()->set(['userID' => 1]);
+        // session()->set(['userID' => 1]);
         $userID = session()->get('userID');
 
         // ดึงรายการห้องสนทนา

@@ -34,7 +34,29 @@ $routes->set404Override('App\Controllers\Errors::show404');
  * --------------------------------------------------------------------
  */
 
-$routes->get('/', 'HomeController::index');
+$routes->get('/', 'HomeController::index', ['filter' => 'userAuth']);
+
+/*
+ * --------------------------------------------------------------------
+ * Authentication
+ * --------------------------------------------------------------------
+ */
+
+$routes->get('/login', 'Authentication::index', ['filter' => 'userNoAuth']);
+$routes->post('/login', 'Authentication::login', ['filter' => 'userNoAuth']);
+$routes->get('/auth-register', 'Authentication::authRegister', ['filter' => 'userNoAuth']);
+$routes->post('/register', 'Authentication::register', ['filter' => 'userNoAuth']);
+$routes->get('/logout', 'Authentication::logout', ['filter' => 'userAuth']);
+
+$routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Authentication Social
+ * --------------------------------------------------------------------
+ */
+
+$routes->get('/callback/(:any)', 'CallbackController::handle/$1');
 
 // -----------------------------------------------------------------------------
 // Chat & Message
@@ -69,6 +91,15 @@ $routes->get('/callback', 'OauthController::callback');
 $routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
 
 $routes->post('/connect/connectPageToApp', 'ConnectController::connectPageToApp');
+
+/*
+ * --------------------------------------------------------------------
+ * Helper
+ * --------------------------------------------------------------------
+ */
+
+ $routes->get('/check/token/(:any)', 'OauthController::checkToken/$1');
+
 
 /*
  * --------------------------------------------------------------------

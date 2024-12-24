@@ -21,8 +21,6 @@ class MessageService
         $this->customerModel = new CustomerModel();
         $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
-
-        session()->set(['userID' => 1]);
     }
 
     // Logic การ Save Message

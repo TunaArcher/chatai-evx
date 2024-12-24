@@ -58,7 +58,8 @@ class UserSocialModel
         $builder = $this->db->table('user_socials');
 
         return $builder
-            ->where('deleted_at', null) // เพิ่มเงื่อนไขสำหรับ deleted_at เป็น NULL
+            ->where('user_id', $userID) 
+            ->where('deleted_at', null)
             ->orderBy('created_at', 'DESC')
             ->get()
             ->getResult();
