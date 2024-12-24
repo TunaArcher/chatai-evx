@@ -54,7 +54,7 @@ function openOAuthInstagramPopup() {
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
   let $scope =
-    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
+    "instagram_basic";
 
     let urlCallback = `${serverUrl}/callback?platform=Instagram`
 
