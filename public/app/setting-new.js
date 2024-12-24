@@ -59,7 +59,7 @@ function openOAuthInstagramPopup() {
   const oauthUrl =
     "https://www.instagram.com/oauth/authorize?" +
     new URLSearchParams({
-      client_id: "1361222625246673",
+      client_id: "561184920098888",
       redirect_uri: `${serverUrl}/callback?platform=Instagram`,
       scope: $scope,
       response_type: "code",
