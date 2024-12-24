@@ -56,16 +56,18 @@ function openOAuthInstagramPopup() {
   let $scope =
     "instagram_business_basic,instagram_business_manage_comments,instagram_business_manage_messages";
 
+    let urlCallback = `${serverUrl}/callback?platform=Instagram`
   const oauthUrl =
     "https://www.instagram.com/oauth/authorize?" +
     new URLSearchParams({
       client_id: "561184920098888",
-      redirect_uri: `${serverUrl}/callback?platform=Instagram`,
+      redirect_uri: urlCallback,
       scope: $scope,
       response_type: "code",
       state: state,
     });
 
+    console.log(urlCallback)
   console.log(oauthUrl);
 
   const popupWidth = 800;

@@ -162,7 +162,6 @@ HTML;
     {
 
         echo '1'; exit();
-        
         $client = new Client();
         $clientId = getenv('APP_ID');
         $clientSecret = getenv('APP_SECRET');
