@@ -82,7 +82,7 @@ class ConnectController extends BaseController
                 foreach ($phoneNumber->data as $data) {
 
                     if ($data->id == $WABID) {
-                        $name = $data->display_phone_number;
+                        $name = $data->verified_name;
                         break;
                     }
                 }

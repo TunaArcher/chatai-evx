@@ -90,6 +90,9 @@ class AuthController extends BaseController
 
         $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts();
 
+        echo '<pre>';
+        print_r($getListBusinessAccounts); exit();
+
         if (getenv('CI_ENVIRONMENT') == 'development') $getListBusinessAccounts = $this->mockup();
 
         $data = [
@@ -103,9 +106,19 @@ class AuthController extends BaseController
 
             $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $account->id);
 
+            $wabID = $account->id;
+            $wabName = '';
+
+            if ($userSocial) {
+                $wabName = $userSocial->name;
+            } else {
+                $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
+                $wabName = $phoneNumber->verified_name;
+            }
+
             $data['data']['pages'][] = [
-                'id' => $page->id ?? '',
-                'name' => $page->name ?? '',
+                'id' => $wabID,
+                'name' => $wabName,
                 'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
                 // 'identifier' => 'fb',
                 'ava' => '',
