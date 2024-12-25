@@ -49,13 +49,20 @@ class WebhookController extends BaseController
         // $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
 
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->mockup();
-
+        log_message('info', "ข้อความเข้า Webhook " . json_encode($input, JSON_PRETTY_PRINT));
         try {
 
             // Facebook
             if (isset($input->object) == 'page') {
                 $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
             }
+
+            // Whats App
+            if (isset($input->value->messaging_product) && $input->value->messaging_product == 'whatsapp') {
+                $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp');
+            }
+
+            exit();
 
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
