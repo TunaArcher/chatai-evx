@@ -192,7 +192,7 @@ class WhatsAppClient
             $endPoint = $this->baseURL . $whatsappBusinessAccountId . '/phone_numbers/';
 
             // เรียก API เพื่อดึง Phone Number ID
-            $response = $$this->http->request('GET', $endPoint, [
+            $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'access_token' => $this->accessToken,
                 ],
