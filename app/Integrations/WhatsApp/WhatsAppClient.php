@@ -264,7 +264,8 @@ class WhatsAppClient
     {
         try {
 
-            $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
+            // $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
+            $endPoint = $this->baseURL . $businessId . '/owned_whatsapp_business_accounts';
 
             // $headers = [
             //     'Authorization' => "Bearer " . $this->facebookToken,
@@ -297,25 +298,19 @@ class WhatsAppClient
     }
 
     // ผูกเพจเข้าไป App
-    public function subscribedApps($pageID)
+    public function subscribedApps($WABID)
     {
         try {
 
-            $endPoint = $this->baseURL . $pageID . '/subscribed_apps';
+            $endPoint = $this->baseURL . $WABID . '/subscribed_apps';
 
             $headers = [
                 'Authorization' => "Bearer " . $this->accessToken,
             ];
 
-            $data = [
-                'subscribed_fields' => "messages",
-                "status",
-            ];
-
             // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
-                'headers' => $headers,
-                'json' => $data,
+                'headers' => $headers
             ]);
 
             // แปลง Response กลับมาเป็น Object

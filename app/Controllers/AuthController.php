@@ -92,7 +92,7 @@ class AuthController extends BaseController
 
         $businessId = $businesses->data ?? false; // เลือก Business ID ตัวแรก
         if (!$businessId) {
-          throw new \Exception('No Business ID associated with this account.');
+            throw new \Exception('No Business ID associated with this account.');
         }
 
         $data = [
@@ -110,27 +110,27 @@ class AuthController extends BaseController
 
             $businessId = $businessesData->id;
 
-
             $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts($businessId);
 
             if ($getListBusinessAccounts) {
+
                 foreach ($getListBusinessAccounts->data as $account) {
 
                     $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $account->id);
-        
+
                     $wabID = $account->id;
                     $wabName = '';
-        
+
                     if ($userSocial) {
                         $wabName = $userSocial->name;
                     } else {
-                        $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
-                        $wabName = $phoneNumber->verified_name;
+                        // $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
+                        $wabName = $account->name;
                     }
-        
+
                     $data['data']['pages'][] = [
                         'id' => $wabID,
-                        'name' => $businessesData->name | $wabName,
+                        'name' => $businessesData->name . ' | ' . $wabName,
                         'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
                         // 'identifier' => 'fb',
                         'ava' => '',
@@ -138,7 +138,6 @@ class AuthController extends BaseController
                     ];
                 }
             }
-
         }
 
         $status = 200;

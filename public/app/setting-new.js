@@ -188,9 +188,9 @@ function WABListBusinessAccounts() {
 
       // วนลูปข้อมูลเพจ
       $pages.forEach((page) => {
-        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="WhatsApp" data-page-id="${page.id}">เชื่อมต่อ</button>`;
+        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="WhatsApp" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อ</button>`;
         if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="WhatsApp" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
+          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="WhatsApp" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อแล้ว</button>`;
         }
         let pageHtml = `
               <div class="card">
@@ -1042,10 +1042,12 @@ $(".step2-whatsapp-wrapper").on("click", ".btnConnectToApp", function () {
 
   let $platform = $me.data("platform");
   let $pageID = $me.data("page-id");
+  let $pageName = $me.data("page-name");
 
   dataObj = {
     platform: $platform,
     pageID: $pageID,
+    pageName: $pageName,
   };
 
   $me.prop("disabled", true);

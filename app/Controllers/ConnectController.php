@@ -72,20 +72,12 @@ class ConnectController extends BaseController
 
             case 'WhatsApp':
 
-                $WABID = $input->pageID;;
+                $WABID = $input->pageID;
+                $name = $input->pageName;
 
                 $whatsAppAPI = new WhatsAppClient([
-                    'accessToken' => $user->access_token_meta
+                    'whatsAppToken' => $user->access_token_whatsapp
                 ]);
-
-                $phoneNumber = $whatsAppAPI->getPhoneNumber($WABID);
-                foreach ($phoneNumber->data as $data) {
-
-                    if ($data->id == $WABID) {
-                        $name = $data->verified_name;
-                        break;
-                    }
-                }
 
                 $subscribedApps = $whatsAppAPI->subscribedApps($WABID);
 
