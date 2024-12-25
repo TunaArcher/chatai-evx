@@ -102,13 +102,13 @@ class AuthController extends BaseController
             ]
         ];
 
-        foreach ($businesses->data as $data) {
+        foreach ($businesses->data as $businessesData) {
 
             // $bundle['id']
             // $data->id;
             // $data->name;
 
-            $businessId = $data->id;
+            $businessId = $businessesData->id;
 
 
             $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts($businessId);
@@ -130,7 +130,7 @@ class AuthController extends BaseController
         
                     $data['data']['pages'][] = [
                         'id' => $wabID,
-                        'name' => $data->name | $wabName,
+                        'name' => $businessesData->name | $wabName,
                         'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
                         // 'identifier' => 'fb',
                         'ava' => '',
