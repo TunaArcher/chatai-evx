@@ -21,7 +21,7 @@ class FacebookClient
     {
         $this->baseURL = 'https://graph.facebook.com/v21.0/';
         $this->facebookToken = $config['facebookToken'] ?? '';
-        $this->accessToken = $config['accessToken'];
+        $this->accessToken = $config['accessToken'] ?? '';
         $this->http = new Client();
     }
 
