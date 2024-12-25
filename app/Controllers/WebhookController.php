@@ -54,7 +54,7 @@ class WebhookController extends BaseController
 
             // Facebook
             if (isset($input->object) == 'page') {
-                $userSocial = $this->userSocialModel->getUserSocialByPageID($input->entry[0]->id);
+                $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
             }
 
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
