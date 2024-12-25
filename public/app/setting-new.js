@@ -40,12 +40,177 @@ const steps = {
 
 let selectedPlatform = "";
 
+// Utility Functions
+function copyToClipboard(url) {
+  // สร้าง Element ชั่วคราวสำหรับคัดลอก
+  const tempInput = document.createElement("input");
+  tempInput.value = url;
+  document.body.appendChild(tempInput);
+
+  // เลือกและคัดลอกข้อความ
+  tempInput.select();
+  tempInput.setSelectionRange(0, 99999); // รองรับบนมือถือ
+  document.execCommand("copy");
+
+  // ลบ Element ชั่วคราว
+  document.body.removeChild(tempInput);
+
+  // แสดงข้อความแจ้งเตือน
+  notyf("คัดลอกแล้ว", "success");
+}
+
+function notyf(message, type) {
+  const notyf = new Notyf({
+    position: {
+      x: "right",
+      y: "top",
+    },
+  });
+
+  if (type == "success") {
+    const notification = notyf.success(message);
+    // notyf.dismiss(notification);
+  }
+
+  if (type == "error") {
+    const notification = notyf.error(message);
+    // notyf.dismiss(notification);
+  }
+}
+
 function generateRandomState() {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array); // ใช้ API สำหรับสร้างตัวเลขสุ่มที่ปลอดภัย
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
     ""
   );
+}
+
+function disableTab(tab, isDisabled) {
+  tab.toggleClass("disabled", isDisabled);
+}
+
+// Main Functions
+function FbPagesList() {
+  $.ajax({
+    type: "GET",
+    url: `${serverUrl}/auth/FbPagesList`,
+  })
+    .done(function (res) {
+      let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
+      let $wrapper = $(".step2-facebook-wrapper"); // div ที่เราจะใส่ข้อมูล
+
+      // เคลียร์ HTML เดิมใน wrapper
+      $wrapper.empty();
+
+      // วนลูปข้อมูลเพจ
+      $pages.forEach((page) => {
+        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Facebook" data-page-id="${page.id}">เชื่อมต่อ</button>`;
+        if (page.status == "connected") {
+          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Facebook" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
+        }
+        let pageHtml = `
+              <div class="card">
+                <div class="card-body py-0">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <a href="#" class="">                                               
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
+                                    </div>
+                                    <div class="flex-grow-1 ms-2 text-truncate">
+                                        <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
+                                    </div><!--end media-body-->
+                                </div><!--end media-->
+                            </a>
+                        </div> <!--end col--> 
+                        <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
+                            ${$btnConnect}
+                        </div> <!--end col-->                                                      
+                    </div><!--end row-->         
+                </div><!--end card-body--> 
+            </div>
+            <hr>
+          `;
+
+        // ใส่ HTML ที่สร้างลงใน wrapper
+        $wrapper.append(pageHtml);
+      });
+    })
+    .fail(function (err) {
+      const message =
+        err.responseJSON?.messages ||
+        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+      Swal.fire({
+        title: message,
+        text: "Redirecting...",
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    });
+}
+
+function WABListBusinessAccounts() {
+  $.ajax({
+    type: "GET",
+    url: `${serverUrl}/auth/WABListBusinessAccounts`,
+  })
+    .done(function (res) {
+      let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
+      let $wrapper = $(".step2-facebook-wrapper"); // div ที่เราจะใส่ข้อมูล
+
+      // เคลียร์ HTML เดิมใน wrapper
+      $wrapper.empty();
+
+      // วนลูปข้อมูลเพจ
+      $pages.forEach((page) => {
+        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="WhatsApp" data-page-id="${page.id}">เชื่อมต่อ</button>`;
+        if (page.status == "connected") {
+          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="WhatsApp" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
+        }
+        let pageHtml = `
+              <div class="card">
+                <div class="card-body py-0">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <a href="#" class="">                                               
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
+                                    </div>
+                                    <div class="flex-grow-1 ms-2 text-truncate">
+                                        <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
+                                    </div><!--end media-body-->
+                                </div><!--end media-->
+                            </a>
+                        </div> <!--end col--> 
+                        <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
+                            ${$btnConnect}
+                        </div> <!--end col-->                                                      
+                    </div><!--end row-->         
+                </div><!--end card-body--> 
+            </div>
+            <hr>
+          `;
+
+        // ใส่ HTML ที่สร้างลงใน wrapper
+        $wrapper.append(pageHtml);
+      });
+    })
+    .fail(function (err) {
+      const message =
+        err.responseJSON?.messages ||
+        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+      Swal.fire({
+        title: message,
+        text: "Redirecting...",
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    });
 }
 
 function openOAuthInstagramPopup() {
@@ -56,7 +221,7 @@ function openOAuthInstagramPopup() {
   let $scope =
     "instagram_basic,instagram_manage_comments,instagram_manage_messages";
 
-    let urlCallback = `${serverUrl}/callback?platform=Instagram`
+  let urlCallback = `${serverUrl}/callback?platform=Instagram`;
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
@@ -68,12 +233,12 @@ function openOAuthInstagramPopup() {
       state: state,
     });
 
-    testUrl = new URLSearchParams({
-      redirect_uri: urlCallback,
-    })
-    console.log(testUrl)
+  testUrl = new URLSearchParams({
+    redirect_uri: urlCallback,
+  });
+  console.log(testUrl);
   console.log(oauthUrl);
-  console.log(state)
+  console.log(state);
 
   const popupWidth = 800;
   const popupHeight = 700;
@@ -108,10 +273,9 @@ function openOAuthWhatsAppPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope =
-    "whatsapp_business_management,whatsapp_business_messaging";
+  let $scope = "whatsapp_business_management,whatsapp_business_messaging";
 
-    let urlCallback = `${serverUrl}/callback?platform=WhatsApp`
+  let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
@@ -123,12 +287,12 @@ function openOAuthWhatsAppPopup() {
       state: state,
     });
 
-    testUrl = new URLSearchParams({
-      redirect_uri: urlCallback,
-    })
-    console.log(testUrl)
+  testUrl = new URLSearchParams({
+    redirect_uri: urlCallback,
+  });
+  console.log(testUrl);
   console.log(oauthUrl);
-  console.log(state)
+  console.log(state);
 
   const popupWidth = 800;
   const popupHeight = 700;
@@ -157,7 +321,6 @@ function openOAuthWhatsAppPopup() {
     }
   }, 500);
 }
-
 
 function openOAuthFacebookPopup() {
   // สร้างค่า state แบบสุ่ม
@@ -206,126 +369,6 @@ function openOAuthFacebookPopup() {
       FbPagesList();
     }
   }, 500);
-}
-
-$(".btnAI").on("click", function () {
-  let $me = $(this);
-
-  let $platform = $me.data("platform"),
-    $userSocialID = $me.data("user-social-id");
-
-  dataObj = {
-    platform: $platform,
-    userSocialID: $userSocialID,
-  };
-
-  $me.prop("disabled", true);
-
-  $.ajax({
-    type: "POST",
-    url: `${serverUrl}/setting/ai`,
-    data: JSON.stringify(dataObj),
-    contentType: "application/json; charset=utf-8",
-  })
-    .done(function (res) {
-      if (res.success) {
-        Swal.fire({
-          title: "สำเร็จ",
-          // icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        if (res.data.newStatus == "on") {
-          $me.html(`<i class="fas fa-robot me-1"></i> กำลังใช้งาน AI`);
-          $me.prop("disabled", false);
-        } else {
-          $me.html(`<i class="fas fa-robot me-1"></i> เปิดใช้ AI`);
-          $me.prop("disabled", false);
-        }
-
-        // TODO:: HANDLE
-      } else {
-        Swal.fire({
-          title: res.messages,
-          text: "Redirecting...",
-          icon: "warning",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      }
-    })
-    .fail(function (err) {
-      const message =
-        err.responseJSON?.messages ||
-        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
-      Swal.fire({
-        title: message,
-        text: "Redirecting...",
-        icon: "warning",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    });
-});
-
-$(".radio-item").click(function () {
-  // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
-  $(".radio-icon").removeClass("selected");
-  // เพิ่ม class 'selected' ในไอคอนที่คลิก
-  $(this).find(".radio-icon").addClass("selected");
-  // ดึงค่าที่เลือก (value)
-  selectedPlatform = $(this).data("value");
-
-  console.log("Selected:", selectedPlatform);
-
-  if (selectedPlatform == "Facebook") {
-    $("#fb-step2-tab").show();
-    $("#step2-tab").hide();
-    $("#step3-tab").hide();
-  } else {
-    $("#fb-step2-tab").hide();
-    $("#step2-tab").show();
-    $("#step3-tab").show();
-  }
-});
-
-// Utility Functions
-function copyToClipboard(url) {
-  // สร้าง Element ชั่วคราวสำหรับคัดลอก
-  const tempInput = document.createElement("input");
-  tempInput.value = url;
-  document.body.appendChild(tempInput);
-
-  // เลือกและคัดลอกข้อความ
-  tempInput.select();
-  tempInput.setSelectionRange(0, 99999); // รองรับบนมือถือ
-  document.execCommand("copy");
-
-  // ลบ Element ชั่วคราว
-  document.body.removeChild(tempInput);
-
-  // แสดงข้อความแจ้งเตือน
-  notyf("คัดลอกแล้ว", "success");
-}
-
-function notyf(message, type) {
-  const notyf = new Notyf({
-    position: {
-      x: "right",
-      y: "top",
-    },
-  });
-
-  if (type == "success") {
-    const notification = notyf.success(message);
-    // notyf.dismiss(notification);
-  }
-
-  if (type == "error") {
-    const notification = notyf.error(message);
-    // notyf.dismiss(notification);
-  }
 }
 
 function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
@@ -462,116 +505,11 @@ function setPlatformWrappers(wrappers, platform) {
   });
 }
 
-function disableTab(tab, isDisabled) {
-  tab.toggleClass("disabled", isDisabled);
-}
-
 // Initialization
 function initialize() {
   disableTab(steps.step3.tab, true); // Disable step3 tab at start
   setPlatformWrappers(steps.step2.wrappers, null); // Hide all wrappers in step2
   setPlatformWrappers(steps.step3.wrappers, null); // Hide all wrappers in step3
-}
-
-$(".step2-facebook-wrapper").on("click", ".btnConnectPage", function () {
-  let $me = $(this);
-
-  let $pageID = $me.data("page-id");
-
-  dataObj = {
-    pageID: $pageID,
-  };
-
-  $me.prop("disabled", true);
-
-  $.ajax({
-    url: `${serverUrl}/connect/connectPageToApp`,
-    type: "POST",
-    data: JSON.stringify(dataObj),
-    contentType: "application/json; charset=utf-8",
-    success: function (response) {
-      if (response.success) {
-        $me.html("เชื่อมต่อแล้ว");
-
-        Swal.fire({
-          title: "สำเร็จ",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        location.reload(); // รีโหลดหน้าเว็บ
-      } else {
-        $me.prop("disabled", false);
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
-      $me.prop("disabled", false);
-    },
-  });
-});
-
-function FbPagesList() {
-  $.ajax({
-    type: "GET",
-    url: `${serverUrl}/auth/FbPagesList`,
-  })
-    .done(function (res) {
-      let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
-      let $wrapper = $(".step2-facebook-wrapper"); // div ที่เราจะใส่ข้อมูล
-
-      // เคลียร์ HTML เดิมใน wrapper
-      $wrapper.empty();
-
-      // วนลูปข้อมูลเพจ
-      $pages.forEach((page) => {
-        let $btnConnect = `<button type="button" class="btnConnectPage btn btn-primary btn-sm px-2" data-page-id="${page.id}">เชื่อมต่อ</button>`;
-        if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectPage btn btn-primary btn-sm px-2 disabled" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
-        }
-        let pageHtml = `
-              <div class="card">
-                <div class="card-body py-0">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <a href="#" class="">                                               
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1 ms-2 text-truncate">
-                                        <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
-                                    </div><!--end media-body-->
-                                </div><!--end media-->
-                            </a>
-                        </div> <!--end col--> 
-                        <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
-                            ${$btnConnect}
-                        </div> <!--end col-->                                                      
-                    </div><!--end row-->         
-                </div><!--end card-body--> 
-            </div>
-            <hr>
-          `;
-
-        // ใส่ HTML ที่สร้างลงใน wrapper
-        $wrapper.append(pageHtml);
-      });
-    })
-    .fail(function (err) {
-      const message =
-        err.responseJSON?.messages ||
-        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
-      Swal.fire({
-        title: message,
-        text: "Redirecting...",
-        icon: "warning",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    });
 }
 
 // Event Handlers
@@ -587,7 +525,7 @@ steps.step1.next.on("click", function () {
   if (selectedPlatform == "Facebook") {
     $.ajax({
       type: "GET",
-      url: `${serverUrl}/check/token/facebook`,
+      url: `${serverUrl}/check/token/Facebook`,
     })
       .done(function (res) {
         let $data = res.data;
@@ -606,7 +544,21 @@ steps.step1.next.on("click", function () {
   } else if (selectedPlatform == "Instagram") {
     openOAuthInstagramPopup();
   } else if (selectedPlatform == "WhatsApp") {
-    openOAuthWhatsAppPopup();
+    $.ajax({
+      type: "GET",
+      url: `${serverUrl}/check/token/whatsapp`,
+    })
+      .done(function (res) {
+        let $data = res.data;
+        if ($data == "NO TOKEN") {
+          openOAuthWhatsAppPopup();
+        } else {
+          WABListBusinessAccounts();
+        }
+      })
+      .fail(function (err) {
+        console.log(err);
+      });
   } else {
     activateStep(steps.step1, steps.step2);
     setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
@@ -822,6 +774,130 @@ $("#btnSaveFbToken").on("click", function () {
         showConfirmButton: false,
       });
     });
+});
+
+$(".btnAI").on("click", function () {
+  let $me = $(this);
+
+  let $platform = $me.data("platform"),
+    $userSocialID = $me.data("user-social-id");
+
+  dataObj = {
+    platform: $platform,
+    userSocialID: $userSocialID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    type: "POST",
+    url: `${serverUrl}/setting/ai`,
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+  })
+    .done(function (res) {
+      if (res.success) {
+        Swal.fire({
+          title: "สำเร็จ",
+          // icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        if (res.data.newStatus == "on") {
+          $me.html(`<i class="fas fa-robot me-1"></i> กำลังใช้งาน AI`);
+          $me.prop("disabled", false);
+        } else {
+          $me.html(`<i class="fas fa-robot me-1"></i> เปิดใช้ AI`);
+          $me.prop("disabled", false);
+        }
+
+        // TODO:: HANDLE
+      } else {
+        Swal.fire({
+          title: res.messages,
+          text: "Redirecting...",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    })
+    .fail(function (err) {
+      const message =
+        err.responseJSON?.messages ||
+        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+      Swal.fire({
+        title: message,
+        text: "Redirecting...",
+        icon: "warning",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    });
+});
+
+$(".step2-facebook-wrapper").on("click", ".btnConnectToApp", function () {
+  let $me = $(this);
+
+  let $platform = $me.data("platform");
+  let $pageID = $me.data("page-id");
+
+  dataObj = {
+    platform: $platform,
+    pageID: $pageID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    url: `${serverUrl}/connect/connectToApp`,
+    type: "POST",
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      if (response.success) {
+        $me.html("เชื่อมต่อแล้ว");
+
+        Swal.fire({
+          title: "สำเร็จ",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        location.reload(); // รีโหลดหน้าเว็บ
+      } else {
+        $me.prop("disabled", false);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
+      $me.prop("disabled", false);
+    },
+  });
+});
+
+$(".radio-item").click(function () {
+  // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
+  $(".radio-icon").removeClass("selected");
+  // เพิ่ม class 'selected' ในไอคอนที่คลิก
+  $(this).find(".radio-icon").addClass("selected");
+  // ดึงค่าที่เลือก (value)
+  selectedPlatform = $(this).data("value");
+
+  console.log("Selected:", selectedPlatform);
+
+  if (selectedPlatform == "Facebook") {
+    $("#fb-step2-tab").show();
+    $("#step2-tab").hide();
+    $("#step3-tab").hide();
+  } else {
+    $("#fb-step2-tab").hide();
+    $("#step2-tab").show();
+    $("#step3-tab").show();
+  }
 });
 
 $(".btnDelete").on("click", function () {

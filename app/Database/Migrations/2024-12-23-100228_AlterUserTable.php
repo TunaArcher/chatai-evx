@@ -16,7 +16,9 @@ class AlterUserTable extends Migration
             ADD COLUMN `access_token_meta` TEXT(200) NULL DEFAULT NULL AFTER `deleted_at`,
             ADD COLUMN `name` VARCHAR(45) NULL DEFAULT NULL AFTER `access_token_meta`,
             ADD COLUMN `picture` TEXT(200) NULL DEFAULT NULL AFTER `name`,
-            ADD COLUMN `email` VARCHAR(45) NULL DEFAULT NULL AFTER `picture`;
+            ADD COLUMN `email` VARCHAR(45) NULL DEFAULT NULL AFTER `picture`,
+            ADD COLUMN `access_token_instagram` TEXT(200) NULL DEFAULT NULL AFTER `email`,
+            ADD COLUMN `access_token_whatsapp` TEXT(200) NULL DEFAULT NULL AFTER `access_token_instagram`;
         ");
     }
 

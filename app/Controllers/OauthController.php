@@ -110,7 +110,7 @@ HTML;
         $status = 500;
 
         switch ($platform) {
-            case 'facebook':
+            case 'Facebook':
                 $user = $this->userModel->getUserByID(session()->get('userID'));
 
                 if ($user->access_token_meta == '') {
@@ -119,6 +119,16 @@ HTML;
                 }
 
                 break;
+
+            case 'WhatsApp':
+                    $user = $this->userModel->getUserByID(session()->get('userID'));
+    
+                    if ($user->access_token_whatsapp == '') {
+                        $status = 200;
+                        $response['data'] = 'NO TOKEN';
+                    }
+    
+                    break;
         }
 
 

@@ -4,38 +4,23 @@ namespace App\Controllers;
 
 use GuzzleHttp\Client;
 
-use App\Factories\HandlerFactory;
 use App\Integrations\Facebook\FacebookClient;
-use App\Models\CustomerModel;
-use App\Models\MessageModel;
-use App\Models\MessageRoomModel;
+use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
-use App\Services\MessageService;
-use CodeIgniter\HTTP\ResponseInterface;
-
 
 class ConnectController extends BaseController
 {
-
-    private MessageService $messageService;
-    private CustomerModel $customerModel;
-    private MessageModel $messageModel;
-    private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct()
     {
-        $this->messageService = new MessageService();
-        $this->customerModel = new CustomerModel();
-        $this->messageModel = new MessageModel();
-        $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
     }
 
-    public function connectPageToApp()
+    public function connectToApp()
     {
         $userID = session()->get('userID');
 
@@ -43,40 +28,85 @@ class ConnectController extends BaseController
 
         $input = $this->request->getJSON();
 
-        $pageID = $input->pageID;
-        $pageToken = '';
+        switch ($input->platform) {
 
-        $faceBookAPI = new FacebookClient([
-            'accessToken' => $user->access_token_meta
-        ]);
-        $getFbPagesList = $faceBookAPI->getFbPagesList();
-        foreach ($getFbPagesList->data as $page) {
+            case 'Facebook':
 
-            if ($page->id == $pageID) {
-                $pageName = $page->name;
-                $pageToken = $page->access_token;
+                $pageID = $input->pageID;
+                $pageToken = '';
+
+                $faceBookAPI = new FacebookClient([
+                    'accessToken' => $user->access_token_meta
+                ]);
+                $getFbPagesList = $faceBookAPI->getFbPagesList();
+                foreach ($getFbPagesList->data as $page) {
+
+                    if ($page->id == $pageID) {
+                        $pageName = $page->name;
+                        $pageToken = $page->access_token;
+                        break;
+                    }
+                }
+
+                $subscribedApps = $faceBookAPI->subscribedApps($pageID, $pageToken);
+
+                if ($subscribedApps) {
+
+                    $this->userSocialModel->insertUserSocial([
+                        'user_id' => $userID,
+                        'platform' => 'Facebook',
+                        'name' => $pageName,
+                        'fb_token' => $pageToken,
+                        'is_connect' => '1',
+                        'page_id' => $pageID
+                    ]);
+
+                    $status = 200;
+                    $response = [
+                        'success' => 1,
+                        'message' => '',
+                    ];
+                }
+
                 break;
-            }
-        }
 
-        $subscribedApps = $faceBookAPI->subscribedApps($pageID, $pageToken);
+            case 'WhatsApp':
 
-        if ($subscribedApps) {
+                $WABID = $input->pageID;;
 
-            $this->userSocialModel->insertUserSocial([
-                'user_id' => $userID,
-                'platform' => 'Facebook',
-                'name' => $pageName,
-                'fb_token' => $pageToken,
-                'is_connect' => '1',
-                'page_id' => $pageID
-            ]);
+                $whatsAppAPI = new WhatsAppClient([
+                    'accessToken' => $user->access_token_meta
+                ]);
 
-            $status = 200;
-            $response = [
-                'success' => 1,
-                'message' => '',
-            ];
+                $phoneNumber = $whatsAppAPI->getPhoneNumber($WABID);
+                foreach ($phoneNumber->data as $data) {
+
+                    if ($data->id == $WABID) {
+                        $name = $data->display_phone_number;
+                        break;
+                    }
+                }
+
+                $subscribedApps = $whatsAppAPI->subscribedApps($WABID);
+
+                if ($subscribedApps) {
+
+                    $this->userSocialModel->insertUserSocial([
+                        'user_id' => $userID,
+                        'platform' => 'WhatsApp',
+                        'name' => $name,
+                        'is_connect' => '1',
+                        'page_id' => $WABID
+                    ]);
+
+                    $status = 200;
+                    $response = [
+                        'success' => 1,
+                        'message' => '',
+                    ];
+                }
+
+                break;
         }
 
         return $this->response

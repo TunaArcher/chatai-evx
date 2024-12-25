@@ -88,9 +88,11 @@ $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหร
 
 
 $routes->get('/callback', 'OauthController::callback');
-$routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
 
-$routes->post('/connect/connectPageToApp', 'ConnectController::connectPageToApp');
+$routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
+$routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAccounts');
+
+$routes->post('/connect/connectToApp', 'ConnectController::connectToApp');
 
 /*
  * --------------------------------------------------------------------

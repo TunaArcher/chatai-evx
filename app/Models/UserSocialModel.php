@@ -107,10 +107,14 @@ class UserSocialModel
         }
     }
 
-    public function getUserSocialByPageID($pageID)
+    public function getUserSocialByPageID($platform, $pageID)
     {
         $builder = $this->db->table('user_socials');
 
-        return $builder->where('page_id', $pageID)->get()->getRow();
+        return $builder
+        ->where('platform', $platform)
+        ->where('page_id', $pageID)
+        ->get()
+        ->getRow();
     }
 }

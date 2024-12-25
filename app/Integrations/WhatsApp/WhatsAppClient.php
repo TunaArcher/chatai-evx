@@ -180,6 +180,34 @@ class WhatsAppClient
         }
     }
 
+    public function getPhoneNumber($whatsappBusinessAccountId)
+    {
+        try {
+
+            $endPoint = $this->baseURL . $whatsappBusinessAccountId . '/phone_numbers/';
+
+            // เรียก API เพื่อดึง Phone Number ID
+            $response = $$this->http->request('GET', $endPoint, [
+                'query' => [
+                    'access_token' => $this->accessToken,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+
+            if (isset($data['data'][0])) {
+                return $data['data'][0];
+            } else {
+                log_message('error', "Failed to get PhoneNumber to WhatsApp API: " . json_encode($data));
+                throw new Exception("ไม่พบ Phone Number ID");
+            }
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppAPI::getPhoneNumber error {message}', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
     public function getWhatsAppBusinessAccountIdForPhoneNumberID()
     {
 
@@ -191,6 +219,87 @@ class WhatsAppClient
             $phoneNumberId = $this->getPhoneNumberId($whatsappBusinessAccountId);
 
             if ($phoneNumberId) return $phoneNumberId;
+        }
+    }
+
+    /*********************************************************************
+     * 3. Account | ดึงข้อมูลเกี่ยวกับ Account
+     */
+
+    // ดึงรายชื่อเพจ
+    public function getListBusinessAccounts()
+    {
+        try {
+
+            $endPoint = $this->baseURL . '/me/whatsapp_business_accounts';
+
+            // $headers = [
+            //     'Authorization' => "Bearer " . $this->facebookToken,
+            // ];
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('GET', $endPoint, [
+                'query' => [
+                    "access_token" => $this->accessToken
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get list Business Accounts from WhatsApp API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppClient::getListBusinessAccounts error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    // ผูกเพจเข้าไป App
+    public function subscribedApps($pageID)
+    {
+        try {
+
+            $endPoint = $this->baseURL . $pageID . '/subscribed_apps';
+
+            $headers = [
+                'Authorization' => "Bearer " . $this->accessToken,
+            ];
+
+            $data = [
+                'subscribed_fields' => "messages", "status",
+            ];
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'headers' => $headers,
+                'json' => $data,
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return true;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to send Subscribed Apps from WhatsApp API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppClient::subscribedApps error {message}', ['message' => $e->getMessage()]);
+            return false;
         }
     }
 }

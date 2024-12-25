@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 
 use App\Factories\HandlerFactory;
 use App\Integrations\Facebook\FacebookClient;
+use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
@@ -56,7 +57,7 @@ class AuthController extends BaseController
 
         foreach ($getFbPagesList->data as $page) {
 
-            $userSocial = $this->userSocialModel->getUserSocialByPageID($page->id);
+            $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $page->id);
 
             $data['data']['pages'][] = [
                 'id' => $page->id ?? '',
@@ -75,5 +76,69 @@ class AuthController extends BaseController
             ->setStatusCode($status)
             ->setContentType('application/json')
             ->setJSON($response);
+    }
+
+    public function WABListBusinessAccounts()
+    {
+        $userID = session()->get('userID');
+
+        $user = $this->userModel->getUserByID($userID);
+
+        $whatsAppAPI = new WhatsAppClient([
+            'whatsAppToken' => $user->access_token_whatsapp
+        ]);
+
+        $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts();
+
+        if (getenv('CI_ENVIRONMENT') == 'development') $getListBusinessAccounts = $this->mockup();
+
+        $data = [
+            'type' => 'list',
+            'data' => [
+                'pages' => []
+            ]
+        ];
+
+        foreach ($getListBusinessAccounts->data as $account) {
+
+            $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $account->id);
+
+            $data['data']['pages'][] = [
+                'id' => $page->id ?? '',
+                'name' => $page->name ?? '',
+                'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                // 'identifier' => 'fb',
+                'ava' => '',
+                // 'account_owner' => null,
+            ];
+        }
+
+        $status = 200;
+        $response = $data;
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    private function mockup()
+    {
+        return json_decode(
+            '{
+  "data": [
+    {
+      "id": "1234567890",
+      "name": "Account 1",
+      "account_status": "ACTIVE"
+    },
+    {
+      "id": "9876543210",
+      "name": "Account 2",
+      "account_status": "ACTIVE"
+    }
+  ]
+}'
+        );
     }
 }
