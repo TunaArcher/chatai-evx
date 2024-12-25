@@ -88,12 +88,12 @@ class AuthController extends BaseController
             'whatsAppToken' => $user->access_token_whatsapp
         ]);
 
-        $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts();
+        $businesses = $whatsAppAPI->getBussinessID();
 
-        echo '<pre>';
-        print_r($getListBusinessAccounts); exit();
-
-        if (getenv('CI_ENVIRONMENT') == 'development') $getListBusinessAccounts = $this->mockup();
+        $businessId = $businesses->data ?? false; // เลือก Business ID ตัวแรก
+        if (!$businessId) {
+          throw new \Exception('No Business ID associated with this account.');
+        }
 
         $data = [
             'type' => 'list',
@@ -102,28 +102,43 @@ class AuthController extends BaseController
             ]
         ];
 
-        foreach ($getListBusinessAccounts->data as $account) {
+        foreach ($businesses->data as $data) {
 
-            $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $account->id);
+            // $bundle['id']
+            // $data->id;
+            // $data->name;
 
-            $wabID = $account->id;
-            $wabName = '';
+            $businessId = $data->id;
 
-            if ($userSocial) {
-                $wabName = $userSocial->name;
-            } else {
-                $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
-                $wabName = $phoneNumber->verified_name;
+
+            $getListBusinessAccounts = $whatsAppAPI->getListBusinessAccounts($businessId);
+
+            if ($getListBusinessAccounts) {
+                foreach ($getListBusinessAccounts->data as $account) {
+
+                    $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $account->id);
+        
+                    $wabID = $account->id;
+                    $wabName = '';
+        
+                    if ($userSocial) {
+                        $wabName = $userSocial->name;
+                    } else {
+                        $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
+                        $wabName = $phoneNumber->verified_name;
+                    }
+        
+                    $data['data']['pages'][] = [
+                        'id' => $wabID,
+                        'name' => $data->name | $wabName,
+                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                        // 'identifier' => 'fb',
+                        'ava' => '',
+                        // 'account_owner' => null,
+                    ];
+                }
             }
 
-            $data['data']['pages'][] = [
-                'id' => $wabID,
-                'name' => $wabName,
-                'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
-                // 'identifier' => 'fb',
-                'ava' => '',
-                // 'account_owner' => null,
-            ];
         }
 
         $status = 200;

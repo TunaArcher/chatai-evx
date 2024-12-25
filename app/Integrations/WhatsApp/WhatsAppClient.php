@@ -118,6 +118,39 @@ class WhatsAppClient
         }
     }
 
+    public function getBussinessID()
+    {
+        try {
+
+            $endPoint = $this->baseURL . '/me/businesses/';
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('GET', $endPoint, [
+                'query' => [
+                    'access_token' => $this->accessToken,
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get bussiness id from WhatsApp API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'WhatsAppAPI::getBussinessID error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+
     /*********************************************************************
      * 1. Get Phone Number ID | ดึง Phone ID ใช้ในการ Request
      */
@@ -227,11 +260,11 @@ class WhatsAppClient
      */
 
     // ดึงรายชื่อเพจ
-    public function getListBusinessAccounts()
+    public function getListBusinessAccounts($businessId)
     {
         try {
 
-            $endPoint = $this->baseURL . '/me/whatsapp_business_accounts';
+            $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
 
             // $headers = [
             //     'Authorization' => "Bearer " . $this->facebookToken,
@@ -275,7 +308,8 @@ class WhatsAppClient
             ];
 
             $data = [
-                'subscribed_fields' => "messages", "status",
+                'subscribed_fields' => "messages",
+                "status",
             ];
 
             // ส่งคำขอ GET ไปยัง API

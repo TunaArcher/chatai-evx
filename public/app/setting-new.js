@@ -297,6 +297,7 @@ function openOAuthWhatsAppPopup() {
 
   let $scope = "whatsapp_business_management,business_management,whatsapp_business_messaging";
 
+
   let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
 
   const oauthUrl =
