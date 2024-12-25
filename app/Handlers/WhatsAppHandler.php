@@ -6,6 +6,7 @@ use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
+use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Services\MessageService;
 
@@ -16,6 +17,7 @@ class WhatsAppHandler
     private MessageService $messageService;
     private CustomerModel $customerModel;
     private MessageRoomModel $messageRoomModel;
+    private UserModel $userModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
@@ -23,6 +25,7 @@ class WhatsAppHandler
         $this->messageService = $messageService;
         $this->customerModel = new CustomerModel();
         $this->messageRoomModel = new MessageRoomModel();
+        $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
     }
 
@@ -147,9 +150,13 @@ class WhatsAppHandler
     {
         $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
 
+        // TODO:: REFACTOR
+        $user = $this->userModel->getUserByID($userSocial->user_id);
+
         return new WhatsAppClient([
             'phoneNumberID' => $userSocial->whatsapp_phone_number_id,
-            'whatsAppToken' => $userSocial->whatsapp_token
+            // 'whatsAppToken' => $userSocial->whatsapp_token
+            'whatsAppToken' => $user->access_token_whatsapp
         ]);
     }
 
