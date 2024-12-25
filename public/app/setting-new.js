@@ -295,8 +295,8 @@ function openOAuthWhatsAppPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope = "whatsapp_business_management,business_management,whatsapp_business_messaging";
-
+  let $scope =
+    "whatsapp_business_management,business_management,whatsapp_business_messaging";
 
   let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
 

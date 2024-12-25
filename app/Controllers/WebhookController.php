@@ -58,11 +58,9 @@ class WebhookController extends BaseController
             }
 
             // Whats App
-            if (isset($input->value->messaging_product) && $input->value->messaging_product == 'whatsapp') {
-                $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp');
+            else if (isset($input->object) && $input->object == 'whatsapp_business_account') {
+                $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $input->entry[0]->id);
             }
-
-            exit();
 
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
