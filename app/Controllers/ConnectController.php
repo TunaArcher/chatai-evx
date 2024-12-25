@@ -79,6 +79,8 @@ class ConnectController extends BaseController
                     'whatsAppToken' => $user->access_token_whatsapp
                 ]);
 
+                $whatsappPhoneNumberID = $whatsAppAPI->getPhoneNumberId($WABID);
+
                 $subscribedApps = $whatsAppAPI->subscribedApps($WABID);
 
                 if ($subscribedApps) {
@@ -88,7 +90,8 @@ class ConnectController extends BaseController
                         'platform' => 'WhatsApp',
                         'name' => $name,
                         'is_connect' => '1',
-                        'page_id' => $WABID
+                        'page_id' => $WABID,
+                        'whatsapp_phone_number_id' => $whatsappPhoneNumberID,
                     ]);
 
                     $status = 200;
