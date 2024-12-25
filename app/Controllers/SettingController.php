@@ -25,7 +25,7 @@ class SettingController extends BaseController
         $userSocials = $this->userSocialModel->getUserSocialByUserID($userID);
 
         return view('/app', [
-            'content' => 'setting/index-new',
+            'content' => 'setting/index',
             'title' => 'Chat',
             'css_critical' => '
                 <link href="assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
@@ -34,7 +34,7 @@ class SettingController extends BaseController
             'js_critical' => '
                 <script src="assets/libs/sweetalert2/sweetalert2.min.js"></script>
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-                <script src="app/setting-new.js"></script>
+                <script src="app/setting.js"></script>
             ',
             'rooms' => [],
             'user_socials' => $userSocials,

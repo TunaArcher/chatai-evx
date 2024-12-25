@@ -1,3 +1,71 @@
+<style>
+    .radio-group {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .radio-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .radio-icon {
+        width: 78px;
+        height: 78px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        position: relative;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+    .radio-icon.selected {
+        border-color: #007bff;
+    }
+
+    .radio-icon img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .radio-item span {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .radio-icon .checkmark {
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 12px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .radio-icon.selected .checkmark {
+        display: flex;
+    }
+
+    .thumb-md {
+        position: absolute;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        left: 50%;
+    }
+</style>
 <div class="page-content">
     <div class="container-xxl">
         <div class="row my-3">
@@ -34,26 +102,14 @@
                             </div>
                             <div class="text-center border-dashed-bottom pb-3">
                                 <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
-                                <h5 class="fw-bold my-2 fs-20"><?php echo $user_social->name; ?></h5>
-                                <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
+                                <h5 class="fw-bold my-2 fs-18"><?php echo $user_social->name; ?></h5>
                                 <div style="height: 96px;">
                                     <?php if ($user_social->platform == 'Line') { ?>
+                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
                                         <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a></p>
                                         <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } else if ($user_social->platform == 'Facebook') { ?>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
-                                        <p class="text-muted mt-0 mb-0">2. แล้วจะได้ Token จาก Facebook ให้นำมาใส่ที่ ปุ่มระบุ Token</p>
-                                        <p class="text-danger mt-0 mb-0">3. ต้องยื่นเรื่องขอ Permission กับ Meta</p>
-                                        <p class="text-muted mt-0 mb-0">4. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } else if ($user_social->platform == 'WhatsApp') { ?>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer</p>
-                                        <p class="text-muted mt-0 mb-0">2. หากต้องยืนยันให้ใส่คำว่า HAPPY</p>
-                                        <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } else if ($user_social->platform == 'Instagram') { ?>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Meta Developer (หากต้องยืนยันให้ใส่คำว่า HAPPY) </p>
-                                        <p class="text-danger mt-0 mb-0">2. ต้องยื่นเรื่องขอ Permission (instagram_business_basic, instagram_business_manage_messages) กับ Meta เพื่อใช้ในการตอบข้อความ</p>
-                                        <p class="text-muted mt-0 mb-0">3. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                     <?php } else if ($user_social->platform == 'Tiktok') { ?>
+                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
                                         <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Tiktok Developer</p>
                                         <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
                                     <?php } ?>
@@ -61,10 +117,9 @@
                             </div>
                             <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">
                                 <div>
-                                    <?php if ($user_social->platform == 'Facebook') { ?>
-                                        <button type="button" class="btn bg-info-subtle text-dark btn-sm px-3 btnInputToken" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>" data-bs-toggle="modal" data-bs-target="#formModalDefault">ระบุ Token</button>
+                                    <?php if ($user_social->platform == 'Line') { ?>
+                                        <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
                                     <?php } ?>
-                                    <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
                                     <?php if ($user_social->ai == 'on') { ?>
                                         <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> กำลังใช้งาน AI</button>
                                     <?php } else { ?>
@@ -134,10 +189,15 @@
             <div class="modal-body">
                 <form action="" method="post" id="custom-step">
                     <nav>
-                        <div class="nav nav-tabs" id="nav-tab">
+
+                        <div class="nav nav-tabs" id="nav-tab" style="">
                             <a class="nav-link py-2 active" id="step1-tab" data-bs-toggle="tab" href="#step1">ขั้นตอนที่ 1 เลือกแฟลตฟอร์ม</a>
                             <a class="nav-link py-2" id="step2-tab" data-bs-toggle="tab" href="#step2">ขั้นตอนที่ 2 ตรวจสอบการใช้งาน Messaging API</a>
                             <a class="nav-link py-2" id="step3-tab" data-bs-toggle="tab" href="#step3">ขั้นตอนที่ 3 กรอกข้อมูลการเชื่อมต่อ</a>
+
+                            <a style="display: none;" class="nav-link py-2" id="facebook-step2-tab" data-bs-toggle="tab" href="#facebook-step2">ขั้นตอนที่ 2 เลือก Connect</a>
+                            <a style="display: none;" class="nav-link py-2" id="instagram-step2-tab" data-bs-toggle="tab" href="#instagram-step2">ขั้นตอนที่ 2 เลือก Account</a>
+                            <a style="display: none;" class="nav-link py-2" id="whatsapp-step2-tab" data-bs-toggle="tab" href="#whatsapp-step2">ขั้นตอนที่ 2 เลือก Whatsapp Business Account</a>
                         </div>
                     </nav>
                     <div class="tab-content mt-3" id="nav-tabContent">
@@ -159,67 +219,7 @@
                                 <input type="radio" class="btn-check disabled" name="btnradio" id="btnradio5" autocomplete="off" value="Tiktok">
                                 <label class="btn btn-outline-secondary disabled" for="btnradio5">Tiktok</label>
                             </div> -->
-                            <style>
-                                .radio-group {
-                                    display: flex;
-                                    justify-content: center;
-                                    gap: 30px;
-                                    margin-top: 20px;
-                                }
 
-                                .radio-item {
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    cursor: pointer;
-                                }
-
-                                .radio-icon {
-                                    width: 60px;
-                                    height: 60px;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    border-radius: 50%;
-                                    position: relative;
-                                    border: 2px solid transparent;
-                                    transition: border-color 0.3s ease;
-                                }
-
-                                .radio-icon.selected {
-                                    border-color: #007bff;
-                                }
-
-                                .radio-icon img {
-                                    width: 40px;
-                                    height: 40px;
-                                }
-
-                                .radio-item span {
-                                    margin-top: 10px;
-                                    font-size: 14px;
-                                    color: #333;
-                                }
-
-                                .radio-icon .checkmark {
-                                    position: absolute;
-                                    bottom: -5px;
-                                    right: -5px;
-                                    background-color: #007bff;
-                                    color: white;
-                                    font-size: 12px;
-                                    width: 20px;
-                                    height: 20px;
-                                    border-radius: 50%;
-                                    display: none;
-                                    justify-content: center;
-                                    align-items: center;
-                                }
-
-                                .radio-icon.selected .checkmark {
-                                    display: flex;
-                                }
-                            </style>
                             <div class="radio-group">
                                 <!-- LINE -->
                                 <div class="radio-item" data-value="Line">
@@ -269,14 +269,6 @@
 
                         <!-- tab 2 -->
                         <div class="tab-pane" id="step2">
-                            <!-- Facebook -->
-                            <div class="step2-facebook-wrapper" style="display: none;">
-                                <img src="https://i0.wp.com/saixiii.com/wp-content/uploads/2017/04/messaging-api.png?fit=720%2C346&ssl=1" alt="" class="img-fluid rounded w-100">
-                                <hr>
-                                <p class="mb-0">1. เข้าไปจัดการที่ Meta Developer <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></p>
-                                <p class="mb-0">2. เลือก Facebook Messaging API</p>
-                                <p class="mb-0">3. หลังจากใส่ข้อมูลเสร็จ ให้เอา Token มาใส่ที่ระบบ</p>
-                            </div>
                             <!-- Line -->
                             <div class="step2-line-wrapper" style="display: none;">
                                 <img src="https://cdn6.aptoide.com/imgs/6/c/b/6cb90ef28865cb7d4dcc94450cb24c6a_fgraphic.png" alt="" class="img-fluid rounded">
@@ -345,17 +337,6 @@
 
                         <!-- tab 3 -->
                         <div class="tab-pane" id="step3">
-                            <!-- Facebook -->
-                            <div class="step3-facebook-wrapper">
-                                <div class="mb-3">
-                                    <label for="" class="form-label">ชื่อ (ไม่มีผลกับในระบบ ตั้งเพื่อโน้ตไว้ใช้งาน)<span class="text-denger">*</span></label>
-                                    <input type="text" name="facebook_social_name" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div>
-                                <!-- <div class="mb-3">
-                                    <label for="" class="form-label">Token <span class="text-denger">*</span></label>
-                                    <input type="text" name="fb_token" class="form-control" id="" aria-describedby="" placeholder="">
-                                </div> -->
-                            </div>
                             <!-- Line -->
                             <div class="step3-line-wrapper">
                                 <div class="mb-3">
@@ -411,6 +392,66 @@
                             <div>
                                 <button type="button" id="step3Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                                 <button type="button" id="step3Finish" class="btn btn-danger float-end mt-2">Finish</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 fb -->
+                        <div class="tab-pane" id="facebook-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                            <!-- Facebook -->
+                            <div class="step2-facebook-wrapper" style="display: none;"></div>
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 ig -->
+                        <div class="tab-pane" id="instagram-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                            <!-- Instagram -->
+                            <div class="step2-instagram-wrapper" style="display: none;"></div>
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 wab -->
+                        <div class="tab-pane" id="whatsapp-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                            <!-- WhatsApp -->
+                            <div class="step2-whatsapp-wrapper" style="display: none;"></div>
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                             </div>
                         </div>
                     </div>

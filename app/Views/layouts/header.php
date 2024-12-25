@@ -335,13 +335,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo base_url('/setting'); ?>">
                                 <i class="iconoir-compact-disc menu-icon"></i>
-                                <span>Setting</span>
-                            </a>
-                        </li><!--end nav-item-->
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo base_url('/setting-new'); ?>">
-                                <i class="iconoir-compact-disc menu-icon"></i>
                                 <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
                             </a>
                         </li><!--end nav-item-->
