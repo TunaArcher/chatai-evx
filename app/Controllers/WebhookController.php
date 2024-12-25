@@ -55,7 +55,7 @@ class WebhookController extends BaseController
             log_message('info', "ข้อความเข้า Webhook " . json_encode($input, JSON_PRETTY_PRINT));
 
             // Facebook
-            if (isset($input->object) && isset($input->object) == 'page') {
+            if (isset($input->object) && $input->object == 'page') {
                 $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
             }
 
