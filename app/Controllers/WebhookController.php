@@ -28,7 +28,13 @@ class WebhookController extends BaseController
         $hubChallenge = $this->request->getGet('hub_challenge');
 
         if ($hubMode === 'subscribe' && $hubVerifyToken === 'HAPPY') {
-            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)->setBody($hubChallenge);
+            // for fb
+            // return $this->response->setStatusCode(ResponseInterface::HTTP_OK)->setBody($hubChallenge);
+
+            // for whats app
+            echo $hubChallenge; // ส่ง Challenge กลับไป
+            http_response_code(200);
+            exit;
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);

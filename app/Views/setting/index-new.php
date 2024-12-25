@@ -14,8 +14,8 @@
     }
 
     .radio-icon {
-        width: 60px;
-        height: 60px;
+        width: 78px;
+        height: 78px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -203,8 +203,9 @@
                             <a class="nav-link py-2" id="step2-tab" data-bs-toggle="tab" href="#step2">ขั้นตอนที่ 2 ตรวจสอบการใช้งาน Messaging API</a>
                             <a class="nav-link py-2" id="step3-tab" data-bs-toggle="tab" href="#step3">ขั้นตอนที่ 3 กรอกข้อมูลการเชื่อมต่อ</a>
 
-                            <a style="display: none;" class="nav-link py-2" id="fb-step2-tab" data-bs-toggle="tab" href="#fb-step2">ขั้นตอนที่ 2 เลือก Connect</a>
-
+                            <a style="display: none;" class="nav-link py-2" id="facebook-step2-tab" data-bs-toggle="tab" href="#facebook-step2">ขั้นตอนที่ 2 เลือก Connect</a>
+                            <a style="display: none;" class="nav-link py-2" id="instagram-step2-tab" data-bs-toggle="tab" href="#instagram-step2">ขั้นตอนที่ 2 เลือก Account</a>
+                            <a style="display: none;" class="nav-link py-2" id="whatsapp-step2-tab" data-bs-toggle="tab" href="#whatsapp-step2">ขั้นตอนที่ 2 เลือก Whatsapp Business Account</a>
                         </div>
                     </nav>
                     <div class="tab-content mt-3" id="nav-tabContent">
@@ -402,8 +403,8 @@
                             </div>
                         </div>
 
-                        <!-- tab 2 -->
-                        <div class="tab-pane" id="fb-step2">
+                        <!-- tab 2 fb -->
+                        <div class="tab-pane" id="facebook-step2">
                             <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
                                 <div class="container-xxl">
                                     <div class="justify-content-center inner">
@@ -417,6 +418,46 @@
                             </div>
                             <!-- Facebook -->
                             <div class="step2-facebook-wrapper" style="display: none;"></div>
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 ig -->
+                        <div class="tab-pane" id="instagram-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                            <!-- Instagram -->
+                            <div class="step2-instagram-wrapper" style="display: none;"></div>
+                            <div>
+                                <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
+                            </div>
+                        </div>
+
+                        <!-- tab 2 wab -->
+                        <div class="tab-pane" id="whatsapp-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
+                            <!-- WhatsApp -->
+                            <div class="step2-whatsapp-wrapper" style="display: none;"></div>
                             <div>
                                 <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                             </div>

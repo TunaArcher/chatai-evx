@@ -38,7 +38,7 @@ class FacebookClient
     {
         try {
 
-            $endPoint = $this->baseURL . 'v21.0/me/messages';
+            $endPoint = $this->baseURL . 'me/messages';
 
             // $headers = [
             //     'Authorization' => "Bearer " . $this->facebookToken,

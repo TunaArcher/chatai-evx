@@ -20,11 +20,11 @@
 }; ?>
 
 <script>
-    let bodyElement = document.body;
-    let bodySize = bodyElement.getAttribute("data-sidebar-size");
-    const messagecollapse = document.getElementById("message-collapse");
-    if (bodySize == "collapsed") {
-        messagecollapse.style.display = "none";
+    let _bodyElement = document.body;
+    let _bodySize = _bodyElement.getAttribute("data-sidebar-size");
+    let _messagecollapse = document.getElementById("message-collapse");
+    if (_bodySize == "collapsed") {
+        _messagecollapse.style.display = "none";
     } 
 </script>
 </body>

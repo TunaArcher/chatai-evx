@@ -28,12 +28,30 @@ const steps = {
     },
   },
 
-  fbStep2: {
-    tab: $("#fb-step2-tab"),
-    content: $("#fb-step2"),
-    prev: $("#fbStep2Prev"),
+  facebookStep2: {
+    tab: $("#facebook-step2-tab"),
+    content: $("#facebook-step2"),
+    prev: $("#facebookStep2Prev"),
     wrappers: {
       Facebook: $(".step2-facebook-wrapper"),
+    },
+  },
+
+  instagramStep2: {
+    tab: $("#instagram-step2-tab"),
+    content: $("#instagram-step2"),
+    prev: $("#instagramStep2Prev"),
+    wrappers: {
+      Instagram: $(".step2-instagram-wrapper"),
+    },
+  },
+
+  whatsAppStep2: {
+    tab: $("#whatsapp-step2-tab"),
+    content: $("#whatsapp-step2"),
+    prev: $("#whatsAppStep2Prev"),
+    wrappers: {
+      WhatsApp: $(".step2-whatsapp-wrapper"),
     },
   },
 };
@@ -163,7 +181,7 @@ function WABListBusinessAccounts() {
   })
     .done(function (res) {
       let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
-      let $wrapper = $(".step2-facebook-wrapper"); // div ที่เราจะใส่ข้อมูล
+      let $wrapper = $(".step2-whatsapp-wrapper"); // div ที่เราจะใส่ข้อมูล
 
       // เคลียร์ HTML เดิมใน wrapper
       $wrapper.empty();
@@ -526,49 +544,61 @@ steps.step1.next.on("click", function () {
     return false;
   }
 
-  if (selectedPlatform == "Facebook") {
-    $(".step2-facebook-wrapper").html("");
+  switch (selectedPlatform) {
+    case "Facebook":
+      $(".step2-facebook-wrapper").html("");
 
-    $.ajax({
-      type: "GET",
-      url: `${serverUrl}/check/token/Facebook`,
-    })
-      .done(function (res) {
-        let $data = res.data;
-        if ($data == "NO TOKEN") {
-          openOAuthFacebookPopup();
-        } else {
-          FbPagesList();
-        }
+      $.ajax({
+        type: "GET",
+        url: `${serverUrl}/check/token/Facebook`,
       })
-      .fail(function (err) {
-        console.log(err);
-      });
+        .done(function (res) {
+          let $data = res.data;
+          if ($data == "NO TOKEN") {
+            openOAuthFacebookPopup();
+          } else {
+            FbPagesList();
+          }
+        })
+        .fail(function (err) {
+          console.log(err);
+        });
 
-    activateStep(steps.step1, steps.fbStep2);
-    setPlatformWrappers(steps.fbStep2.wrappers, selectedPlatform);
-  } else if (selectedPlatform == "Instagram") {
-    openOAuthInstagramPopup();
-  } else if (selectedPlatform == "WhatsApp") {
-    $.ajax({
-      type: "GET",
-      url: `${serverUrl}/check/token/whatsapp`,
-    })
-      .done(function (res) {
-        let $data = res.data;
-        if ($data == "NO TOKEN") {
-          openOAuthWhatsAppPopup();
-        } else {
-          WABListBusinessAccounts();
-        }
+      activateStep(steps.step1, steps.facebookStep2);
+      setPlatformWrappers(steps.facebookStep2.wrappers, selectedPlatform);
+      break;
+
+    case "Instagram":
+      openOAuthInstagramPopup();
+      break;
+
+    case "WhatsApp":
+      $(".step2-whatsapp-wrapper").html("");
+
+      $.ajax({
+        type: "GET",
+        url: `${serverUrl}/check/token/WhatsApp`,
       })
-      .fail(function (err) {
-        console.log(err);
-      });
-  } else {
-    activateStep(steps.step1, steps.step2);
-    setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
-    disableTab(steps.step3.tab, false); // Enable step3 tab
+        .done(function (res) {
+          let $data = res.data;
+          if ($data == "NO TOKEN") {
+            openOAuthWhatsAppPopup();
+          } else {
+            WABListBusinessAccounts();
+          }
+        })
+        .fail(function (err) {
+          console.log(err);
+        });
+
+      activateStep(steps.step1, steps.whatsAppStep2);
+      setPlatformWrappers(steps.whatsAppStep2.wrappers, selectedPlatform);
+      break;
+
+    default:
+      activateStep(steps.step1, steps.step2);
+      setPlatformWrappers(steps.step2.wrappers, selectedPlatform);
+      disableTab(steps.step3.tab, false); // Enable step3 tab
   }
 });
 
@@ -665,14 +695,37 @@ steps.step1.tab.on("click", function (e) {
   activateStep(steps.step2, steps.step1);
   disableTab(steps.step3.tab, true);
 
-  if (selectedPlatform == "Facebook") {
-    $("#fb-step2-tab").show();
-    $("#step2-tab").hide();
-    $("#step3-tab").hide();
-  } else {
-    $("#fb-step2-tab").hide();
-    $("#step2-tab").show();
-    $("#step3-tab").show();
+  switch (selectedPlatform) {
+    case "Facebook":
+      $("#facebook-step2-tab").show();
+      $("#instagram-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    case "Instagram":
+      $("#instagram-step2-tab").show();
+      $("#facebook-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    case "WhatsApp":
+      $("#whatsapp-step2-tab").show();
+      $("#facebook-step2-tab").hide();
+      $("#instagram-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    default:
+      $("#facebook-step2-tab").hide();
+      $("#instagram-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").show();
+      $("#step3-tab").show();
   }
 });
 
@@ -692,11 +745,11 @@ steps.step2.tab.on("click", function (e) {
   }
 
   if (selectedPlatform == "Facebook") {
-    $("#fb-step2-tab").show();
+    $("#facebook-step2-tab").show();
     $("#step2-tab").hide();
     $("#step3-tab").hide();
   } else {
-    $("#fb-step2-tab").hide();
+    $("#facebook-step2-tab").hide();
     $("#step2-tab").show();
     $("#step3-tab").show();
   }
@@ -708,7 +761,7 @@ steps.step3.tab.on("click", function (e) {
   setPlatformWrappers(steps.step3.wrappers, selectedPlatform);
 });
 
-steps.fbStep2.tab.on("click", function (e) {
+steps.facebookStep2.tab.on("click", function (e) {
   e.preventDefault();
 
   console.log("คุณเลือก " + selectedPlatform);
@@ -731,8 +784,37 @@ steps.fbStep2.tab.on("click", function (e) {
       console.log(err);
     });
 
-  activateStep(steps.step1, steps.fbStep2);
-  setPlatformWrappers(steps.fbStep2.wrappers, selectedPlatform);
+  activateStep(steps.step1, steps.facebookStep2);
+  setPlatformWrappers(steps.facebookStep2.wrappers, selectedPlatform);
+});
+
+steps.instagramStep2.tab.on("click", function (e) {});
+
+steps.whatsAppStep2.tab.on("click", function (e) {
+  e.preventDefault();
+
+  console.log("คุณเลือก " + selectedPlatform);
+
+  $(".step2-whatsapp-wrapper").html("");
+
+  $.ajax({
+    type: "GET",
+    url: `${serverUrl}/check/token/WhatsApp`,
+  })
+    .done(function (res) {
+      let $data = res.data;
+      if ($data == "NO TOKEN") {
+        openOAuthWhatsAppPopup();
+      } else {
+        WABListBusinessAccounts();
+      }
+    })
+    .fail(function (err) {
+      console.log(err);
+    });
+
+  activateStep(steps.step1, steps.whatsAppStep2);
+  setPlatformWrappers(steps.whatsAppStep2.wrappers, selectedPlatform);
 });
 
 $(".btnInputToken").on("click", function () {
@@ -912,6 +994,90 @@ $(".step2-facebook-wrapper").on("click", ".btnConnectToApp", function () {
   });
 });
 
+$(".step2-instagram-wrapper").on("click", ".btnConnectToApp", function () {
+  let $me = $(this);
+
+  let $platform = $me.data("platform");
+  let $pageID = $me.data("page-id");
+
+  dataObj = {
+    platform: $platform,
+    pageID: $pageID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    url: `${serverUrl}/connect/connectToApp`,
+    type: "POST",
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      if (response.success) {
+        $me.html("เชื่อมต่อแล้ว");
+
+        Swal.fire({
+          title: "สำเร็จ",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        location.reload(); // รีโหลดหน้าเว็บ
+      } else {
+        $me.prop("disabled", false);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
+      $me.prop("disabled", false);
+    },
+  });
+});
+
+$(".step2-whatsapp-wrapper").on("click", ".btnConnectToApp", function () {
+  let $me = $(this);
+
+  let $platform = $me.data("platform");
+  let $pageID = $me.data("page-id");
+
+  dataObj = {
+    platform: $platform,
+    pageID: $pageID,
+  };
+
+  $me.prop("disabled", true);
+
+  $.ajax({
+    url: `${serverUrl}/connect/connectToApp`,
+    type: "POST",
+    data: JSON.stringify(dataObj),
+    contentType: "application/json; charset=utf-8",
+    success: function (response) {
+      if (response.success) {
+        $me.html("เชื่อมต่อแล้ว");
+
+        Swal.fire({
+          title: "สำเร็จ",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        location.reload(); // รีโหลดหน้าเว็บ
+      } else {
+        $me.prop("disabled", false);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
+      $me.prop("disabled", false);
+    },
+  });
+});
+
 $(".radio-item").click(function () {
   // ลบ class 'selected' ออกจากไอคอนอื่น ๆ
   $(".radio-icon").removeClass("selected");
@@ -922,14 +1088,37 @@ $(".radio-item").click(function () {
 
   console.log("Selected:", selectedPlatform);
 
-  if (selectedPlatform == "Facebook") {
-    $("#fb-step2-tab").show();
-    $("#step2-tab").hide();
-    $("#step3-tab").hide();
-  } else {
-    $("#fb-step2-tab").hide();
-    $("#step2-tab").show();
-    $("#step3-tab").show();
+  switch (selectedPlatform) {
+    case "Facebook":
+      $("#facebook-step2-tab").show();
+      $("#instagram-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    case "Instagram":
+      $("#instagram-step2-tab").show();
+      $("#facebook-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    case "WhatsApp":
+      $("#whatsapp-step2-tab").show();
+      $("#facebook-step2-tab").hide();
+      $("#instagram-step2-tab").hide();
+      $("#step2-tab").hide();
+      $("#step3-tab").hide();
+      break;
+
+    default:
+      $("#facebook-step2-tab").hide();
+      $("#instagram-step2-tab").hide();
+      $("#whatsapp-step2-tab").hide();
+      $("#step2-tab").show();
+      $("#step3-tab").show();
   }
 });
 
