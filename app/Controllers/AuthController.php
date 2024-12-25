@@ -123,19 +123,31 @@ class AuthController extends BaseController
 
                     if ($userSocial) {
                         $wabName = $userSocial->name;
+
+                        $data['data']['pages'][] = [
+                            'id' => $wabID,
+                            'name' => $userSocial->name,
+                            'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                            // 'identifier' => 'fb',
+                            'ava' => '',
+                            // 'account_owner' => null,
+                        ];
+                        
                     } else {
                         // $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
                         $wabName = $account->name;
+
+                        $data['data']['pages'][] = [
+                            'id' => $wabID,
+                            'name' => $businessesData->name . ' | ' . $wabName,
+                            'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                            // 'identifier' => 'fb',
+                            'ava' => '',
+                            // 'account_owner' => null,
+                        ];
                     }
 
-                    $data['data']['pages'][] = [
-                        'id' => $wabID,
-                        'name' => $businessesData->name . ' | ' . $wabName,
-                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
-                        // 'identifier' => 'fb',
-                        'ava' => '',
-                        // 'account_owner' => null,
-                    ];
+
                 }
             }
         }

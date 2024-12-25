@@ -99,9 +99,6 @@ $routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAc
 
 $routes->post('/connect/connectToApp', 'ConnectController::connectToApp');
 
-
-
-
 /*
  * --------------------------------------------------------------------
  * Additional Routing
