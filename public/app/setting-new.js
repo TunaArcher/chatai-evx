@@ -54,7 +54,7 @@ function openOAuthInstagramPopup() {
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
   let $scope =
-    "instagram_basic";
+    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
 
     let urlCallback = `${serverUrl}/callback?platform=Instagram`
 
@@ -102,6 +102,62 @@ function openOAuthInstagramPopup() {
     }
   }, 500);
 }
+
+function openOAuthWhatsAppPopup() {
+  // สร้างค่า state แบบสุ่ม
+  const state = generateRandomState();
+  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
+
+  let $scope =
+    "whatsapp_business_management,whatsapp_business_messaging";
+
+    let urlCallback = `${serverUrl}/callback?platform=WhatsApp`
+
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: urlCallback,
+      scope: $scope,
+      response_type: "code",
+      state: state,
+    });
+
+    testUrl = new URLSearchParams({
+      redirect_uri: urlCallback,
+    })
+    console.log(testUrl)
+  console.log(oauthUrl);
+  console.log(state)
+
+  const popupWidth = 800;
+  const popupHeight = 700;
+  const screenX = window.screenX ?? window.screenLeft;
+  const screenY = window.screenY ?? window.screenTop;
+  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
+  const screenHeight =
+    window.innerHeight ?? document.documentElement.clientHeight;
+
+  const left = screenX + (screenWidth - popupWidth) / 2;
+  const top = screenY + (screenHeight - popupHeight) / 2;
+
+  const popup = window.open(
+    oauthUrl,
+    "oauthPopup",
+    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  // ตรวจสอบว่า popup ถูกปิดหรือยัง
+  const popupInterval = setInterval(() => {
+    if (popup.closed) {
+      clearInterval(popupInterval);
+      alert("Login completed! Please check your session or token.");
+
+      FbPagesList();
+    }
+  }, 500);
+}
+
 
 function openOAuthFacebookPopup() {
   // สร้างค่า state แบบสุ่ม
@@ -550,6 +606,7 @@ steps.step1.next.on("click", function () {
   } else if (selectedPlatform == "Instagram") {
     openOAuthInstagramPopup();
   } else if (selectedPlatform == "WhatsApp") {
+    openOAuthWhatsAppPopup();
   } else {
     activateStep(steps.step1, steps.step2);
     setPlatformWrappers(steps.step2.wrappers, selectedPlatform);

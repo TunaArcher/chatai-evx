@@ -198,6 +198,27 @@ HTML;
 
     private function handleWhatsAppCallback($code)
     {
-        // โค้ดสำหรับ WhatsApp OAuth
+        $client = new Client();
+        $clientId = getenv('APP_ID');
+        $clientSecret = getenv('APP_SECRET');
+        $redirectUri = base_url('/callback?platform=WhatsApp');
+
+        $authCode = $code;
+
+        $response = $client->post('https://graph.facebook.com/v21.0/oauth/access_token', [
+            'form_params' => [
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'redirect_uri' => $redirectUri,
+                'code' => $authCode,
+            ],
+        ]);
+
+        $data = json_decode($response->getBody(), true);
+        $accessToken = $data['access_token'];
+
+        $this->userModel->updateUserByID(session()->get('userID'), [
+            'access_token_whatsapp' => $accessToken
+        ]);
     }
 }
