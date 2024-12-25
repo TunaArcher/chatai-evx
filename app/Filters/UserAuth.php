@@ -16,7 +16,7 @@ class UserAuth implements FilterInterface
 
         if (!$User) {
             session()->setFlashdata(['session_expired' => 'เซ็นซันหมดอายุ กรุณาล็อคอินอีกครั้ง']);
-            return redirect()->to('/');
+            return redirect()->to('/login');
         }
 
         if (!session()->get('isUserLoggedIn')) return redirect()->to('/login');
