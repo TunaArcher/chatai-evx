@@ -49,11 +49,13 @@ class WebhookController extends BaseController
         // $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
 
         if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->mockup();
-        log_message('info', "ข้อความเข้า Webhook " . json_encode($input, JSON_PRETTY_PRINT));
+
         try {
 
+            log_message('info', "ข้อความเข้า Webhook " . json_encode($input, JSON_PRETTY_PRINT));
+
             // Facebook
-            if (isset($input->object) == 'page') {
+            if (isset($input->object) && isset($input->object) == 'page') {
                 $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
             }
 
