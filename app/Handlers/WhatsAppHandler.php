@@ -9,7 +9,7 @@ use App\Models\MessageRoomModel;
 use App\Models\UserSocialModel;
 use App\Services\MessageService;
 
-class LineHandler
+class WhatsAppHandler
 {
     private $platform = 'WhatsApp';
 
