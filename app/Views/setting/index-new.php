@@ -1,3 +1,71 @@
+<style>
+    .radio-group {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .radio-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .radio-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        position: relative;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+    .radio-icon.selected {
+        border-color: #007bff;
+    }
+
+    .radio-icon img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .radio-item span {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .radio-icon .checkmark {
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 12px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .radio-icon.selected .checkmark {
+        display: flex;
+    }
+
+    .thumb-md {
+        position: absolute;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        left: 50%;
+    }
+</style>
 <div class="page-content">
     <div class="container-xxl">
         <div class="row my-3">
@@ -156,67 +224,7 @@
                                 <input type="radio" class="btn-check disabled" name="btnradio" id="btnradio5" autocomplete="off" value="Tiktok">
                                 <label class="btn btn-outline-secondary disabled" for="btnradio5">Tiktok</label>
                             </div> -->
-                            <style>
-                                .radio-group {
-                                    display: flex;
-                                    justify-content: center;
-                                    gap: 30px;
-                                    margin-top: 20px;
-                                }
 
-                                .radio-item {
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    cursor: pointer;
-                                }
-
-                                .radio-icon {
-                                    width: 60px;
-                                    height: 60px;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    border-radius: 50%;
-                                    position: relative;
-                                    border: 2px solid transparent;
-                                    transition: border-color 0.3s ease;
-                                }
-
-                                .radio-icon.selected {
-                                    border-color: #007bff;
-                                }
-
-                                .radio-icon img {
-                                    width: 40px;
-                                    height: 40px;
-                                }
-
-                                .radio-item span {
-                                    margin-top: 10px;
-                                    font-size: 14px;
-                                    color: #333;
-                                }
-
-                                .radio-icon .checkmark {
-                                    position: absolute;
-                                    bottom: -5px;
-                                    right: -5px;
-                                    background-color: #007bff;
-                                    color: white;
-                                    font-size: 12px;
-                                    width: 20px;
-                                    height: 20px;
-                                    border-radius: 50%;
-                                    display: none;
-                                    justify-content: center;
-                                    align-items: center;
-                                }
-
-                                .radio-icon.selected .checkmark {
-                                    display: flex;
-                                }
-                            </style>
                             <div class="radio-group">
                                 <!-- LINE -->
                                 <div class="radio-item" data-value="Line">
@@ -394,9 +402,19 @@
 
                         <!-- tab 2 -->
                         <div class="tab-pane" id="fb-step2">
+                            <div id="chat-box-preloader" class="chat-box-preloader cn" style="display: none;">
+                                <div class="container-xxl">
+                                    <div class="justify-content-center inner">
+                                        <div class="col-12">
+                                            <div class="" style="height: 710px; position: relative;">
+                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                            </div><!--end card-->
+                                        </div> <!--end col-->
+                                    </div><!--end row-->
+                                </div>
+                            </div>
                             <!-- Facebook -->
                             <div class="step2-facebook-wrapper" style="display: none;"></div>
-
                             <div>
                                 <button type="button" id="step2Prev" class="btn btn-secondary float-start mt-2">Previous</button>
                             </div>

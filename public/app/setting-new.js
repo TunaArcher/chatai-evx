@@ -92,6 +92,8 @@ function disableTab(tab, isDisabled) {
 
 // Main Functions
 function FbPagesList() {
+  $("#chat-box-preloader").show();
+
   $.ajax({
     type: "GET",
     url: `${serverUrl}/auth/FbPagesList`,
@@ -137,6 +139,8 @@ function FbPagesList() {
         // ใส่ HTML ที่สร้างลงใน wrapper
         $wrapper.append(pageHtml);
       });
+
+      $("#chat-box-preloader").hide();
     })
     .fail(function (err) {
       const message =
@@ -523,6 +527,8 @@ steps.step1.next.on("click", function () {
   }
 
   if (selectedPlatform == "Facebook") {
+    $(".step2-facebook-wrapper").html("");
+
     $.ajax({
       type: "GET",
       url: `${serverUrl}/check/token/Facebook`,
@@ -700,6 +706,33 @@ steps.step3.tab.on("click", function (e) {
   e.preventDefault();
   activateStep(steps.step2, steps.step3);
   setPlatformWrappers(steps.step3.wrappers, selectedPlatform);
+});
+
+steps.fbStep2.tab.on("click", function (e) {
+  e.preventDefault();
+
+  console.log("คุณเลือก " + selectedPlatform);
+
+  $(".step2-facebook-wrapper").html("");
+
+  $.ajax({
+    type: "GET",
+    url: `${serverUrl}/check/token/Facebook`,
+  })
+    .done(function (res) {
+      let $data = res.data;
+      if ($data == "NO TOKEN") {
+        openOAuthFacebookPopup();
+      } else {
+        FbPagesList();
+      }
+    })
+    .fail(function (err) {
+      console.log(err);
+    });
+
+  activateStep(steps.step1, steps.fbStep2);
+  setPlatformWrappers(steps.fbStep2.wrappers, selectedPlatform);
 });
 
 $(".btnInputToken").on("click", function () {

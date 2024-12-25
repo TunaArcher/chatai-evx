@@ -61,6 +61,7 @@ $routes->get('/callback/(:any)', 'CallbackController::handle/$1');
 // -----------------------------------------------------------------------------
 // Chat & Message
 // -----------------------------------------------------------------------------
+
 $routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
 $routes->get('/chatLeft', 'ChatController::messageLeft'); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
 $routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
@@ -69,6 +70,7 @@ $routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข�
 // -----------------------------------------------------------------------------
 // Setting
 // -----------------------------------------------------------------------------
+
 $routes->get('/setting', 'SettingController::index');
 $routes->post('/setting', 'SettingController::setting');
 $routes->post('/check/connection', 'SettingController::connection'); // เช็คการเชื่อมต่อ
@@ -78,15 +80,18 @@ $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค
 
 $routes->get('/setting-new', 'SettingController::index');
 
-// registration/channelConnection
-
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
+
 $routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
 $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
+// -----------------------------------------------------------------------------
+// Helper
+// -----------------------------------------------------------------------------
 
+$routes->get('/check/token/(:any)', 'OauthController::checkToken/$1');
 $routes->get('/callback', 'OauthController::callback');
 
 $routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
@@ -94,13 +99,7 @@ $routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAc
 
 $routes->post('/connect/connectToApp', 'ConnectController::connectToApp');
 
-/*
- * --------------------------------------------------------------------
- * Helper
- * --------------------------------------------------------------------
- */
 
- $routes->get('/check/token/(:any)', 'OauthController::checkToken/$1');
 
 
 /*

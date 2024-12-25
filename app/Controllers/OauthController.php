@@ -106,31 +106,28 @@ HTML;
 
     public function checkToken($platform)
     {
-
         $status = 500;
+        $response['data'] = '';
 
         switch ($platform) {
             case 'Facebook':
                 $user = $this->userModel->getUserByID(session()->get('userID'));
 
-                if ($user->access_token_meta == '') {
-                    $status = 200;
-                    $response['data'] = 'NO TOKEN';
-                }
+                if ($user->access_token_meta == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
 
                 break;
 
             case 'WhatsApp':
-                    $user = $this->userModel->getUserByID(session()->get('userID'));
-    
-                    if ($user->access_token_whatsapp == '') {
-                        $status = 200;
-                        $response['data'] = 'NO TOKEN';
-                    }
-    
-                    break;
-        }
+                $user = $this->userModel->getUserByID(session()->get('userID'));
 
+                if ($user->access_token_whatsapp == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
+
+                break;
+        }
 
         return $this->response
             ->setStatusCode($status)
@@ -181,7 +178,7 @@ HTML;
 
             log_message('debug', 'Authorization Code: ' . $authCode);
             log_message('debug', 'Redirect URI: ' . $redirectUri);
-            
+
             $response = $client->post('https://api.instagram.com/oauth/access_token', [
                 'form_params' => [
                     'client_id' => $clientId,
