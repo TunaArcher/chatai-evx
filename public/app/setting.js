@@ -122,7 +122,7 @@ function openOAuthInstagramPopup() {
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
-      client_id: "2356202511392731",
+      client_id: `${window.APP_ID}`,
       redirect_uri: `${serverUrl}/callback?platform=Instagram`,
       scope: $scope,
       response_type: "code",
@@ -177,7 +177,7 @@ function openOAuthWhatsAppPopup() {
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
-      client_id: "2356202511392731",
+      client_id: `${window.APP_ID}`,
       redirect_uri: urlCallback,
       scope: $scope,
       response_type: "code",
@@ -231,7 +231,7 @@ function openOAuthFacebookPopup() {
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
-      client_id: "2356202511392731",
+      client_id: `${window.APP_ID}`,
       redirect_uri: `${serverUrl}/callback?platform=Facebook`,
       scope: $scope,
       response_type: "code",
