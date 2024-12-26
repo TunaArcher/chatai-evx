@@ -76,7 +76,7 @@ class InstagramClient
     {
         try {
 
-            $endPoint = $this->baseURL . '/messages/';
+            $endPoint = 'https://graph.instagram.com/access_token';
 
             // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
