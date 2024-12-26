@@ -389,66 +389,66 @@ function WABListBusinessAccounts() {
     });
 }
 
-function IGListBusinessAccounts() {
-  $.ajax({
-    type: "GET",
-    url: `${serverUrl}/auth/IGListBusinessAccounts`,
-  })
-    .done(function (res) {
-      let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
-      let $wrapper = $(".step2-instagram-wrapper"); // div ที่เราจะใส่ข้อมูล
+// function IGListBusinessAccounts() {
+//   $.ajax({
+//     type: "GET",
+//     url: `${serverUrl}/auth/IGListBusinessAccounts`,
+//   })
+//     .done(function (res) {
+//       let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
+//       let $wrapper = $(".step2-instagram-wrapper"); // div ที่เราจะใส่ข้อมูล
 
-      // เคลียร์ HTML เดิมใน wrapper
-      $wrapper.empty();
+//       // เคลียร์ HTML เดิมใน wrapper
+//       $wrapper.empty();
 
-      // วนลูปข้อมูลเพจ
-      $pages.forEach((page) => {
-        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อ</button>`;
-        if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อแล้ว</button>`;
-        }
-        let pageHtml = `
-              <div class="card">
-                <div class="card-body py-0">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <a href="#" class="">                                               
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1 ms-2 text-truncate">
-                                        <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
-                                    </div><!--end media-body-->
-                                </div><!--end media-->
-                            </a>
-                        </div> <!--end col--> 
-                        <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
-                            ${$btnConnect}
-                        </div> <!--end col-->                                                      
-                    </div><!--end row-->         
-                </div><!--end card-body--> 
-            </div>
-            <hr>
-          `;
+//       // วนลูปข้อมูลเพจ
+//       $pages.forEach((page) => {
+//         let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อ</button>`;
+//         if (page.status == "connected") {
+//           $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อแล้ว</button>`;
+//         }
+//         let pageHtml = `
+//               <div class="card">
+//                 <div class="card-body py-0">
+//                     <div class="row">
+//                         <div class="col-md-10">
+//                             <a href="#" class="">                                               
+//                                 <div class="d-flex align-items-center">
+//                                     <div class="flex-shrink-0">
+//                                         <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
+//                                     </div>
+//                                     <div class="flex-grow-1 ms-2 text-truncate">
+//                                         <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
+//                                     </div><!--end media-body-->
+//                                 </div><!--end media-->
+//                             </a>
+//                         </div> <!--end col--> 
+//                         <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
+//                             ${$btnConnect}
+//                         </div> <!--end col-->                                                      
+//                     </div><!--end row-->         
+//                 </div><!--end card-body--> 
+//             </div>
+//             <hr>
+//           `;
 
-        // ใส่ HTML ที่สร้างลงใน wrapper
-        $wrapper.append(pageHtml);
-      });
-    })
-    .fail(function (err) {
-      const message =
-        err.responseJSON?.messages ||
-        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
-      Swal.fire({
-        title: message,
-        text: "Redirecting...",
-        icon: "warning",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    });
-}
+//         // ใส่ HTML ที่สร้างลงใน wrapper
+//         $wrapper.append(pageHtml);
+//       });
+//     })
+//     .fail(function (err) {
+//       const message =
+//         err.responseJSON?.messages ||
+//         "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+//       Swal.fire({
+//         title: message,
+//         text: "Redirecting...",
+//         icon: "warning",
+//         timer: 2000,
+//         showConfirmButton: false,
+//       });
+//     });
+// }
 
 function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
   if (actionBy != null) actionBy.prop("disabled", true);
