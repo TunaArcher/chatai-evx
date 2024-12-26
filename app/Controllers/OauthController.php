@@ -206,6 +206,10 @@ HTML;
                 'access_token_instagram' => $longAccessToken
             ]);
 
+            $instagramAPI = new InstagramClient([
+                'accessToken' => $longAccessToken
+            ]);
+
             $userProfile = $instagramAPI->getUserProfile($igUserID);
 
             $subscribedApps = $instagramAPI->subscribedApps($userProfile->id, $longAccessToken);
