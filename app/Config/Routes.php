@@ -96,6 +96,7 @@ $routes->get('/callback', 'OauthController::callback');
 
 $routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
 $routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAccounts');
+$routes->get('/auth/IGListBusinessAccounts', 'AuthController::IGListBusinessAccounts');
 
 $routes->post('/connect/connectToApp', 'ConnectController::connectToApp');
 

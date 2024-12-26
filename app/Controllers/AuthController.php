@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 
 use App\Factories\HandlerFactory;
 use App\Integrations\Facebook\FacebookClient;
+use App\Integrations\Instagram\InstagramClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
@@ -18,20 +19,11 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthController extends BaseController
 {
-
-    private MessageService $messageService;
-    private CustomerModel $customerModel;
-    private MessageModel $messageModel;
-    private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
 
     public function __construct()
     {
-        $this->messageService = new MessageService();
-        $this->customerModel = new CustomerModel();
-        $this->messageModel = new MessageModel();
-        $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
     }
@@ -132,7 +124,6 @@ class AuthController extends BaseController
                             'ava' => '',
                             // 'account_owner' => null,
                         ];
-                        
                     } else {
                         // $phoneNumber = $whatsAppAPI->getPhoneNumber($wabID);
                         $wabName = $account->name;
@@ -146,8 +137,56 @@ class AuthController extends BaseController
                             // 'account_owner' => null,
                         ];
                     }
+                }
+            }
+        }
 
+        $status = 200;
+        $response = $data;
 
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function IGListBusinessAccounts()
+    {
+        $userID = session()->get('userID');
+
+        $user = $this->userModel->getUserByID($userID);
+
+        $instagramAPI = new InstagramClient([
+            'accessToken' => $user->access_token_instagram
+        ]);
+
+        $getListBusinessAccounts = $instagramAPI->getListBusinessAccounts();
+
+        foreach ($getListBusinessAccounts->data as $account) {
+
+            if (property_exists($account, 'instagram_business_account')) {
+
+                $accountIG = $account->instagram_business_account;
+                $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $accountIG->id);
+
+                $accountIGProfile = $instagramAPI->getUserProfile($accountIG->id);
+
+                if ($userSocial) {
+
+                    $data['data']['pages'][] = [
+                        'id' => $accountIGProfile->id,
+                        'name' => $userSocial->name,
+                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                        'ava' => $accountIGProfile->profile_picture_url,
+                    ];
+                } else {
+
+                    $data['data']['pages'][] = [
+                        'id' => $accountIGProfile->id,
+                        'name' => $accountIGProfile->name,
+                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+                        'ava' => $accountIGProfile->profile_picture_url,
+                    ];
                 }
             }
         }

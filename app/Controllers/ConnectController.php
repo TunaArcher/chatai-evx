@@ -5,6 +5,7 @@ namespace App\Controllers;
 use GuzzleHttp\Client;
 
 use App\Integrations\Facebook\FacebookClient;
+use App\Integrations\Instagram\InstagramClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
@@ -92,6 +93,36 @@ class ConnectController extends BaseController
                         'is_connect' => '1',
                         'page_id' => $WABID,
                         'whatsapp_phone_number_id' => $whatsappPhoneNumberID,
+                    ]);
+
+                    $status = 200;
+                    $response = [
+                        'success' => 1,
+                        'message' => '',
+                    ];
+                }
+
+                break;
+
+            case 'Instagram':
+                
+                $instagramBusinessAccountID = $input->pageID;
+                $name = $input->pageName;
+
+                $instagramAPI = new InstagramClient([
+                    'accessToken' => $user->access_token_instagram
+                ]);
+
+                $subscribedApps = $instagramAPI->subscribedApps($instagramBusinessAccountID);
+
+                if ($subscribedApps) {
+
+                    $this->userSocialModel->insertUserSocial([
+                        'user_id' => $userID,
+                        'platform' => 'Instagram',
+                        'name' => $name,
+                        'is_connect' => '1',
+                        'page_id' => $instagramBusinessAccountID
                     ]);
 
                     $status = 200;

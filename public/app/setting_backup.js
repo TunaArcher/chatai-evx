@@ -109,165 +109,6 @@ function disableTab(tab, isDisabled) {
 }
 
 // Main Functions
-function openOAuthInstagramPopup() {
-  // สร้างค่า state แบบสุ่ม
-  const state = generateRandomState();
-  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
-
-  let $scope =
-    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
-
-  let urlCallback = `${serverUrl}/callback?platform=Instagram`;
-
-  const oauthUrl =
-    "https://www.facebook.com/v21.0/dialog/oauth?" +
-    new URLSearchParams({
-      client_id: "2356202511392731",
-      redirect_uri: `${serverUrl}/callback?platform=Instagram`,
-      scope: $scope,
-      response_type: "code",
-      state: state,
-    });
-
-  testUrl = new URLSearchParams({
-    redirect_uri: urlCallback,
-  });
-  console.log(testUrl);
-  console.log(oauthUrl);
-  console.log(state);
-
-  const popupWidth = 800;
-  const popupHeight = 700;
-  const screenX = window.screenX ?? window.screenLeft;
-  const screenY = window.screenY ?? window.screenTop;
-  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
-  const screenHeight =
-    window.innerHeight ?? document.documentElement.clientHeight;
-
-  const left = screenX + (screenWidth - popupWidth) / 2;
-  const top = screenY + (screenHeight - popupHeight) / 2;
-
-  const popup = window.open(
-    oauthUrl,
-    "oauthPopup",
-    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-  );
-
-  // ตรวจสอบว่า popup ถูกปิดหรือยัง
-  const popupInterval = setInterval(() => {
-    if (popup.closed) {
-      clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
-
-      IGListBusinessAccounts();
-    }
-  }, 500);
-}
-
-function openOAuthWhatsAppPopup() {
-  // สร้างค่า state แบบสุ่ม
-  const state = generateRandomState();
-  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
-
-  let $scope =
-    "whatsapp_business_management,business_management,whatsapp_business_messaging";
-
-  let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
-
-  const oauthUrl =
-    "https://www.facebook.com/v21.0/dialog/oauth?" +
-    new URLSearchParams({
-      client_id: "2356202511392731",
-      redirect_uri: urlCallback,
-      scope: $scope,
-      response_type: "code",
-      state: state,
-    });
-
-  testUrl = new URLSearchParams({
-    redirect_uri: urlCallback,
-  });
-  console.log(testUrl);
-  console.log(oauthUrl);
-  console.log(state);
-
-  const popupWidth = 800;
-  const popupHeight = 700;
-  const screenX = window.screenX ?? window.screenLeft;
-  const screenY = window.screenY ?? window.screenTop;
-  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
-  const screenHeight =
-    window.innerHeight ?? document.documentElement.clientHeight;
-
-  const left = screenX + (screenWidth - popupWidth) / 2;
-  const top = screenY + (screenHeight - popupHeight) / 2;
-
-  const popup = window.open(
-    oauthUrl,
-    "oauthPopup",
-    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-  );
-
-  // ตรวจสอบว่า popup ถูกปิดหรือยัง
-  const popupInterval = setInterval(() => {
-    if (popup.closed) {
-      clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
-
-      WABListBusinessAccounts();
-    }
-  }, 500);
-}
-
-function openOAuthFacebookPopup() {
-  // สร้างค่า state แบบสุ่ม
-  const state = generateRandomState();
-  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
-
-  let $scope = "";
-  $scope =
-    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement ";
-
-  const oauthUrl =
-    "https://www.facebook.com/v21.0/dialog/oauth?" +
-    new URLSearchParams({
-      client_id: "2356202511392731",
-      redirect_uri: `${serverUrl}/callback?platform=Facebook`,
-      scope: $scope,
-      response_type: "code",
-      state: state,
-    });
-
-  console.log(oauthUrl);
-
-  const popupWidth = 800;
-  const popupHeight = 700;
-  const screenX = window.screenX ?? window.screenLeft;
-  const screenY = window.screenY ?? window.screenTop;
-  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
-  const screenHeight =
-    window.innerHeight ?? document.documentElement.clientHeight;
-
-  const left = screenX + (screenWidth - popupWidth) / 2;
-  const top = screenY + (screenHeight - popupHeight) / 2;
-
-  const popup = window.open(
-    oauthUrl,
-    "oauthPopup",
-    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-  );
-
-  // ตรวจสอบว่า popup ถูกปิดหรือยัง
-  const popupInterval = setInterval(() => {
-    if (popup.closed) {
-      clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
-
-      FbPagesList();
-    }
-  }, 500);
-}
-
 function FbPagesList() {
   $("#chat-box-preloader").show();
 
@@ -394,65 +235,163 @@ function WABListBusinessAccounts() {
     });
 }
 
-function IGListBusinessAccounts() {
-  $.ajax({
-    type: "GET",
-    url: `${serverUrl}/auth/IGListBusinessAccounts`,
-  })
-    .done(function (res) {
-      let $pages = res.data.pages; // ข้อมูลเพจจาก JSON
-      let $wrapper = $(".step2-instagram-wrapper"); // div ที่เราจะใส่ข้อมูล
+function openOAuthInstagramPopup() {
+  // สร้างค่า state แบบสุ่ม
+  const state = generateRandomState();
+  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-      // เคลียร์ HTML เดิมใน wrapper
-      $wrapper.empty();
+  let $scope =
+    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
 
-      // วนลูปข้อมูลเพจ
-      $pages.forEach((page) => {
-        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อ</button>`;
-        if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Instagram" data-page-id="${page.id}" data-page-name="${page.name}">เชื่อมต่อแล้ว</button>`;
-        }
-        let pageHtml = `
-              <div class="card">
-                <div class="card-body py-0">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <a href="#" class="">                                               
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1 ms-2 text-truncate">
-                                        <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
-                                    </div><!--end media-body-->
-                                </div><!--end media-->
-                            </a>
-                        </div> <!--end col--> 
-                        <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
-                            ${$btnConnect}
-                        </div> <!--end col-->                                                      
-                    </div><!--end row-->         
-                </div><!--end card-body--> 
-            </div>
-            <hr>
-          `;
+  let urlCallback = `${serverUrl}/callback?platform=Instagram`;
 
-        // ใส่ HTML ที่สร้างลงใน wrapper
-        $wrapper.append(pageHtml);
-      });
-    })
-    .fail(function (err) {
-      const message =
-        err.responseJSON?.messages ||
-        "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
-      Swal.fire({
-        title: message,
-        text: "Redirecting...",
-        icon: "warning",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: urlCallback,
+      scope: $scope,
+      response_type: "code",
+      state: state,
     });
+
+  testUrl = new URLSearchParams({
+    redirect_uri: urlCallback,
+  });
+  console.log(testUrl);
+  console.log(oauthUrl);
+  console.log(state);
+
+  const popupWidth = 800;
+  const popupHeight = 700;
+  const screenX = window.screenX ?? window.screenLeft;
+  const screenY = window.screenY ?? window.screenTop;
+  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
+  const screenHeight =
+    window.innerHeight ?? document.documentElement.clientHeight;
+
+  const left = screenX + (screenWidth - popupWidth) / 2;
+  const top = screenY + (screenHeight - popupHeight) / 2;
+
+  const popup = window.open(
+    oauthUrl,
+    "oauthPopup",
+    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  // ตรวจสอบว่า popup ถูกปิดหรือยัง
+  const popupInterval = setInterval(() => {
+    if (popup.closed) {
+      clearInterval(popupInterval);
+      alert("Login completed! Please check your session or token.");
+
+      FbPagesList();
+    }
+  }, 500);
+}
+
+function openOAuthWhatsAppPopup() {
+  // สร้างค่า state แบบสุ่ม
+  const state = generateRandomState();
+  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
+
+  let $scope =
+    "whatsapp_business_management,business_management,whatsapp_business_messaging";
+
+  let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
+
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: urlCallback,
+      scope: $scope,
+      response_type: "code",
+      state: state,
+    });
+
+  testUrl = new URLSearchParams({
+    redirect_uri: urlCallback,
+  });
+  console.log(testUrl);
+  console.log(oauthUrl);
+  console.log(state);
+
+  const popupWidth = 800;
+  const popupHeight = 700;
+  const screenX = window.screenX ?? window.screenLeft;
+  const screenY = window.screenY ?? window.screenTop;
+  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
+  const screenHeight =
+    window.innerHeight ?? document.documentElement.clientHeight;
+
+  const left = screenX + (screenWidth - popupWidth) / 2;
+  const top = screenY + (screenHeight - popupHeight) / 2;
+
+  const popup = window.open(
+    oauthUrl,
+    "oauthPopup",
+    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  // ตรวจสอบว่า popup ถูกปิดหรือยัง
+  const popupInterval = setInterval(() => {
+    if (popup.closed) {
+      clearInterval(popupInterval);
+      alert("Login completed! Please check your session or token.");
+
+      WABListBusinessAccounts();
+    }
+  }, 500);
+}
+
+function openOAuthFacebookPopup() {
+  // สร้างค่า state แบบสุ่ม
+  const state = generateRandomState();
+  localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
+
+  let $scope = "";
+  $scope =
+    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement ";
+
+  const oauthUrl =
+    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    new URLSearchParams({
+      client_id: "2356202511392731",
+      redirect_uri: `${serverUrl}/callback?platform=Facebook`,
+      scope: $scope,
+      response_type: "code",
+      state: state,
+    });
+
+  console.log(oauthUrl);
+
+  const popupWidth = 800;
+  const popupHeight = 700;
+  const screenX = window.screenX ?? window.screenLeft;
+  const screenY = window.screenY ?? window.screenTop;
+  const screenWidth = window.innerWidth ?? document.documentElement.clientWidth;
+  const screenHeight =
+    window.innerHeight ?? document.documentElement.clientHeight;
+
+  const left = screenX + (screenWidth - popupWidth) / 2;
+  const top = screenY + (screenHeight - popupHeight) / 2;
+
+  const popup = window.open(
+    oauthUrl,
+    "oauthPopup",
+    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  // ตรวจสอบว่า popup ถูกปิดหรือยัง
+  const popupInterval = setInterval(() => {
+    if (popup.closed) {
+      clearInterval(popupInterval);
+      alert("Login completed! Please check your session or token.");
+
+      FbPagesList();
+    }
+  }, 500);
 }
 
 function ajaxCheckConnect($platform, $userSocialID, actionBy = null) {
@@ -631,26 +570,7 @@ steps.step1.next.on("click", function () {
       break;
 
     case "Instagram":
-      $(".step2-instagram-wrapper").html("");
-
-      $.ajax({
-        type: "GET",
-        url: `${serverUrl}/check/token/Instagram`,
-      })
-        .done(function (res) {
-          let $data = res.data;
-          if ($data == "NO TOKEN") {
-            openOAuthInstagramPopup();
-          } else {
-            IGListBusinessAccounts();
-          }
-        })
-        .fail(function (err) {
-          console.log(err);
-        });
-
-      activateStep(steps.step1, steps.instagramStep2);
-      setPlatformWrappers(steps.instagramStep2.wrappers, selectedPlatform);
+      openOAuthInstagramPopup();
       break;
 
     case "WhatsApp":
@@ -1080,12 +1000,10 @@ $(".step2-instagram-wrapper").on("click", ".btnConnectToApp", function () {
 
   let $platform = $me.data("platform");
   let $pageID = $me.data("page-id");
-  let $pageName = $me.data("page-name");
 
   dataObj = {
     platform: $platform,
     pageID: $pageID,
-    pageName: $pageName,
   };
 
   $me.prop("disabled", true);

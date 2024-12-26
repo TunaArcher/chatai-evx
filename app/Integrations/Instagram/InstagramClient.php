@@ -86,13 +86,8 @@ class InstagramClient
 
             $endPoint = $this->baseURL . $UID;
 
-            $headers = [
-                'Authorization' => "Bearer " . $this->accessToken,
-            ];
-
             // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
-                // 'headers' => $headers,
                 'query' => [
                     'access_token' => $this->accessToken,
                     'fields' => 'id, name, profile_picture_url',
@@ -114,6 +109,98 @@ class InstagramClient
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
             log_message('error', 'InstagramClient::getProfile error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    /*********************************************************************
+     * 3. Account | ดึงข้อมูลเกี่ยวกับ Account
+     */
+
+    // ดึงรายชื่อเพจ
+    public function getListBusinessAccounts()
+    {
+        try {
+
+            // $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
+            $endPoint = $this->baseURL . '/me/accounts';
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('GET', $endPoint, [
+                'query' => [
+                    "fields" => 'id,name,instagram_business_account,picture',
+                    "access_token" => $this->accessToken
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get list Business Accounts from Instagram API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'InstagramClient::getListBusinessAccounts error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    // ผูกเพจเข้าไป App
+    public function subscribedApps($instagramBusinessAccountID)
+    {
+        try {
+
+            $endPoint = $this->baseURL . getenv('APP_ID') . '/subscriptions';
+
+            $headers = [
+                'Authorization' => "Bearer " . getenv('APP_ID') . '|' . getenv('APP_SECRET'),
+                'Content-Type' => 'application/json',
+            ];
+
+            // กำหนดข้อมูล Body ที่จะส่งไปยัง API
+            // $data = [
+            //     "object" => "instagram",
+            //     "fields" => ["messages"],
+            //     "callback_url" => base_url('/webhook'),
+            //     "verify_token" => "HAPPY",
+            //     "access_token" => getenv('APP_ID') . '|' . getenv('APP_SECRET')
+            // ];
+            
+            $data = [
+                "object" => "page",
+                "fields" => "messages",
+                "callback_url" => base_url('/webhook'),
+                "verify_token" => "HAPPY",
+            ];
+
+            // ส่งคำขอ GET ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'headers' => $headers,
+                'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return true;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to send Subscribed Apps from Instagram API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'InstagramClient::subscribedApps error {message}', ['message' => $e->getMessage()]);
             return false;
         }
     }

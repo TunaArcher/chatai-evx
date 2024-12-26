@@ -119,6 +119,15 @@ HTML;
 
                 break;
 
+            case 'Instagram':
+                $user = $this->userModel->getUserByID(session()->get('userID'));
+
+                if ($user->access_token_instagram == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
+
+                break;
+
             case 'WhatsApp':
                 $user = $this->userModel->getUserByID(session()->get('userID'));
 
@@ -172,14 +181,11 @@ HTML;
             $client = new Client();
             $clientId = getenv('APP_ID');
             $clientSecret = getenv('APP_SECRET');
-            $redirectUri = rawurlencode(base_url('/callback?platform=Instagram'));
+            $redirectUri = base_url('/callback?platform=Instagram');
 
             $authCode = $code;
 
-            log_message('debug', 'Authorization Code: ' . $authCode);
-            log_message('debug', 'Redirect URI: ' . $redirectUri);
-
-            $response = $client->post('https://api.instagram.com/oauth/access_token', [
+            $response = $client->post('https://graph.facebook.com/v21.0/oauth/access_token', [
                 'form_params' => [
                     'client_id' => $clientId,
                     'client_secret' => $clientSecret,

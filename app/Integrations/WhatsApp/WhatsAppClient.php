@@ -150,7 +150,6 @@ class WhatsAppClient
         }
     }
 
-
     /*********************************************************************
      * 1. Get Phone Number ID | ดึง Phone ID ใช้ในการ Request
      */
