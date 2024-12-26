@@ -115,14 +115,14 @@ function openOAuthInstagramPopup() {
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
   let $scope =
-    "instagram_basic,instagram_manage_comments,instagram_manage_messages";
+    "instagram_business_basic,instagram_business_content_publish,instagram_business_manage_messages,instagram_business_manage_comments";
 
   let urlCallback = `${serverUrl}/callback?platform=Instagram`;
 
   const oauthUrl =
-    "https://www.facebook.com/v21.0/dialog/oauth?" +
+    "https://www.instagram.com/oauth/authorize?" +
     new URLSearchParams({
-      client_id: `${window.APP_ID}`,
+      client_id: '9760582150637033',
       redirect_uri: `${serverUrl}/callback?platform=Instagram`,
       scope: $scope,
       response_type: "code",
@@ -132,9 +132,6 @@ function openOAuthInstagramPopup() {
   testUrl = new URLSearchParams({
     redirect_uri: urlCallback,
   });
-  console.log(testUrl);
-  console.log(oauthUrl);
-  console.log(state);
 
   const popupWidth = 800;
   const popupHeight = 700;
@@ -226,7 +223,7 @@ function openOAuthFacebookPopup() {
 
   let $scope = "";
   $scope =
-    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement ";
+    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +

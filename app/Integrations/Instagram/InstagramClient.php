@@ -123,7 +123,7 @@ class InstagramClient
         try {
 
             // $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
-            $endPoint = $this->baseURL . '/me/accounts';
+            $endPoint = $this->baseURL . 'me/accounts';
 
             // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [

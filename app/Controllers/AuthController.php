@@ -162,6 +162,10 @@ class AuthController extends BaseController
 
         $getListBusinessAccounts = $instagramAPI->getListBusinessAccounts();
 
+        echo '<pre>';
+        print_r($getListBusinessAccounts); exit();
+
+        $data = [];
         foreach ($getListBusinessAccounts->data as $account) {
 
             if (property_exists($account, 'instagram_business_account')) {
