@@ -212,7 +212,7 @@ HTML;
 
             $userProfile = $instagramAPI->getUserProfile($igUserID);
 
-            $subscribedApps = $instagramAPI->subscribedApps($userProfile->id, $longAccessToken);
+            $subscribedApps = $instagramAPI->subscribedApps($igUserID, $longAccessToken);
 
             if ($subscribedApps) {
                 $this->userSocialModel->insertUserSocial([
