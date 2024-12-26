@@ -195,7 +195,7 @@ HTML;
 
             $oauthAccessToken = $instagramAPI->oauthAccessToken($redirectUri, $authCode);
 
-            $igUserID = $oauthAccessToken->id;
+            $igUserID = $oauthAccessToken->user_id;
             $shortAccessToken = $oauthAccessToken->access_token;
 
             $longAccessToken = $instagramAPI->getLongAccessToken($shortAccessToken);
