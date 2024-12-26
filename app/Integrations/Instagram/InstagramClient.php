@@ -79,7 +79,7 @@ class InstagramClient
             $endPoint = 'https://graph.instagram.com/access_token';
 
             // ส่งคำขอ POST ไปยัง API
-            $response = $this->http->request('POST', $endPoint, [
+            $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'grant_type' => 'ig_exchange_token',
                     'client_secret' => $this->clientSecret,
