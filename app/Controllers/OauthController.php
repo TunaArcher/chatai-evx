@@ -185,7 +185,7 @@ HTML;
 
             $authCode = $code;
 
-            $response = $client->post('https://graph.facebook.com/v21.0/oauth/access_token', [
+            $response = $client->post('https://api.instagram.com/oauth/access_token', [
                 'form_params' => [
                     'client_id' => $clientId,
                     'client_secret' => $clientSecret,
