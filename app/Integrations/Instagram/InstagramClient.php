@@ -59,7 +59,7 @@ class InstagramClient
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
             $statusCode = $response->getStatusCode();
             if ($statusCode === 200) {
-                return $responseData->access_token;
+                return $responseData;
             }
 
             // กรณีส่งข้อความล้มเหลว

@@ -193,7 +193,10 @@ HTML;
                 'clientSecret' => $clientSecret,
             ]);
 
-            $shortAccessToken = $instagramAPI->oauthAccessToken($redirectUri, $authCode);
+            $oauthAccessToken = $instagramAPI->oauthAccessToken($redirectUri, $authCode);
+
+            $igUserID = $oauthAccessToken->id;
+            $shortAccessToken = $oauthAccessToken->access_token;
 
             $longAccessToken = $instagramAPI->getLongAccessToken($shortAccessToken);
 
@@ -203,7 +206,7 @@ HTML;
                 'access_token_instagram' => $longAccessToken
             ]);
 
-            $userProfile = $instagramAPI->getUserProfile($longAccessToken);
+            $userProfile = $instagramAPI->getUserProfile($igUserID);
 
             $subscribedApps = $instagramAPI->subscribedApps($userProfile->id, $longAccessToken);
 
