@@ -20,7 +20,8 @@ class InstagramClient
 
     public function __construct($config)
     {
-        $this->baseURL = 'https://graph.facebook.com/v21.0/';
+        // $this->baseURL = 'https://graph.facebook.com/v21.0/';
+        $this->baseURL = 'https://graph.instagram.com/v21.0/';
         $this->clientID = $config['clientID'] ?? '';
         $this->clientSecret = $config['clientSecret'] ?? '';
         $this->accessToken = $config['accessToken'] ?? '';
