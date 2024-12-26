@@ -13,12 +13,16 @@ class InstagramClient
 {
     private $http;
     private $baseURL;
+    private $clientID;
+    private $clientSecret;
     private $accessToken;
     private $debug = false;
 
     public function __construct($config)
     {
         $this->baseURL = 'https://graph.facebook.com/v21.0/';
+        $this->clientID = $config['clientID'] ?? '';
+        $this->clientSecret = $config['clientSecret'] ?? '';
         $this->accessToken = $config['accessToken'] ?? '';
         $this->http = new Client();
     }
@@ -26,6 +30,113 @@ class InstagramClient
     public function setDebug($value)
     {
         $this->debug = $value;
+    }
+
+    /*********************************************************************
+     * 0. Access Token | เกี่ยวกับ Token
+     */
+
+    public function oauthAccessToken($redirectUri, $authCode)
+    {
+        try {
+
+            $endPoint = 'https://api.instagram.com/oauth/access_token';
+
+            // ส่งคำขอ POST ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'form_params' => [
+                    'client_id' => $this->clientID,
+                    'client_secret' => $this->clientSecret,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $redirectUri,
+                    'code' => $authCode,
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData->access_token;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get access token from Instagram API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'InstagramClient::oauthAccessToken error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function getLongAccessToken($shortAccessToken)
+    {
+        try {
+
+            $endPoint = $this->baseURL . '/messages/';
+
+            // ส่งคำขอ POST ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'query' => [
+                    'grant_type' => 'ig_exchange_token',
+                    'client_secret' => $this->clientSecret,
+                    'access_token' => $shortAccessToken,
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData->access_token;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get LongAccessToken from Instagram API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'InstagramClient::getLongAccessToken error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function getRefreshToken($longAccessToken)
+    {
+        try {
+
+            $endPoint = 'https://graph.instagram.com/refresh_access_token';
+
+            // ส่งคำขอ POST ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'query' => [
+                    'grant_type' => 'ig_refresh_token',
+                    'access_token' => $longAccessToken,
+                ],
+            ]);
+
+            // แปลง Response กลับมาเป็น Object
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData->access_token;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get RefreshToken from Instagram API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'InstagramClient::getRefreshToken error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
     }
 
     /*********************************************************************
@@ -113,77 +224,110 @@ class InstagramClient
         }
     }
 
-    /*********************************************************************
-     * 3. Account | ดึงข้อมูลเกี่ยวกับ Account
-     */
+    // /*********************************************************************
+    //  * 3. Account | ดึงข้อมูลเกี่ยวกับ Account
+    //  */
 
-    // ดึงรายชื่อเพจ
-    public function getListBusinessAccounts()
+    // // ดึงรายชื่อเพจ
+    // public function getListBusinessAccounts()
+    // {
+    //     try {
+
+    //         // $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
+    //         $endPoint = $this->baseURL . 'me/accounts';
+
+    //         // ส่งคำขอ GET ไปยัง API
+    //         $response = $this->http->request('GET', $endPoint, [
+    //             'query' => [
+    //                 "fields" => 'id,name,instagram_business_account,picture',
+    //                 "access_token" => $this->accessToken
+    //             ],
+    //         ]);
+
+    //         // แปลง Response กลับมาเป็น Object
+    //         $responseData = json_decode($response->getBody());
+
+    //         // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+    //         $statusCode = $response->getStatusCode();
+    //         if ($statusCode === 200) {
+    //             return $responseData;
+    //         }
+
+    //         // กรณีส่งข้อความล้มเหลว
+    //         log_message('error', "Failed to get list Business Accounts from Instagram API: " . json_encode($responseData));
+    //         return false;
+    //     } catch (\Exception $e) {
+    //         // จัดการข้อผิดพลาด
+    //         log_message('error', 'InstagramClient::getListBusinessAccounts error {message}', ['message' => $e->getMessage()]);
+    //         return false;
+    //     }
+    // }
+
+    // // ผูกเพจเข้าไป App
+    // public function subscribedApps($instagramBusinessAccountID)
+    // {
+    //     try {
+
+    //         $endPoint = $this->baseURL . getenv('APP_ID') . '/subscriptions';
+
+    //         $headers = [
+    //             'Authorization' => "Bearer " . getenv('APP_ID') . '|' . getenv('APP_SECRET'),
+    //             'Content-Type' => 'application/json',
+    //         ];
+
+    //         // กำหนดข้อมูล Body ที่จะส่งไปยัง API
+    //         // $data = [
+    //         //     "object" => "instagram",
+    //         //     "fields" => ["messages"],
+    //         //     "callback_url" => base_url('/webhook'),
+    //         //     "verify_token" => "HAPPY",
+    //         //     "access_token" => getenv('APP_ID') . '|' . getenv('APP_SECRET')
+    //         // ];
+
+    //         $data = [
+    //             "object" => "page",
+    //             "fields" => "messages",
+    //             "callback_url" => base_url('/webhook'),
+    //             "verify_token" => "HAPPY",
+    //         ];
+
+    //         // ส่งคำขอ GET ไปยัง API
+    //         $response = $this->http->request('POST', $endPoint, [
+    //             'headers' => $headers,
+    //             'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+    //         ]);
+
+    //         // แปลง Response กลับมาเป็น Object
+    //         $responseData = json_decode($response->getBody());
+
+    //         // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+    //         $statusCode = $response->getStatusCode();
+    //         if ($statusCode === 200) {
+    //             return true;
+    //         }
+
+    //         // กรณีส่งข้อความล้มเหลว
+    //         log_message('error', "Failed to send Subscribed Apps from Instagram API: " . json_encode($responseData));
+    //         return false;
+    //     } catch (\Exception $e) {
+    //         // จัดการข้อผิดพลาด
+    //         log_message('error', 'InstagramClient::subscribedApps error {message}', ['message' => $e->getMessage()]);
+    //         return false;
+    //     }
+    // }
+
+    public function subscribedApps($userID, $longAccessToken)
     {
         try {
 
-            // $endPoint = $this->baseURL . $businessId . '/whatsapp_business_accounts';
-            $endPoint = $this->baseURL . 'me/accounts';
-
-            // ส่งคำขอ GET ไปยัง API
-            $response = $this->http->request('GET', $endPoint, [
-                'query' => [
-                    "fields" => 'id,name,instagram_business_account,picture',
-                    "access_token" => $this->accessToken
-                ],
-            ]);
-
-            // แปลง Response กลับมาเป็น Object
-            $responseData = json_decode($response->getBody());
-
-            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
-            $statusCode = $response->getStatusCode();
-            if ($statusCode === 200) {
-                return $responseData;
-            }
-
-            // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to get list Business Accounts from Instagram API: " . json_encode($responseData));
-            return false;
-        } catch (\Exception $e) {
-            // จัดการข้อผิดพลาด
-            log_message('error', 'InstagramClient::getListBusinessAccounts error {message}', ['message' => $e->getMessage()]);
-            return false;
-        }
-    }
-
-    // ผูกเพจเข้าไป App
-    public function subscribedApps($instagramBusinessAccountID)
-    {
-        try {
-
-            $endPoint = $this->baseURL . getenv('APP_ID') . '/subscriptions';
-
-            $headers = [
-                'Authorization' => "Bearer " . getenv('APP_ID') . '|' . getenv('APP_SECRET'),
-                'Content-Type' => 'application/json',
-            ];
-
-            // กำหนดข้อมูล Body ที่จะส่งไปยัง API
-            // $data = [
-            //     "object" => "instagram",
-            //     "fields" => ["messages"],
-            //     "callback_url" => base_url('/webhook'),
-            //     "verify_token" => "HAPPY",
-            //     "access_token" => getenv('APP_ID') . '|' . getenv('APP_SECRET')
-            // ];
-            
-            $data = [
-                "object" => "page",
-                "fields" => "messages",
-                "callback_url" => base_url('/webhook'),
-                "verify_token" => "HAPPY",
-            ];
+            $endPoint = $this->baseURL . $userID . '/subscribed_apps';
 
             // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
-                'headers' => $headers,
-                'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+                'query' => [
+                    'subscribed_fields' => 'messages',
+                    'access_token' => $longAccessToken,
+                ]
             ]);
 
             // แปลง Response กลับมาเป็น Object

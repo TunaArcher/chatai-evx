@@ -196,7 +196,7 @@
                             <a class="nav-link py-2" id="step3-tab" data-bs-toggle="tab" href="#step3">ขั้นตอนที่ 3 กรอกข้อมูลการเชื่อมต่อ</a>
 
                             <a style="display: none;" class="nav-link py-2" id="facebook-step2-tab" data-bs-toggle="tab" href="#facebook-step2">ขั้นตอนที่ 2 เลือก Connect</a>
-                            <a style="display: none;" class="nav-link py-2" id="instagram-step2-tab" data-bs-toggle="tab" href="#instagram-step2">ขั้นตอนที่ 2 เลือก Account</a>
+                            <a style="display: none;" class="nav-link py-2" id="" data-bs-toggle="tab" href="#">ขั้นตอนที่ 2 เลือก Account</a>
                             <a style="display: none;" class="nav-link py-2" id="whatsapp-step2-tab" data-bs-toggle="tab" href="#whatsapp-step2">ขั้นตอนที่ 2 เลือก Whatsapp Business Account</a>
                         </div>
                     </nav>

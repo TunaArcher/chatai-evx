@@ -150,59 +150,59 @@ class AuthController extends BaseController
             ->setJSON($response);
     }
 
-    public function IGListBusinessAccounts()
-    {
-        $userID = session()->get('userID');
+    // public function IGListBusinessAccounts()
+    // {
+    //     $userID = session()->get('userID');
 
-        $user = $this->userModel->getUserByID($userID);
+    //     $user = $this->userModel->getUserByID($userID);
 
-        $instagramAPI = new InstagramClient([
-            'accessToken' => $user->access_token_instagram
-        ]);
+    //     $instagramAPI = new InstagramClient([
+    //         'accessToken' => $user->access_token_instagram
+    //     ]);
 
-        $getListBusinessAccounts = $instagramAPI->getListBusinessAccounts();
+    //     $getListBusinessAccounts = $instagramAPI->getListBusinessAccounts();
 
-        echo '<pre>';
-        print_r($getListBusinessAccounts); exit();
+    //     echo '<pre>';
+    //     print_r($getListBusinessAccounts); exit();
 
-        $data = [];
-        foreach ($getListBusinessAccounts->data as $account) {
+    //     $data = [];
+    //     foreach ($getListBusinessAccounts->data as $account) {
 
-            if (property_exists($account, 'instagram_business_account')) {
+    //         if (property_exists($account, 'instagram_business_account')) {
 
-                $accountIG = $account->instagram_business_account;
-                $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $accountIG->id);
+    //             $accountIG = $account->instagram_business_account;
+    //             $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $accountIG->id);
 
-                $accountIGProfile = $instagramAPI->getUserProfile($accountIG->id);
+    //             $accountIGProfile = $instagramAPI->getUserProfile($accountIG->id);
 
-                if ($userSocial) {
+    //             if ($userSocial) {
 
-                    $data['data']['pages'][] = [
-                        'id' => $accountIGProfile->id,
-                        'name' => $userSocial->name,
-                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
-                        'ava' => $accountIGProfile->profile_picture_url,
-                    ];
-                } else {
+    //                 $data['data']['pages'][] = [
+    //                     'id' => $accountIGProfile->id,
+    //                     'name' => $userSocial->name,
+    //                     'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+    //                     'ava' => $accountIGProfile->profile_picture_url,
+    //                 ];
+    //             } else {
 
-                    $data['data']['pages'][] = [
-                        'id' => $accountIGProfile->id,
-                        'name' => $accountIGProfile->name,
-                        'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
-                        'ava' => $accountIGProfile->profile_picture_url,
-                    ];
-                }
-            }
-        }
+    //                 $data['data']['pages'][] = [
+    //                     'id' => $accountIGProfile->id,
+    //                     'name' => $accountIGProfile->name,
+    //                     'status' => $userSocial && $userSocial->is_connect ? 'connected' : 'not_connected',
+    //                     'ava' => $accountIGProfile->profile_picture_url,
+    //                 ];
+    //             }
+    //         }
+    //     }
 
-        $status = 200;
-        $response = $data;
+    //     $status = 200;
+    //     $response = $data;
 
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
-    }
+    //     return $this->response
+    //         ->setStatusCode($status)
+    //         ->setContentType('application/json')
+    //         ->setJSON($response);
+    // }
 
     private function mockup()
     {

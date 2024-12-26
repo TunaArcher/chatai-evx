@@ -155,8 +155,6 @@ function openOAuthInstagramPopup() {
     if (popup.closed) {
       clearInterval(popupInterval);
       alert("Login completed! Please check your session or token.");
-
-      IGListBusinessAccounts();
     }
   }, 500);
 }
@@ -639,15 +637,15 @@ steps.step1.next.on("click", function () {
           if ($data == "NO TOKEN") {
             openOAuthInstagramPopup();
           } else {
-            IGListBusinessAccounts();
+            alert('คุณเชื่อมต่อแล้ว')
           }
         })
         .fail(function (err) {
           console.log(err);
         });
 
-      activateStep(steps.step1, steps.instagramStep2);
-      setPlatformWrappers(steps.instagramStep2.wrappers, selectedPlatform);
+      // activateStep(steps.step1, steps.instagramStep2);
+      // setPlatformWrappers(steps.instagramStep2.wrappers, selectedPlatform);
       break;
 
     case "WhatsApp":

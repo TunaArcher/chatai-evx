@@ -5,6 +5,7 @@ namespace App\Controllers;
 use GuzzleHttp\Client;
 
 use App\Factories\HandlerFactory;
+use App\Integrations\Instagram\InstagramClient;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
@@ -178,29 +179,43 @@ HTML;
     private function handleInstagramCallback($code)
     {
         try {
-            $client = new Client();
-            $clientId = getenv('APP_ID');
-            $clientSecret = getenv('APP_SECRET');
-            $redirectUri = base_url('/callback?platform=Instagram');
+            // $clientId = getenv('APP_ID');
+            // $clientSecret = getenv('APP_SECRET');
+            // $redirectUri = base_url('/callback?platform=Instagram');
+            $clientId = '9760582150637033';
+            $clientSecret = 'feb557e7bc3962299ff7e352bbf23592';
+            $redirectUri = base_url('/callback');
 
             $authCode = $code;
 
-            $response = $client->post('https://api.instagram.com/oauth/access_token', [
-                'form_params' => [
-                    'client_id' => $clientId,
-                    'client_secret' => $clientSecret,
-                    'grant_type' => 'authorization_code',
-                    'redirect_uri' => $redirectUri,
-                    'code' => $authCode,
-                ],
+            $instagramAPI = new InstagramClient([
+                'clientID' => $clientId,
+                'clientSecret' => $clientSecret,
             ]);
 
-            $data = json_decode($response->getBody(), true);
-            $accessToken = $data['access_token'];
+            $shortAccessToken = $instagramAPI->oauthAccessToken($redirectUri, $authCode);
 
-            $this->userModel->updateUserByID(session()->get('userID'), [
-                'access_token_instagram' => $accessToken
+            $longAccessToken = $instagramAPI->getLongAccessToken($shortAccessToken);
+
+            $userID = session()->get('userID');
+
+            $this->userModel->updateUserByID($userID, [
+                'access_token_instagram' => $longAccessToken
             ]);
+
+            $userProfile = $instagramAPI->getUserProfile($longAccessToken);
+
+            $subscribedApps = $instagramAPI->subscribedApps($userProfile->id, $longAccessToken);
+
+            if ($subscribedApps) {
+                $this->userSocialModel->insertUserSocial([
+                    'user_id' => $userID,
+                    'platform' => 'Instagram',
+                    'name' => $userProfile->name,
+                    'is_connect' => '1',
+                    'page_id' => $userProfile->id,
+                ]);
+            }
         } catch (ClientException $e) {
             $response = $e->getResponse();
             $errorBody = $response->getBody()->getContents();
