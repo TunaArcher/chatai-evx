@@ -196,7 +196,7 @@ class Authentication extends BaseController
                 session()->set('oauth_state', $state);
                 session()->set('platform', $platform);
 
-                $redirectUri = base_url('callback/facebook');
+                $redirectUri = base_url('auth/callback/facebook');
 
                 $authUrl = 'https://facebook.com/v21.0/dialog/oauth' . '?' . http_build_query([
                     'client_id' => getenv('APP_ID'),
@@ -225,7 +225,7 @@ class Authentication extends BaseController
                 $code = $this->request->getGet('code');
                 if (!$code) return $this->response->setJSON(['error' => 'Authorization code not found.']);
 
-                $redirectUri = base_url('callback/facebook');
+                $redirectUri = base_url('auth/callback/facebook');
 
                 $faceBookAPI = new FacebookClient([
                     'clientID' => getenv('APP_ID'),
