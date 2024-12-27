@@ -379,7 +379,7 @@ function WABListBusinessAccounts() {
                             <a href="#" class="">                                               
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
-                                        <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png" alt="" class="thumb-lg rounded-circle">
                                     </div>
                                     <div class="flex-grow-1 ms-2 text-truncate">
                                         <h6 class="my-1 fw-medium text-dark fs-14">${page.name}</h6>
