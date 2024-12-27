@@ -25,7 +25,7 @@ ws.onmessage = (event) => {
 
     ntf.open({
       type: "message",
-      message: `${data.message}`,
+      message: `ส่งข้อความใหม่: ${data.message}`,
     });
   }
 };
