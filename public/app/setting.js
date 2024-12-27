@@ -5,24 +5,28 @@ const wsUrl =
 
 // สร้างการเชื่อมต่อกับ WebSocket Server
 const ws = new WebSocket(wsUrl);
-console.log(`WebSocket URL: ${wsUrl}`);
-console.log(ws);
-console.log(window.userID);
 ws.onmessage = (event) => {
-  console.log("onmessage ข้อความใหม่:", event.data);
   let data = JSON.parse(event.data);
   if (data.receiver === window.userID) {
-    console.log(data.sender_avatar);
-    console.log(data.message);
-
-    nn = new Notyf({
+    ntf = new Notyf({
       position: {
         x: "right",
         y: "top",
       },
-    })
+      types: [
+        {
+          type: "message",
+          background: "rgba(0,0,0,.7)",
+          color: "#000",
+          icon: `${data.sender_avatar}`,
+        },
+      ],
+    });
 
-    nn.success('ok');
+    ntf.open({
+      type: "message",
+      message: `${data.message}`,
+    });
   }
 };
 // จัดการสถานะ WebSocket
