@@ -28,6 +28,47 @@ class AuthController extends BaseController
         $this->userSocialModel = new UserSocialModel();
     }
 
+    
+    public function checkToken($platform)
+    {
+        $status = 500;
+        $response['data'] = '';
+
+        switch ($platform) {
+            case 'Facebook':
+                $user = $this->userModel->getUserByID(session()->get('userID'));
+
+                if ($user->access_token_meta == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
+
+                break;
+
+            case 'Instagram':
+                $user = $this->userModel->getUserByID(session()->get('userID'));
+
+                if ($user->access_token_instagram == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
+
+                break;
+
+            case 'WhatsApp':
+                $user = $this->userModel->getUserByID(session()->get('userID'));
+
+                if ($user->access_token_whatsapp == '') $response['data'] = 'NO TOKEN';
+
+                $status = 200;
+
+                break;
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
     public function FbPagesList()
     {
         $userID = session()->get('userID');

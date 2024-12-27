@@ -49,6 +49,7 @@
         var serverUrl = '<?php echo base_url(); ?>'
         var userID = '<?php echo session()->get('userID'); ?>'
         var APP_ID = '<?php echo getenv('APP_ID'); ?>'
+        var IG_APP_ID = '<?php echo getenv('IG_APP_ID'); ?>'
         const wsUrl = window.location.hostname === "localhost" ? "ws://localhost:3000" : "wss://websocket.evxcars.com:8080";
     </script>
 </head>

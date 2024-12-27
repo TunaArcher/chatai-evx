@@ -12,4 +12,9 @@ class HomeController extends BaseController
 
         echo view('/app', $data);
     }
+
+    public function policy()
+    {
+        echo view('/policy');
+    }
 }

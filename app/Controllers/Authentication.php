@@ -212,7 +212,7 @@ class Authentication extends BaseController
         return redirect()->to($authUrl);
     }
 
-    public function handleCallback($platform)
+    public function authCallback($platform)
     {
 
         switch ($platform) {

@@ -9,7 +9,7 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use GuzzleHttp\Exception\ClientException;
 
-class OauthController extends BaseController
+class CallbackController extends BaseController
 {
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
@@ -20,27 +20,23 @@ class OauthController extends BaseController
         $this->userSocialModel = new UserSocialModel();
     }
 
-    public function callback()
+    public function callback($platform)
     {
-        $platform = $this->request->getGet('platform'); // ตรวจสอบแพลตฟอร์มจาก query parameter
         $code = $this->request->getGet('code');
 
-        // if (!isset($code)) {
-        //     die('Authorization code not found.');
-        // }
+        if (!isset($code)) die('Authorization code not found.');
 
         switch ($platform) {
-            case 'Facebook':
+            case 'facebook':
                 $this->handleFacebookCallback($code);
                 break;
-            case 'Instagram':
+            case 'instagram':
                 $this->handleInstagramCallback($code);
                 break;
-            case 'WhatsApp':
+            case 'whatsapp':
                 $this->handleWhatsAppCallback($code);
                 break;
             default:
-                $this->handleInstagramCallback($code);
                 // return $this->respond(['message' => 'Unknown platform'], 400);
         }
 
@@ -51,58 +47,13 @@ class OauthController extends BaseController
         </script>
 HTML;
     }
-
-    public function checkToken($platform)
-    {
-        $status = 500;
-        $response['data'] = '';
-
-        switch ($platform) {
-            case 'Facebook':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
-                if ($user->access_token_meta == '') $response['data'] = 'NO TOKEN';
-
-                $status = 200;
-
-                break;
-
-            case 'Instagram':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
-                if ($user->access_token_instagram == '') $response['data'] = 'NO TOKEN';
-
-                $status = 200;
-
-                break;
-
-            case 'WhatsApp':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
-                if ($user->access_token_whatsapp == '') $response['data'] = 'NO TOKEN';
-
-                $status = 200;
-
-                break;
-        }
-
-        return $this->response
-            ->setStatusCode($status)
-            ->setContentType('application/json')
-            ->setJSON($response);
-    }
-
-    public function policy()
-    {
-        echo view('/policy');
-    }
-
+    
     private function handleFacebookCallback($code)
     {
         $client = new Client();
         $clientId = getenv('APP_ID');
         $clientSecret = getenv('APP_SECRET');
-        $redirectUri = base_url('/callback?platform=Facebook');
+        $redirectUri = base_url('/callback/facebook');
 
         $authCode = $code;
 
@@ -129,7 +80,7 @@ HTML;
 
             $clientId = getenv('IG_APP_ID');
             $clientSecret = getenv('IG_APP_SECRET');
-            $redirectUri = base_url('/callback');
+            $redirectUri = base_url('/callback/instagram');
 
             $authCode = $code;
 
@@ -181,7 +132,7 @@ HTML;
         $client = new Client();
         $clientId = getenv('APP_ID');
         $clientSecret = getenv('APP_SECRET');
-        $redirectUri = base_url('/callback?platform=WhatsApp');
+        $redirectUri = base_url('/callback/whatsapp');
 
         $authCode = $code;
 

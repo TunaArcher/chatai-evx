@@ -150,13 +150,11 @@ function openOAuthInstagramPopup() {
   let $scope =
     "instagram_business_basic,instagram_business_content_publish,instagram_business_manage_messages,instagram_business_manage_comments";
 
-  let urlCallback = `${serverUrl}/callback?platform=Instagram`;
-
   const oauthUrl =
     "https://www.instagram.com/oauth/authorize?" +
     new URLSearchParams({
-      client_id: "9760582150637033",
-      redirect_uri: `${serverUrl}/callback?platform=Instagram`,
+      client_id: `${window.IG_APP_ID}`,
+      redirect_uri: `${serverUrl}/callback/instagram`,
       scope: $scope,
       response_type: "code",
       state: state,
@@ -201,16 +199,13 @@ function openOAuthWhatsAppPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope =
-    "whatsapp_business_management,business_management,whatsapp_business_messaging";
-
-  let urlCallback = `${serverUrl}/callback?platform=WhatsApp`;
+  const $scope = "whatsapp_business_management,business_management,whatsapp_business_messaging";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
       client_id: `${window.APP_ID}`,
-      redirect_uri: urlCallback,
+      redirect_uri: `${serverUrl}/callback/whatsapp`,
       scope: $scope,
       response_type: "code",
       state: state,
@@ -256,15 +251,13 @@ function openOAuthFacebookPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope = "";
-  $scope =
-    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
+  const $scope = "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
       client_id: `${window.APP_ID}`,
-      redirect_uri: `${serverUrl}/callback?platform=Facebook`,
+      redirect_uri: `${serverUrl}/callback/facebook`,
       scope: $scope,
       response_type: "code",
       state: state,

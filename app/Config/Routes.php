@@ -35,6 +35,7 @@ $routes->set404Override('App\Controllers\Errors::show404');
  */
 
 $routes->get('/', 'HomeController::index', ['filter' => 'userAuth']);
+$routes->get('/policy', 'HomeController::policy', ['filter' => 'userNoAuth']);
 
 /*
  * --------------------------------------------------------------------
@@ -56,7 +57,7 @@ $routes->get('/logout', 'Authentication::logout', ['filter' => 'userAuth']); // 
  */
 
 $routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
-$routes->get('/callback/(:any)', 'Authentication::handleCallback/$1');
+$routes->get('/auth/callback/(:any)', 'Authentication::authCallback/$1');
 
 // -----------------------------------------------------------------------------
 // Chat & Message
@@ -91,9 +92,9 @@ $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหร
 // Helper
 // -----------------------------------------------------------------------------
 
-$routes->get('/check/token/(:any)', 'OauthController::checkToken/$1');
-$routes->get('/callback', 'OauthController::callback');
+$routes->get('/callback/(:any)', 'CallbackController::callback/$1');
 
+$routes->get('/check/token/(:any)', 'AuthController::checkToken/$1');
 $routes->get('/auth/FbPagesList', 'AuthController::FbPagesList');
 $routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAccounts');
 // $routes->get('/auth/IGListBusinessAccounts', 'AuthController::IGListBusinessAccounts');
