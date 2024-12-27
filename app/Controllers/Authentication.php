@@ -65,8 +65,8 @@ class Authentication extends BaseController
             } else {
 
                 $userID = $this->userModel->insertUser([
-                    'username' => $email,
-                    'email' => $email,
+                    'username' => $username,
+                    'email' => $username,
                     'password' => password_hash($password, PASSWORD_DEFAULT)
                 ]);
 
