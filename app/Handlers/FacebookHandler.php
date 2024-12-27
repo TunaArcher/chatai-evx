@@ -55,7 +55,7 @@ class FacebookHandler
             'sender_name' => $customer->name,
             'created_at' => date('Y-m-d H:i:s'),
             'sender_avatar' => $customer->profile,
-            'receiver' => session()->get('userID')
+            'receiver' => $messageRoom->user_id
         ]);
     }
 
