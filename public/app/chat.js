@@ -1,8 +1,3 @@
-const wsUrl =
-  window.location.hostname === "localhost"
-    ? "ws://localhost:3000"
-    : "wss://websocket.evxcars.com:8080";
-
 // สร้างการเชื่อมต่อกับ WebSocket Server
 const ws = new WebSocket(wsUrl);
 console.log(`WebSocket URL: ${wsUrl}`);
