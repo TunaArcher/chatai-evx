@@ -18,7 +18,7 @@ ws.onmessage = (event) => {
           type: "message",
           background: "rgba(0,0,0,.7)",
           color: "#000",
-          icon: `${data.sender_avatar}`,
+          icon: `<img width="24" src="${data.sender_avatar}">`,
         },
       ],
     });
