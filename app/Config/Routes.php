@@ -79,8 +79,6 @@ $routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ Us
 $routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
 $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 
-$routes->get('/setting', 'SettingController::index');
-
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
