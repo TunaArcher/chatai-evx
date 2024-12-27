@@ -48,7 +48,7 @@ $routes->get('/password', 'Authentication::password', ['filter' => 'userNoAuth']
 $routes->post('/login', 'Authentication::login', ['filter' => 'userNoAuth']); // ทำการ login
 $routes->get('/auth-register', 'Authentication::authRegister', ['filter' => 'userNoAuth']); // หน้าสมัครสมาชิก
 $routes->post('/register', 'Authentication::register', ['filter' => 'userNoAuth']); // ทำการสมัครสมาชิก
-$routes->get('/logout', 'Authentication::logout', ['filter' => 'userAuth']); // ออกจากระบบ
+$routes->get('/logout', 'Authentication::logout'); // ออกจากระบบ
 
 /*
  * --------------------------------------------------------------------

@@ -297,7 +297,7 @@
     <div class="startbar d-print-none">
         <!--start brand-->
         <div class="brand">
-            <a href="index.html" class="logo">
+            <a href="<?php echo base_url(); ?>" class="logo">
                 <span>
                     <img width="170" height="50" src="/assets/images/conXx.png" alt="logo-small" class="logo-sm">
                 </span>
