@@ -199,7 +199,8 @@ function openOAuthWhatsAppPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  const $scope = "whatsapp_business_management,business_management,whatsapp_business_messaging";
+  const $scope =
+    "whatsapp_business_management,business_management,whatsapp_business_messaging";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
@@ -210,13 +211,6 @@ function openOAuthWhatsAppPopup() {
       response_type: "code",
       state: state,
     });
-
-  testUrl = new URLSearchParams({
-    redirect_uri: urlCallback,
-  });
-  console.log(testUrl);
-  console.log(oauthUrl);
-  console.log(state);
 
   const popupWidth = 800;
   const popupHeight = 700;
@@ -251,7 +245,8 @@ function openOAuthFacebookPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  const $scope = "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
+  const $scope =
+    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
