@@ -113,7 +113,6 @@ class LineClient
                 'Content-Type' => 'application/json',
             ];
 
-            // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
                 'to' => $to,
                 'messages' => [
@@ -124,13 +123,11 @@ class LineClient
                 ],
             ];
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => $headers,
                 'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -168,7 +165,6 @@ class LineClient
                 'headers' => $headers
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -200,7 +196,6 @@ class LineClient
 
             $endPoint = $this->baseURL . '/oauth/accessToken';
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
@@ -212,7 +207,6 @@ class LineClient
                 ]
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response

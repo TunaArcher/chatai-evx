@@ -73,9 +73,7 @@
                 <div class="">
                     <div class="card-body">
                         <div class="d-block d-md-flex justify-content-between align-items-center ">
-                            <div class="d-flex align-self-center mb-2 mb-md-0">
-
-                            </div>
+                            <div class="d-flex align-self-center mb-2 mb-md-0"></div>
                             <div class="align-self-center">
                                 <form class="row g-2">
                                     <div class="col-auto">
@@ -90,7 +88,7 @@
         </div> <!-- end row -->
         <div class="row">
             <?php foreach ($user_socials as $user_social) { ?>
-                <div class="col-md-4" id="userSocialWrapper-<?php echo $user_social->id; ?>">
+                <div class="col-md-3" id="userSocialWrapper-<?php echo $user_social->id; ?>">
                     <div class="card">
                         <div class="card-body">
                             <div class="position-absolute  end-0 me-3 userSocialStatus" data-user-social-id="<?php echo $user_social->id; ?>">
@@ -101,7 +99,7 @@
                                 <?php } ?>
                             </div>
                             <div class="text-center border-dashed-bottom pb-3">
-                                <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="80" class="rounded-circle d-inline-block">
+                                <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="40" class="rounded-circle d-inline-block">
                                 <h5 class="fw-bold my-2 fs-18"><?php echo $user_social->name; ?></h5>
                                 <div style="height: 96px;">
                                     <?php if ($user_social->platform == 'Line') { ?>

@@ -42,13 +42,12 @@ $routes->get('/', 'HomeController::index', ['filter' => 'userAuth']);
  * --------------------------------------------------------------------
  */
 
-$routes->get('/login', 'Authentication::index', ['filter' => 'userNoAuth']);
-$routes->post('/login', 'Authentication::login', ['filter' => 'userNoAuth']);
-$routes->get('/auth-register', 'Authentication::authRegister', ['filter' => 'userNoAuth']);
-$routes->post('/register', 'Authentication::register', ['filter' => 'userNoAuth']);
-$routes->get('/logout', 'Authentication::logout', ['filter' => 'userAuth']);
-
-$routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
+$routes->get('/login', 'Authentication::index', ['filter' => 'userNoAuth']); // หน้าแรก
+$routes->get('/password', 'Authentication::password', ['filter' => 'userNoAuth']); // หน้า login 
+$routes->post('/login', 'Authentication::login', ['filter' => 'userNoAuth']); // ทำการ login
+$routes->get('/auth-register', 'Authentication::authRegister', ['filter' => 'userNoAuth']); // หน้าสมัครสมาชิก
+$routes->post('/register', 'Authentication::register', ['filter' => 'userNoAuth']); // ทำการสมัครสมาชิก
+$routes->get('/logout', 'Authentication::logout', ['filter' => 'userAuth']); // ออกจากระบบ
 
 /*
  * --------------------------------------------------------------------
@@ -56,7 +55,8 @@ $routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
  * --------------------------------------------------------------------
  */
 
-$routes->get('/callback/(:any)', 'CallbackController::handle/$1');
+$routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
+$routes->get('/callback/(:any)', 'Authentication::handleCallback/$1');
 
 // -----------------------------------------------------------------------------
 // Chat & Message

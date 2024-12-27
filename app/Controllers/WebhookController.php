@@ -46,9 +46,6 @@ class WebhookController extends BaseController
     public function webhook()
     {
         $input = $this->request->getJSON();
-        // $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
-
-        if (getenv('CI_ENVIRONMENT') == 'development') $input = $this->mockup();
 
         try {
 
@@ -62,9 +59,14 @@ class WebhookController extends BaseController
                 $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $input->entry[0]->id);
             }
 
+            // Instagram
+            else if (isset($input->object) && $input->object == 'instagram') {
+                $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $input->entry[0]->id);
+            }
+
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
-            $handler->handleWebhook($input, $userSocial);      
+            $handler->handleWebhook($input, $userSocial);
 
             // กรณีเปิดใช้งานให้ AI ช่วยตอบ
             if ($userSocial->ai === 'on') $handler->handleReplyByAI($input, $userSocial); // TODO:: HANDLE
@@ -74,36 +76,5 @@ class WebhookController extends BaseController
             log_message('error', "WebhookController error: " . $e->getMessage());
             return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
         }
-    }
-
-
-    private function mockup()
-    {
-        return json_decode(
-            '{
-    "object": "page",
-    "entry": [
-        {
-            "time": 1734940669748,
-            "id": "443804315492399",
-            "messaging": [
-                {
-                    "sender": {
-                        "id": "9262919210424015"
-                    },
-                    "recipient": {
-                        "id": "443804315492399"
-                    },
-                    "timestamp": 1734940669099,
-                    "message": {
-                        "mid": "m_eE46tlgvblCqPeocXjfmiO0uI1AxII6cacJw3xohSCBziRMKhpOkd6lOxLnVuY3gaIGhIbqHSCaeJjJDU-3PDg",
-                        "text": "topup"
-                    }
-                }
-            ]
-        }
-    ]
-}'
-        );
     }
 }

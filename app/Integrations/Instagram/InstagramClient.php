@@ -3,11 +3,6 @@
 namespace App\Integrations\Instagram;
 
 use \GuzzleHttp\Client;
-use \GuzzleHttp\Handler\CurlHandler;
-use \GuzzleHttp\HandlerStack;
-use \GuzzleHttp\Middleware;
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
 
 class InstagramClient
 {
@@ -20,7 +15,6 @@ class InstagramClient
 
     public function __construct($config)
     {
-        // $this->baseURL = 'https://graph.facebook.com/v21.0/';
         $this->baseURL = 'https://graph.instagram.com/v21.0/';
         $this->clientID = $config['clientID'] ?? '';
         $this->clientSecret = $config['clientSecret'] ?? '';
@@ -37,13 +31,17 @@ class InstagramClient
      * 0. Access Token | เกี่ยวกับ Token
      */
 
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
     public function oauthAccessToken($redirectUri, $authCode)
     {
         try {
 
             $endPoint = 'https://api.instagram.com/oauth/access_token';
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'form_params' => [
                     'client_id' => $this->clientID,
@@ -54,7 +52,6 @@ class InstagramClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -79,7 +76,6 @@ class InstagramClient
 
             $endPoint = 'https://graph.instagram.com/access_token';
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'grant_type' => 'ig_exchange_token',
@@ -88,7 +84,6 @@ class InstagramClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -113,7 +108,6 @@ class InstagramClient
 
             $endPoint = 'https://graph.instagram.com/refresh_access_token';
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'query' => [
                     'grant_type' => 'ig_refresh_token',
@@ -121,7 +115,6 @@ class InstagramClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -155,7 +148,6 @@ class InstagramClient
                 'Content-Type' => 'application/json',
             ];
 
-            // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
                 'recipient' => $to,
                 'message' => [
@@ -163,13 +155,11 @@ class InstagramClient
                 ],
             ];
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => $headers,
-                'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+                'json' => $data, 
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -206,7 +196,6 @@ class InstagramClient
                 ]
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -245,7 +234,7 @@ class InstagramClient
     //             ],
     //         ]);
 
-    //         // แปลง Response กลับมาเป็น Object
+    //     
     //         $responseData = json_decode($response->getBody());
 
     //         // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -276,7 +265,7 @@ class InstagramClient
     //             'Content-Type' => 'application/json',
     //         ];
 
-    //         // กำหนดข้อมูล Body ที่จะส่งไปยัง API
+    //     
     //         // $data = [
     //         //     "object" => "instagram",
     //         //     "fields" => ["messages"],
@@ -295,10 +284,10 @@ class InstagramClient
     //         // ส่งคำขอ GET ไปยัง API
     //         $response = $this->http->request('POST', $endPoint, [
     //             'headers' => $headers,
-    //             'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+    //             'json' => $data, 
     //         ]);
 
-    //         // แปลง Response กลับมาเป็น Object
+    //     
     //         $responseData = json_decode($response->getBody());
 
     //         // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -331,7 +320,6 @@ class InstagramClient
                 ]
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response

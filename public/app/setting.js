@@ -1,3 +1,34 @@
+const wsUrl =
+  window.location.hostname === "localhost"
+    ? "ws://localhost:3000"
+    : "wss://websocket.evxcars.com:8080";
+
+    const notyf = new Notyf({
+      position: {
+          x: "right",
+          y: "top",
+      },
+  });
+
+// สร้างการเชื่อมต่อกับ WebSocket Server
+const ws = new WebSocket(wsUrl);
+console.log(`WebSocket URL: ${wsUrl}`);
+console.log(ws)
+console.log(window.userID)
+ws.onmessage = (event) => {
+  console.log("onmessage ข้อความใหม่:", event.data);
+  let data = JSON.parse(event.data);
+  if (data.receiver === window.userID) {
+    console.log(data.sender_avatar)
+    console.log(data.message)
+    notyf.success('ok')
+  }
+};
+// จัดการสถานะ WebSocket
+ws.onopen = () => console.log("WebSocket connection opened.");
+ws.onclose = () => console.log("WebSocket connection closed.");
+ws.onerror = (error) => console.error("WebSocket error:", error);
+
 // Collect DOM elements
 const steps = {
   step1: { tab: $("#step1-tab"), content: $("#step1"), next: $("#step1Next") },
@@ -122,16 +153,12 @@ function openOAuthInstagramPopup() {
   const oauthUrl =
     "https://www.instagram.com/oauth/authorize?" +
     new URLSearchParams({
-      client_id: '9760582150637033',
+      client_id: "9760582150637033",
       redirect_uri: `${serverUrl}/callback?platform=Instagram`,
       scope: $scope,
       response_type: "code",
       state: state,
     });
-
-  testUrl = new URLSearchParams({
-    redirect_uri: urlCallback,
-  });
 
   const popupWidth = 800;
   const popupHeight = 700;
@@ -154,7 +181,15 @@ function openOAuthInstagramPopup() {
   const popupInterval = setInterval(() => {
     if (popup.closed) {
       clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
+
+      Swal.fire({
+        title: "สำเร็จ",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      location.reload(); // รีโหลดหน้าเว็บ
     }
   }, 500);
 }
@@ -412,7 +447,7 @@ function WABListBusinessAccounts() {
 //                 <div class="card-body py-0">
 //                     <div class="row">
 //                         <div class="col-md-10">
-//                             <a href="#" class="">                                               
+//                             <a href="#" class="">
 //                                 <div class="d-flex align-items-center">
 //                                     <div class="flex-shrink-0">
 //                                         <img src="${page.ava}" alt="" class="thumb-lg rounded-circle">
@@ -422,12 +457,12 @@ function WABListBusinessAccounts() {
 //                                     </div><!--end media-body-->
 //                                 </div><!--end media-->
 //                             </a>
-//                         </div> <!--end col--> 
+//                         </div> <!--end col-->
 //                         <div class="col-md-2 text-end align-self-center mt-sm-2 mt-lg-0">
 //                             ${$btnConnect}
-//                         </div> <!--end col-->                                                      
-//                     </div><!--end row-->         
-//                 </div><!--end card-body--> 
+//                         </div> <!--end col-->
+//                     </div><!--end row-->
+//                 </div><!--end card-body-->
 //             </div>
 //             <hr>
 //           `;
@@ -637,7 +672,7 @@ steps.step1.next.on("click", function () {
           if ($data == "NO TOKEN") {
             openOAuthInstagramPopup();
           } else {
-            alert('คุณเชื่อมต่อแล้ว')
+            alert("คุณเชื่อมต่อแล้ว");
           }
         })
         .fail(function (err) {

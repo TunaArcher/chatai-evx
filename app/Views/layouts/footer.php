@@ -11,6 +11,33 @@
 <script src="assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
 <script src="assets/libs/jsvectormap/maps/world.js"></script>
 <!-- <script src="assets/js/pages/index.init.js"></script> -->
+<script>
+    // ดึงปุ่ม Toggle
+    var themeColorToggle = document.getElementById("light-dark-mode");
+
+    // โหลดธีมที่บันทึกไว้ใน Local Storage (ถ้ามี)
+    var savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+        document.documentElement.setAttribute("data-bs-theme", savedTheme); // ตั้งค่าธีมตามค่าที่บันทึกไว้
+    } else {
+        // ถ้าไม่มีค่า ให้ตั้งค่าเริ่มต้นเป็น "light"
+        document.documentElement.setAttribute("data-bs-theme", "light");
+    }
+
+    // เพิ่ม Event Listener ให้ปุ่ม Toggle
+    themeColorToggle &&
+        themeColorToggle.addEventListener("click", function() {
+            // เช็คธีมปัจจุบัน
+            var currentTheme = document.documentElement.getAttribute("data-bs-theme");
+
+            // สลับธีมระหว่าง "light" และ "dark"
+            var newTheme = currentTheme === "light" ? "dark" : "light";
+            document.documentElement.setAttribute("data-bs-theme", newTheme);
+
+            // บันทึกธีมลงใน Local Storage
+            localStorage.setItem("theme", newTheme);
+        });
+</script>
 <script src="assets/js/app.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
@@ -25,7 +52,7 @@
     let _messagecollapse = document.getElementById("message-collapse");
     if (_bodySize == "collapsed") {
         _messagecollapse.style.display = "none";
-    } 
+    }
 </script>
 </body>
 <!--end body-->

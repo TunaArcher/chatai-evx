@@ -45,7 +45,6 @@ class WhatsAppClient
                 'Content-Type' => 'application/json',
             ];
 
-            // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
                 'messaging_product' => 'whatsapp',
                 'to' => $to,
@@ -55,13 +54,11 @@ class WhatsAppClient
                 ],
             ];
 
-            // ส่งคำขอ POST ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => $headers,
-                'json' => $data, // ใช้ 'json' เพื่อแปลงข้อมูลให้อยู่ในรูปแบบ JSON
+                'json' => $data,
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -94,12 +91,10 @@ class WhatsAppClient
                 'Authorization' => "Bearer " . $this->accessToken,
             ];
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'headers' => $headers
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -124,14 +119,12 @@ class WhatsAppClient
 
             $endPoint = $this->baseURL . '/me/businesses/';
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'access_token' => $this->accessToken,
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -270,14 +263,12 @@ class WhatsAppClient
             //     'Authorization' => "Bearer " . $this->facebookToken,
             // ];
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     "access_token" => $this->accessToken
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -307,12 +298,10 @@ class WhatsAppClient
                 'Authorization' => "Bearer " . $this->accessToken,
             ];
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => $headers
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response

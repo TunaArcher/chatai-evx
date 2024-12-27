@@ -47,6 +47,7 @@
 
     <script>
         var serverUrl = '<?php echo base_url(); ?>'
+        var userID = '<?php echo session()->get('userID'); ?>'
         var APP_ID = '<?php echo getenv('APP_ID'); ?>'
     </script>
 </head>

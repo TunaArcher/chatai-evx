@@ -13,6 +13,8 @@ class FacebookClient
 {
     private $http;
     private $baseURL;
+    private $clientID;
+    private $clientSecret;
     private $facebookToken;
     private $accessToken;
     private $debug = false;
@@ -20,6 +22,8 @@ class FacebookClient
     public function __construct($config)
     {
         $this->baseURL = 'https://graph.facebook.com/v21.0/';
+        $this->clientID = $config['clientID'] ?? '';
+        $this->clientSecret = $config['clientSecret'] ?? '';
         $this->facebookToken = $config['facebookToken'] ?? '';
         $this->accessToken = $config['accessToken'] ?? '';
         $this->http = new Client();
@@ -31,6 +35,49 @@ class FacebookClient
     }
 
     /*********************************************************************
+     * 0. Access Token | เกี่ยวกับ Token
+     */
+
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function oauthAccessToken($redirectUri, $authCode)
+    {
+        try {
+
+            $endPoint = $this->baseURL . 'oauth/access_token';
+
+            // ส่งคำขอ POST ไปยัง API
+            $response = $this->http->request('POST', $endPoint, [
+                'form_params' => [
+                    'client_id' => $this->clientID,
+                    'client_secret' => $this->clientSecret,
+                    'redirect_uri' => $redirectUri,
+                    'code' => $authCode,
+                ],
+            ]);
+
+            $responseData = json_decode($response->getBody());
+
+            // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
+            $statusCode = $response->getStatusCode();
+            if ($statusCode === 200) {
+                return $responseData;
+            }
+
+            // กรณีส่งข้อความล้มเหลว
+            log_message('error', "Failed to get access token from facebook API: " . json_encode($responseData));
+            return false;
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาด
+            log_message('error', 'FacebookClient::oauthAccessToken error {message}', ['message' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    /*********************************************************************
      * 1. Message | ส่งข้อความ
      */
 
@@ -39,11 +86,6 @@ class FacebookClient
         try {
 
             $endPoint = $this->baseURL . 'me/messages';
-
-            // $headers = [
-            //     'Authorization' => "Bearer " . $this->facebookToken,
-            //     'Content-Type' => 'application/json',
-            // ];
 
             // กำหนดข้อมูล Body ที่จะส่งไปยัง API
             $data = [
@@ -64,7 +106,6 @@ class FacebookClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -74,7 +115,7 @@ class FacebookClient
             }
 
             // กรณีส่งข้อความล้มเหลว
-            log_message('error', "Failed to send message to facebook API: " . json_encode($responseData));
+            log_message('error', "Failed to send message to Facebook API: " . json_encode($responseData));
             return false;
         } catch (\Exception $e) {
             // จัดการข้อผิดพลาด
@@ -93,14 +134,8 @@ class FacebookClient
 
             $endPoint = $this->baseURL . $UID . '?fields=first_name,last_name,profile_pic&access_token=' . $this->facebookToken;
 
-            // $headers = [
-            //     'Authorization' => "Bearer " . $this->facebookToken,
-            // ];
-
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -125,7 +160,6 @@ class FacebookClient
 
             $endPoint = $this->baseURL . 'me';
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'fields' => 'id,name,picture',
@@ -133,7 +167,6 @@ class FacebookClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -163,18 +196,12 @@ class FacebookClient
 
             $endPoint = $this->baseURL . '/me/accounts';
 
-            // $headers = [
-            //     'Authorization' => "Bearer " . $this->facebookToken,
-            // ];
-
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     "access_token" => $this->accessToken
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -200,11 +227,6 @@ class FacebookClient
 
             $endPoint = $this->baseURL . $pageID . '/picture';
 
-            // $headers = [
-            //     'Authorization' => "Bearer " . $this->facebookToken,
-            // ];
-
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     'type' => 'large',
@@ -213,7 +235,6 @@ class FacebookClient
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -252,13 +273,11 @@ class FacebookClient
                 "message_reactio"
             ];
 
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('POST', $endPoint, [
                 'headers' => $headers,
                 'json' => $data,
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
@@ -284,18 +303,12 @@ class FacebookClient
 
             $endPoint = $this->baseURL . $pageID . '/subscribed_apps';
 
-            // $headers = [
-            //     'Authorization' => "Bearer " . $this->facebookToken,
-            // ];
-
-            // ส่งคำขอ GET ไปยัง API
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
                     "access_token" => $this->accessToken
                 ],
             ]);
 
-            // แปลง Response กลับมาเป็น Object
             $responseData = json_decode($response->getBody());
 
             // ตรวจสอบสถานะ HTTP Code และข้อมูลใน Response
