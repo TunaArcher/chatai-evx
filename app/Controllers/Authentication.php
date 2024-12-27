@@ -75,7 +75,7 @@ class Authentication extends BaseController
                 session()->set([
                     'userID' => $user->id,
                     // 'username' => $user->username,
-                    'name' => $user->name,
+                    'name' => $user->username,
                     'platform' => $user->sign_by_platform,
                     'thumbnail' => $user->picture,
                     'isUserLoggedIn' => true
