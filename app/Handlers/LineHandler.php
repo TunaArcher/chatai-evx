@@ -6,6 +6,7 @@ use App\Integrations\Line\LineClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
+use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Services\MessageService;
 
@@ -17,6 +18,7 @@ class LineHandler
     private CustomerModel $customerModel;
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
+    private UserModel $userModel;
 
     public function __construct(MessageService $messageService)
     {
@@ -24,6 +26,7 @@ class LineHandler
         $this->customerModel = new CustomerModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
+        $this->userModel = new UserModel();
     }
 
     public function handleWebhook($input, $userSocial)
@@ -62,7 +65,8 @@ class LineHandler
     public function handleReplyByAI($input, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
-        $message_setting = session()->get('message_setting');
+        $userID = session()->get('userID');
+        $dataMessage =$this->userModel->getMessageTraningByID($userID);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
@@ -71,7 +75,7 @@ class LineHandler
 
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $message_setting);
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
