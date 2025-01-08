@@ -439,11 +439,6 @@ class SettingController extends BaseController
                 'message_status' => $message_status
             ]);
 
-
-            session()->set([
-                'message_setting' => $message,
-            ]);
-
             $status = 200;
             $response['success'] = 1;
             $response['message'] = 'Traning สำเร็จ';

@@ -8,6 +8,7 @@ use App\Models\CustomerModel;
 use App\Integrations\Facebook\FacebookClient;
 use App\Services\MessageService;
 use App\Libraries\ChatGPT;
+use App\Models\UserModel;
 use CodeIgniter\HTTP\Message;
 
 class FacebookHandler
@@ -18,6 +19,7 @@ class FacebookHandler
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
     private CustomerModel $customerModel;
+    private UserModel $userModel;
 
     public function __construct(MessageService $messageService)
     {
@@ -25,6 +27,7 @@ class FacebookHandler
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
         $this->customerModel = new CustomerModel();
+        $this->userModel = new UserModel();
     }
 
     public function handleWebhook($input, $userSocial): void
@@ -114,8 +117,8 @@ class FacebookHandler
             'GPTToken' => $GPTToken
         ]);
 
-        $message_setting = session()->get('message_setting');
-        $messageReplyToCustomer = $chatGPT->askChatGPT($message, $message_setting);
+        $dataMessage =$this->userModel->getMessageTraningByID($userID);
+        $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
