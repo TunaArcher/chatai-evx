@@ -66,4 +66,11 @@ class CustomerModel
 
         return $builder->where('uid', $UID)->where('platform', $platform)->get()->getRow();
     }
+
+    public function insertMessageTraning($data)
+    {
+        $builder = $this->db->table('message_setting');
+
+        return $builder->insert($data) ? $this->db->insertID() : false;
+    }
 }

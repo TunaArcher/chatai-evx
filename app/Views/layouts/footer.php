@@ -3,13 +3,13 @@
 
 <!-- Javascript  -->
 <!-- vendor js -->
-<script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="assets/libs/simplebar/simplebar.min.js"></script>
+<script src="<?php echo base_url('/assets/libs/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+<script src="<?php echo base_url('/assets/libs/simplebar/simplebar.min.js'); ?>"></script>
 
 <!-- <script src="assets/libs/apexcharts/apexcharts.min.js"></script> -->
-<script src="assets/data/stock-prices.js"></script>
-<script src="assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
-<script src="assets/libs/jsvectormap/maps/world.js"></script>
+<script src="<?php echo base_url('/assets/data/stock-prices.js'); ?>"></script>
+<script src="<?php echo base_url('/assets/libs/jsvectormap/js/jsvectormap.min.js'); ?>"></script>
+<script src="<?php echo base_url('/assets/libs/jsvectormap/maps/world.js'); ?>"></script>
 <!-- <script src="assets/js/pages/index.init.js"></script> -->
 <script>
     // ดึงปุ่ม Toggle
@@ -38,7 +38,7 @@
             localStorage.setItem("theme", newTheme);
         });
 </script>
-<script src="assets/js/app.js"></script>
+<script src="<?php echo base_url('/assets/js/app.js'); ?>"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 

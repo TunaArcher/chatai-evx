@@ -10,14 +10,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/logo72x72.png">
+    <link rel="shortcut icon" href="<?php echo base_url('/assets/images/logo72x72.png'); ?>">
 
-    <link rel="stylesheet" href="assets/libs/jsvectormap/css/jsvectormap.min.css">
+    <link rel="stylesheet" href="<?php echo base_url('/assets/libs/jsvectormap/css/jsvectormap.min.css'); ?>">
 
     <!-- App css -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/icons.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/app.min.css'); ?>" rel="stylesheet" type="text/css" />
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
@@ -337,10 +337,20 @@
                         </li><!--end nav-item-->
 
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo base_url('/setting'); ?>">
+                            <a class="nav-link" href="sidebarSetting">
                                 <i class="iconoir-compact-disc menu-icon"></i>
                                 <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
                             </a>
+                            <div class="collapse show" id="sidebarSetting">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>"> Connect</a>
+                                    </li><!--end nav-item-->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Traning</a>
+                                    </li><!--end nav-item-->
+                                </ul><!--end nav-->
+                            </div>
                         </li><!--end nav-item-->
                     </ul><!--end navbar-nav--->
                 </div>

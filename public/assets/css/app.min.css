@@ -2191,6 +2191,38 @@ html[data-bs-theme="light"]
 .chat-box-right .chat-footer input.form-control {
   border: none;
 }
+
+.chat-setting {
+  width: auto;
+  background-color: var(--bs-body-bg);
+  display: block;
+  border-radius: 8px;
+  position: relative;
+  height: 710px;
+  /* margin-left: 361px; */
+  margin-bottom: 20px;
+}
+
+.chat-setting .chat-footer-setting {
+  background-color: var(--bs-secondary-bg);
+  border-radius: 8px;
+  padding: 16px;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+}
+.chat-setting .chat-footer-setting .chat-features a {
+  color: #c1cde0;
+  font-size: 22px;
+  margin-left: 12px;
+}
+.chat-setting .chat-footer-setting .chat-features a:hover {
+  color: #22c55e;
+}
+.chat-setting .chat-footer-setting input.form-control {
+  border: none;
+}
 @media (min-width: 1030px) and (max-width: 1680px) {
   .chat-box-left {
     width: 310px;

@@ -28,8 +28,13 @@ class UserModel
     public function getUserByID($id)
     {
         $builder = $this->db->table('users');
-
         return $builder->where('id', $id)->get()->getRow();
+    }
+
+    public function getMessageTraningByID($id)
+    {
+        $builder = $this->db->table('message_setting');
+        return $builder->where('user_id', $id)->get()->getRow();
     }
 
     public function insertUser($data)
