@@ -470,7 +470,7 @@ function createNewRoom(data) {
     </a>`;
   document.getElementById("rooms-list").prepend(newRoom);
   console.log("เพิ่มห้องใหม่:", newRoom);
-  document.getElementById("rooms-list-menu").prepend(newRoom);
+  // document.getElementById("rooms-list-menu").prepend(newRoom); // TODO:: HANDLE
 }
 
 //check collapsed
