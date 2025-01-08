@@ -79,7 +79,8 @@ $routes->post('/check/connection', 'SettingController::connection'); // เช�
 $routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ User Social
 $routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
 $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
-$routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user
+$routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user   
+$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');
 
 // -----------------------------------------------------------------------------
 // Webhook
