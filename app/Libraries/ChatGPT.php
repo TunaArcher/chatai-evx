@@ -78,10 +78,11 @@ class ChatGPT
         }
     }
 
-    public function askChatGPT($question)
+    public function askChatGPT($question, $message_setting)
     {
 
         try {
+            $message_user = $message_setting . '\n' . 'ตอบกระชับได้ใจความ ไม่นานแกินไป โดยใช้ข้อความที่ระบุไว้ข้างต้นเป็นส่วนหลักในการตอบคำถาม \n';
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -92,7 +93,7 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => 'ตอบกระชับได้ใจความ ไม่นานแกินไป \n'.$question
+                            'content' => $message_user . $question
                         ]
                     ]
                 ]

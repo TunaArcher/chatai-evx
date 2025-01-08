@@ -71,6 +71,7 @@ class Authentication extends BaseController
                 ]);
 
                 $user = $this->userModel->getUserByID($userID);
+                $dataMessage =$this->userModel->getMessageTraningByID($userID);
 
                 session()->set([
                     'userID' => $user->id,
@@ -78,7 +79,8 @@ class Authentication extends BaseController
                     'name' => $user->username,
                     'platform' => $user->sign_by_platform,
                     'thumbnail' => $user->picture,
-                    'isUserLoggedIn' => true
+                    'isUserLoggedIn' => true,
+                    'message_setting' => $dataMessage->message,
                 ]);
 
                 $status = 200;
@@ -126,6 +128,7 @@ class Authentication extends BaseController
                         if (password_verify($password, $user->password)) {
 
                             $this->userModel->updateUserByID($user->id, ['login_fail' => 0]);
+                            $dataMessage = $this->userModel->getMessageTraningByID($user->id);
 
                             session()->set([
                                 'userID' => $user->id,
@@ -133,7 +136,8 @@ class Authentication extends BaseController
                                 'name' => $user->username,
                                 'platform' => $user->sign_by_platform,
                                 'thumbnail' => $user->picture,
-                                'isUserLoggedIn' => true
+                                'isUserLoggedIn' => true,
+                                'message_setting' => $dataMessage->message                             
                             ]);
 
                             $status = 200;
@@ -239,6 +243,7 @@ class Authentication extends BaseController
                 $profile = $faceBookAPI->getProfile();
 
                 $user = $this->userModel->getUserByPlatFromAndID($platform, $profile->id);
+                $dataMessage = $this->userModel->getMessageTraningByID($user->id);
 
                 if (!$user) {
 
@@ -251,15 +256,17 @@ class Authentication extends BaseController
                     ]);
 
                     $user = $this->userModel->getUserByID($userID);
+                    $dataMessage = $this->userModel->getMessageTraningByID($userID);
                 }
-
+             
                 session()->set([
                     'userID' => $user->id,
                     // 'username' => $user->username,
                     'name' => $user->name,
                     'platform' => $user->sign_by_platform,
                     'thumbnail' => $user->picture,
-                    'isUserLoggedIn' => true
+                    'isUserLoggedIn' => true,
+                    'message_setting' => $dataMessage->message
                 ]);
 
                 break;

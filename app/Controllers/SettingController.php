@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
+use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
 use App\Models\UserSocialModel;
 
@@ -11,11 +12,13 @@ class SettingController extends BaseController
 {
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
+    private CustomerModel $customerModel;
 
     public function __construct()
     {
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
+        $this->customerModel = new CustomerModel();
     }
 
     public function index()
@@ -25,16 +28,16 @@ class SettingController extends BaseController
         $userSocials = $this->userSocialModel->getUserSocialByUserID($userID);
 
         return view('/app', [
-            'content' => 'setting/index',
+            'content' => 'setting/connect',
             'title' => 'Chat',
             'css_critical' => '
-                <link href="assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
-                <link href="assets/libs/animate.css/animate.min.css" rel="stylesheet" type="text/css">
+                <link href="' . base_url('assets/libs/sweetalert2/sweetalert2.min.css') . '" rel="stylesheet" type="text/css">
+                <link href="' . base_url('assets/libs/animate.css/animate.min.css') . '" rel="stylesheet" type="text/css">
             ',
             'js_critical' => '
-                <script src="assets/libs/sweetalert2/sweetalert2.min.js"></script>
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-                <script src="app/setting.js"></script>
+                <script src="' . base_url('assets/libs/sweetalert2/sweetalert2.min.js') . '"></script>       
+                <script src="' . base_url('app/setting.js?v=' . time()) . '"></script>
             ',
             'rooms' => [],
             'user_socials' => $userSocials,
@@ -386,5 +389,71 @@ class SettingController extends BaseController
     {
         $data['updated_at'] = date('Y-m-d H:i:s');
         $this->userSocialModel->updateUserSocialByID($userSocialID, $data);
+    }
+
+    public function index_message()
+    {
+        $userID = $this->initializeSession();
+
+        $userSocials = $this->userSocialModel->getUserSocialByUserID($userID);
+
+        return view('/app', [
+            'content' => 'setting/message',
+            'title' => 'Chat',
+            'css_critical' => '
+                <link href="' . base_url('assets/libs/sweetalert2/sweetalert2.min.css') . '" rel="stylesheet" type="text/css">
+                <link href="' . base_url('assets/libs/animate.css/animate.min.css') . '" rel="stylesheet" type="text/css">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+            ',
+            'js_critical' => '
+                <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+                <script src="' . base_url('assets/libs/sweetalert2/sweetalert2.min.js') . '"></script>       
+                <script src="' . base_url('app/setting.js?v=' . time()) . '"></script>   
+                <script src="' . base_url('app/message-setting.js?v=' . time()) . '"></script>
+            ',
+            'rooms' => [],
+            'user_socials' => $userSocials,
+        ]);
+    }
+
+    public function message_traning()
+    {
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            // session()->set(['userID' => 1]);
+            $userID = session()->get('userID');
+            $data = $this->request->getJSON();
+            $message = $data->message;
+            $message_status = $data->message_status;
+
+
+            $traning = $this->customerModel->insertMessageTraning([
+                'user_id' => $userID,
+                'message' => $message,
+                'message_status' => $message_status
+            ]);
+
+
+            session()->set([
+                'message_setting' => $message,
+            ]);
+
+            $status = 200;
+            $response['success'] = 1;
+            $response['message'] = 'Traning สำเร็จ';
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
     }
 }

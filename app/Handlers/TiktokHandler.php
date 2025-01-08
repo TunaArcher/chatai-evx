@@ -62,6 +62,7 @@ class TiktokHandler
     public function handleReplyByAI($input, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
+        $message_setting = session()->get('message_setting');
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
@@ -70,7 +71,7 @@ class TiktokHandler
 
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message);
+        $messageReply = $chatGPT->askChatGPT($message, $message_setting);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
