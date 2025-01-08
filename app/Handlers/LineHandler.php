@@ -65,10 +65,10 @@ class LineHandler
     public function handleReplyByAI($input, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
-        $userID = session()->get('userID');
+        $userID =  $userSocial->user_id;
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
-        log_message('info', "DATA Traning:" . (string)session()->get('userID'));
+        log_message('info', "DATA Traning: " . $userID);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
