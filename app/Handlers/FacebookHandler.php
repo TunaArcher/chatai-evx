@@ -112,12 +112,12 @@ class FacebookHandler
         $userID = session()->get('userID');
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
         $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
-    
+
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
 
-        $dataMessage =$this->userModel->getMessageTraningByID($userID);
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
         $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -130,7 +130,6 @@ class FacebookHandler
             $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
             $UID = $UID;
             $facebookToken = $userSocial->fb_token;
-
         }
 
         $facebookAPI = new FacebookClient([
@@ -157,7 +156,6 @@ class FacebookHandler
                 'sender_avatar' => '',
             ]);
         }
-
     }
 
     private function getMockFacebookWebhookData()
