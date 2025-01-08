@@ -72,7 +72,7 @@ class WhatsAppHandler
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
         $userID = session()->get('userID');
-        $dataMessage =$this->userModel->getMessageTraningByID($userID);
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
