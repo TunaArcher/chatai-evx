@@ -73,8 +73,6 @@ class WebhookController extends BaseController
             log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
             $handler->handleWebhook($input, $userSocial);
 
-            var_dump($userSocial);
-            exit;
 
             // กรณีเปิดใช้งานให้ AI ช่วยตอบ
             if ($userSocial->ai === 'on') $handler->handleReplyByAI($input, $userSocial); // TODO:: HANDLE
