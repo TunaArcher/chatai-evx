@@ -6,19 +6,24 @@ use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
+use App\Models\UserModel;
 use App\Models\UserSocialModel;
+
+date_default_timezone_set('Asia/Jakarta');
 
 class SettingController extends BaseController
 {
     private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
     private CustomerModel $customerModel;
+    private UserModel $userModel;
 
     public function __construct()
     {
         $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
         $this->customerModel = new CustomerModel();
+        $this->userModel = new UserModel();
     }
 
     public function index()
@@ -419,6 +424,7 @@ class SettingController extends BaseController
 
     public function message_traning()
     {
+        $buffer_datetime = date("Y-m-d H:i:s");
         $response = [
             'success' => 0,
             'message' => '',
@@ -432,12 +438,22 @@ class SettingController extends BaseController
             $message = $data->message;
             $message_status = $data->message_status;
 
+            $messageBack = $this->userModel->getMessageTraningByID($userID);
 
-            $traning = $this->customerModel->insertMessageTraning([
-                'user_id' => $userID,
+            $data_update = [
                 'message' => $message,
-                'message_status' => $message_status
-            ]);
+                'updated_at' => $buffer_datetime
+            ];
+
+            if ($messageBack) {
+                $traning = $this->customerModel->updateMessageTraning($userID, $data_update);
+            } else {
+                $traning = $this->customerModel->insertMessageTraning([
+                    'user_id' => $userID,
+                    'message' => $message,
+                    'message_status' => $message_status
+                ]);
+            }
 
             $status = 200;
             $response['success'] = 1;
@@ -445,6 +461,19 @@ class SettingController extends BaseController
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
         }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function message_traning_load($user_id)
+    {
+        $messageBack = $this->userModel->getMessageTraningByID($user_id);
+
+        $status = 200;
+        $response = $messageBack;
 
         return $this->response
             ->setStatusCode($status)

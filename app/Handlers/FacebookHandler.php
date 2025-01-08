@@ -117,7 +117,7 @@ class FacebookHandler
             'GPTToken' => $GPTToken
         ]);
 
-        $dataMessage = $this->userModel->getMessageTraningByID($userID);
+        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
         $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);

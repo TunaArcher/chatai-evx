@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  loadMessageTraning();
+});
+
 const notyf_message = new Notyf({
   position: {
     x: "right",
@@ -29,7 +33,7 @@ $("#traning-massage-form").on("submit", function (e) {
     success: function (response) {
       if (response.success) {
         notyf_message.success("สำเร็จ");
-        document.getElementById("traning-massage-form").reset();
+        // document.getElementById("traning-massage-form").reset();
       } else {
         notyf_message.error("ไม่สำเร็จ =>" + response.message);
       }
@@ -46,3 +50,18 @@ $("#traning-massage-form").on("submit", function (e) {
     },
   });
 });
+
+function loadMessageTraning() {
+  $.ajax({
+    url: `${serverUrl}/message-traning-load/${userID}`,
+    method: "get",
+    async: false,
+    success: function (response) {
+      var result = response;
+      if (result) {
+        $("#message-traning").val(result.message);
+      } else {
+      }
+    },
+  });
+}

@@ -68,7 +68,7 @@ class LineHandler
         $userID =  $userSocial->user_id;
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
-        log_message('info', "DATA Traning: " . $userID);
+        // log_message('info', "DATA Traning: " . $userID);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];

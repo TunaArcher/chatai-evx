@@ -73,4 +73,11 @@ class CustomerModel
 
         return $builder->insert($data) ? $this->db->insertID() : false;
     }
+
+    public function updateMessageTraning($id, $data)
+    {
+        $builder = $this->db->table('message_setting');
+
+        return $builder->where('user_id', $id)->update($data);
+    }
 }

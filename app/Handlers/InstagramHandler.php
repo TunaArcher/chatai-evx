@@ -66,8 +66,7 @@ class InstagramHandler
     public function handleReplyByAI($input, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
-        $userID = session()->get('userID');
-        $dataMessage = $this->userModel->getMessageTraningByID($userID);
+        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
