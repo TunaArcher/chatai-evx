@@ -83,7 +83,7 @@ class LineHandler
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, session()->get('userID'), 'Admin');
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin');
     }
 
     // -----------------------------------------------------------------------------
