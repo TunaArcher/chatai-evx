@@ -81,6 +81,8 @@ $routes->post('/setting/save-token', 'SettingController::saveToken'); // ระ�
 $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 $routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user
 
+//testssssss
+
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
