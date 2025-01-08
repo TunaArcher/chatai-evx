@@ -67,6 +67,8 @@ class LineHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
         $userID = session()->get('userID');
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
+
+        log_message('info', "DATA Traning:" . $dataMessage);
         
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
