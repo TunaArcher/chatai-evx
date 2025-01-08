@@ -43,7 +43,7 @@ class WebhookController extends BaseController
     /**
      * จัดการข้อมูล Webhook จากแพลตฟอร์มต่าง ๆ
      */
-    public function webhook()
+    public function webhook($userSocialID)
     {
         $input = $this->request->getJSON();
 
@@ -62,6 +62,11 @@ class WebhookController extends BaseController
             // Instagram
             else if (isset($input->object) && $input->object == 'instagram') {
                 $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $input->entry[0]->id);
+            }
+
+            // Line 
+            else {
+                $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
             }
 
             $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);

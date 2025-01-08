@@ -81,14 +81,13 @@ $routes->post('/setting/save-token', 'SettingController::saveToken'); // ระ�
 $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 $routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user
 
-//testssssss
-
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------
 
 $routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
-$routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+// $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+$routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 // -----------------------------------------------------------------------------
 // Helper
