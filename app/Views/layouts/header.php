@@ -16,8 +16,8 @@
 
     <!-- App css -->
     <link href="<?php echo base_url('/assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('/assets/css/icons.min.css'); ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('/assets/css/app.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/icons.min.css?v=' . time()) ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/app.min.css?v=' . time()); ?>" rel="stylesheet" type="text/css" />
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
