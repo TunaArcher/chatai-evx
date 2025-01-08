@@ -68,8 +68,8 @@ class LineHandler
         $userID = session()->get('userID');
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
-        log_message('info', "DATA Traning:" . session()->get('userID') );
-        
+        log_message('info', "DATA Traning:" . (string)session()->get('userID'));
+
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         $event = $input->events[0];
         $UID = $event->source->userId;
