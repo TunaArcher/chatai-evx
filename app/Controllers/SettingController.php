@@ -8,6 +8,7 @@ use App\Models\CustomerModel;
 use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
+use App\Libraries\ChatGPT;
 
 date_default_timezone_set('Asia/Jakarta');
 
@@ -474,6 +475,31 @@ class SettingController extends BaseController
 
         $status = 200;
         $response = $messageBack;
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+
+
+    public function message_traning_testing()
+    {
+        $data = $_POST['data'];
+        $GPTToken = getenv('GPT_TOKEN');
+        // CONNECT TO GPT
+        $userID = session()->get('userID');
+
+        $chatGPT = new ChatGPT([
+            'GPTToken' => $GPTToken
+        ]);
+
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
+        $messageReplyToCustomer = $chatGPT->askChatGPT($data, $dataMessage->message);
+
+        $status = 200;
+        $response = $messageReplyToCustomer;
 
         return $this->response
             ->setStatusCode($status)

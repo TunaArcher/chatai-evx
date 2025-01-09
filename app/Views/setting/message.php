@@ -94,17 +94,24 @@
                                     <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
                                         <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
                                             <div class="simplebar-content" style="padding: 16px;">
-                                                <div class="chat-detail">
-                                                    <div class="d-flex">
+                                                <div class="chat-detail" id="chat-detail-training">
+                                                    <!-- <div class="d-flex">
                                                         <div class="ms-1 chat-box w-100">
                                                             <div class="user-chat">
                                                                 <p class="">Good Morning !</p>
                                                                 <p class="">There are many variations of passages of Lorem Ipsum available.</p>
                                                             </div>
-                                                          
-                                                        </div><!--end media-body-->
-                                                    </div><!--end media-->                            
-                                                </div> <!-- end chat-detail -->
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-row-reverse">
+                                                        <div class="me-1 chat-box w-100 reverse">
+                                                            <div class="user-chat">
+                                                                <p class="">Hi,</p>
+                                                                <p class="">Can be verified on any platform using docker?</p>
+                                                            </div>
+                                                        </div>
+                                                    </div> -->
+                                                </div> 
                                             </div>
                                         </div>
                                     </div>
@@ -121,11 +128,11 @@
                         <div class="chat-footer-setting">
                             <div class="row">
                                 <div class="col-12 col-md-8">
-                                    <input type="text" class="form-control" placeholder="Type something here...">
+                                    <input type="text" class="form-control" id="chat_test_training" placeholder="Type something here...">
                                 </div><!-- col-8 -->
                                 <div class="col-4 text-end">
                                     <div class="d-none d-sm-inline-block chat-features">
-                                        <a href="" class="text-primary"><i class="iconoir-send-solid"></i></a>
+                                        <a href="javascript:void(0);" class="text-primary" onclick="sendTraining();"><i class="iconoir-send-solid"></i></a>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->

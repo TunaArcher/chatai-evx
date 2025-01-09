@@ -2134,6 +2134,21 @@ html[data-bs-theme="light"]
 .chat-box-right .chat-body .chat-detail {
   max-height: 610px;
 }
+.chat-setting .chat-body .chat-detail {
+  max-height: 610px;
+}
+.chat-setting .chat-body .chat-detail .chat-box .user-chat p {
+  background-color: var(--bs-secondary-bg);
+  -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 16px 16px 16px 0;
+  padding: 14px;
+  margin-bottom: 4px;
+  width: 75%;
+  max-width: -webkit-max-content;
+  max-width: -moz-max-content;
+  max-width: max-content;
+}
 .chat-box-right .chat-body .chat-detail .chat-box .user-chat p {
   background-color: var(--bs-secondary-bg);
   -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -2158,11 +2173,33 @@ html[data-bs-theme="light"]
   -ms-flex-align: end;
   align-items: flex-end;
 }
+.chat-setting .chat-body .chat-detail .chat-box.reverse {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
 .chat-box-right .chat-body .chat-detail .chat-box.reverse .user-chat {
   display: contents;
   width: 100%;
 }
+.chat-setting .chat-body .chat-detail .chat-box.reverse .user-chat {
+  display: contents;
+  width: 100%;
+}
 .chat-box-right .chat-body .chat-detail .chat-box.reverse .user-chat p {
+  background-color: #22c55e;
+  color: #fff;
+  border-radius: 16px 16px 0 16px;
+  text-align: end;
+}
+.chat-setting .chat-body .chat-detail .chat-box.reverse .user-chat p {
   background-color: #22c55e;
   color: #fff;
   border-radius: 16px 16px 0 16px;
@@ -2180,7 +2217,21 @@ html[data-bs-theme="light"]
   left: 0;
   bottom: 0;
 }
+.chat-setting .chat-footer {
+  background-color: var(--bs-secondary-bg);
+  border-radius: 8px;
+  padding: 16px;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+}
 .chat-box-right .chat-footer .chat-features a {
+  color: #c1cde0;
+  font-size: 22px;
+  margin-left: 12px;
+}
+.chat-setting .chat-footer .chat-features a {
   color: #c1cde0;
   font-size: 22px;
   margin-left: 12px;
@@ -2188,7 +2239,13 @@ html[data-bs-theme="light"]
 .chat-box-right .chat-footer .chat-features a:hover {
   color: #22c55e;
 }
+.chat-settingt .chat-footer .chat-features a:hover {
+  color: #22c55e;
+}
 .chat-box-right .chat-footer input.form-control {
+  border: none;
+}
+.chat-setting .chat-footer input.form-control {
   border: none;
 }
 

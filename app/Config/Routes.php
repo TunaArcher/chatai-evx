@@ -80,7 +80,8 @@ $routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ Us
 $routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
 $routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 $routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user   
-$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');
+$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');  
+$routes->post('/message-traning-testing', 'SettingController::message_traning_testing');
 
 // -----------------------------------------------------------------------------
 // Webhook

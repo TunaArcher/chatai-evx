@@ -65,3 +65,25 @@ function loadMessageTraning() {
     },
   });
 }
+
+function sendTraining() {
+  let ask = $("#chat_test_training").val();
+
+  if (ask == "") {
+    notyf_message.error("ไม่อนุญาติให้มีค่าว่าง");
+    return;
+  }
+
+  $.ajax({
+    url: `${serverUrl}/message-traning-testing`,
+    method: "POST",
+    async: false,
+    data: {
+      data: ask,
+    },
+    success: function (response) {
+      console.log(response);
+      $("#chat_test_training").val("");
+    },
+  });
+}
