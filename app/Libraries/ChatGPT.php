@@ -81,7 +81,7 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            $message_user = $message_setting . '\n';
+            $message_user = $message_setting . '\n' . 'ใช้ข้อความข้างต้นผสมกับข้อมูลทั่วไปในการตอบ โดยมีความกระชับและเป็นมนุษย์มากที่สุด \n';
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
