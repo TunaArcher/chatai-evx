@@ -26,14 +26,14 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
-                                                        <label class="form-label" for="message-traning">Message Traning</label>
+                                                        <label class="form-label" for="message-traning">Message Training</label>
                                                         <textarea class="form-control" rows="15" id="message-traning" name="message-traning"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-12 text-end">
-                                                    <button type="submit" class="btn btn-primary px-4">Traning</button>
+                                                    <button type="submit" class="btn btn-primary px-4">Training</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -43,7 +43,7 @@
                             <div class="accordion-item">
                                 <h4 class="accordion-header m-0" id="flush-headingTwo">
                                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo" disabled>
-                                        Traning By File (development)
+                                        Training By File (development)
                                     </button>
                                 </h4>
                                 <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample" style="">
@@ -57,7 +57,7 @@
                             <div class="accordion-item">
                                 <h4 class="accordion-header m-0" id="flush-headingThree">
                                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree" disabled>
-                                        Traning By Database (development)
+                                        Training By Database (development)
                                     </button>
                                 </h4>
                                 <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample" style="">
@@ -80,7 +80,7 @@
                             <a href="" class="d-flex align-self-center">
                                 <div class="flex-grow-1 ms-2 align-self-center">
                                     <div>
-                                        <h4 class="card-title">Testing Message Traning</h4>
+                                        <h4 class="card-title">Testing Message Training</h4>
                                     </div>
                                 </div><!-- end media-body -->
                             </a><!--end media-->
