@@ -347,7 +347,7 @@
                                         <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>"> Connect</a>
                                     </li><!--end nav-item-->
                                     <li class="nav-item">
-                                        <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Traning</a>
+                                        <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
                             </div>
