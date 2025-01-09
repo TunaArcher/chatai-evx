@@ -91,8 +91,12 @@ class ChatGPT
                     'model' => 'gpt-4-turbo',
                     'messages' => [
                         [
+                            "role" => "assistant",
+                            "content" => $message_user 
+                        ],
+                        [
                             'role' => 'user',
-                            'content' => $message_user . $question
+                            'content' =>  $question
                         ]
                     ]
                 ]
@@ -104,5 +108,4 @@ class ChatGPT
             return 'Error: ' . $e->getMessage();
         }
     }
-
 }
