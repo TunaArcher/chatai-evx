@@ -82,6 +82,7 @@ class ChatGPT
     {
         try {
             $message_user = $message_setting;
+            log_message("info", "message_setting: " . $message_user);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -92,7 +93,7 @@ class ChatGPT
                     'messages' => [
                         [
                             "role" => "assistant",
-                            "content" => $message_user 
+                            "content" => $message_user
                         ],
                         [
                             'role' => 'user',
