@@ -337,7 +337,7 @@
                         </li><!--end nav-item-->
 
                         <li class="nav-item">
-                            <a class="nav-link" href="sidebarSetting">
+                            <a class="nav-link" href="javascript:void(0);">
                                 <i class="iconoir-compact-disc menu-icon"></i>
                                 <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
                             </a>
