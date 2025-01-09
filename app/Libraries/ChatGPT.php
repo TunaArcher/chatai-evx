@@ -91,7 +91,7 @@ class ChatGPT
                     'model' => 'gpt-4o',
                     'messages' => [
                         [
-                            "role" => "sale",
+                            "role" => "assistant",
                             "content" => $message_user 
                         ],
                         [
