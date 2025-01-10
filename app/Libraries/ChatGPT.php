@@ -140,4 +140,35 @@ class ChatGPT
             return 'Error: ' . $e->getMessage();
         }
     }
+
+    public function gptBuilderChatGPT($question)
+    {
+        try {
+    
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'คุณคือ GPT Builder ที่คอรับคำสั่งในการสรา้ง Chat AI จาก User ที่ป้อนข้อมูลเข้ามาให้'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
 }
