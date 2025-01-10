@@ -93,11 +93,11 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => $message_user
+                            'content' => 'สวัสดี นายคือใคร'
                         ],
                         [
                             "role" => "assistant",
-                            "content" => "ฉันคือขุน เป็นพนักงานขายรถ EVX ที่มีเป้าหมายหลักในการแนะนำข้อมูลรถยนต์ไฟฟ้ารุ่นต่าง ๆ ให้กับลูกค้าอย่างมืออาชีพ"
+                            "content" => $message_user
                         ],
                         [
                             'role' => 'user',
