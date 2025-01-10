@@ -81,7 +81,7 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            $message_user = $message_setting . '\n' . 'ใช่ข้อความด้านบนตอบคำถามรวมกับข้อมูลภายนอก โดยตอบเป็นภาษามนุษย์ \n';
+            $message_user = $message_setting;
             // log_message("info", "message_setting: " . $message_user);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
@@ -92,12 +92,16 @@ class ChatGPT
                     'model' => 'gpt-4o',
                     'messages' => [
                         [
+                            'role' => 'user',
+                            'content' => $message_user
+                        ],
+                        [
                             "role" => "assistant",
                             "content" => "You are a helpful assistant."
                         ],
                         [
                             'role' => 'user',
-                            'content' => $message_user . $question
+                            'content' =>  $question
                         ]
                     ]
                 ]
