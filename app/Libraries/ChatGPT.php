@@ -92,12 +92,12 @@ class ChatGPT
                     'model' => 'gpt-4o',
                     'messages' => [
                         [
-                            'role' => 'user',
-                            'content' => $message_user
-                        ],
-                        [
                             "role" => "assistant",
                             "content" => "You are a helpful assistant."
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $message_user
                         ],
                         [
                             'role' => 'user',
