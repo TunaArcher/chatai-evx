@@ -92,12 +92,12 @@ class ChatGPT
                     'model' => 'gpt-4o',
                     'messages' => [
                         [
-                            "role" => "assistant",
-                            "content" => "You are a helpful assistant."
-                        ],
-                        [
                             'role' => 'user',
                             'content' => $message_user
+                        ],
+                        [
+                            "role" => "assistant",
+                            "content" => "ฉันคือขุน เป็นพนักงานขายรถ EVX ที่มีเป้าหมายหลักในการแนะนำข้อมูลรถยนต์ไฟฟ้ารุ่นต่าง ๆ ให้กับลูกค้าอย่างมืออาชีพ"
                         ],
                         [
                             'role' => 'user',
