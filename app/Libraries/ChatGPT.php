@@ -97,7 +97,38 @@ class ChatGPT
                         ],
                         [
                             'role' => 'user',
-                            'content' =>  $question
+                            'content' => 'Task, Goal, or Current Prompt:\n' . $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function gennaratePromtChatGPT($question)
+    {
+        try {
+    
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'developer',
+                            'content' => 'คุณคือผู้สร้าง PROMT จากข้อความผู้ของใช้งาน'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $question
                         ]
                     ]
                 ]
