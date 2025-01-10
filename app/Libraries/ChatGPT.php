@@ -93,7 +93,7 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'user',
-                            'content' => 'สวัสดี'
+                            'content' => 'สวัสดี นายคือใคร'
                         ],
                         [
                             "role" => "assistant",
