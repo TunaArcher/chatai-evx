@@ -155,7 +155,7 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'คุณคือ GPT Builder ที่คอรับคำสั่งในการสรา้ง Chat AI จาก User ที่ป้อนข้อมูลเข้ามาให้'
+                            'content' => 'คุณคือ GPT Builder ที่คอรับคำสั่งในการสรา้ง Chat AI แบบกระชับ จาก User ที่ป้อนข้อมูลเข้ามาให้'
                         ],
                         [
                             'role' => 'user',
