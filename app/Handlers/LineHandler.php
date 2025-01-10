@@ -77,9 +77,9 @@ class LineHandler
 
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        // $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
         
-        $messageReply = $chatGPT->gennaratePromtChatGPT($message);
+        // $messageReply = $chatGPT->gennaratePromtChatGPT($message);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
