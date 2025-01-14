@@ -436,25 +436,57 @@ class SettingController extends BaseController
             // session()->set(['userID' => 1]);
             $userID = session()->get('userID');
             $data = $this->request->getJSON();
-            $message = $data->message;
-            $message_status = $data->message_status;
 
-            $messageBack = $this->userModel->getMessageTraningByID($userID);
+            $message_training = $data->message;
+            $message_state = $data->message_status;
 
-            $data_update = [
-                'message' => $message,
-                'updated_at' => $buffer_datetime
-            ];
+            $traning = $this->customerModel->insertMessageTraning([
+                'user_id' => $userID,
+                'message_training' => $message_training,
+                'message_state' => $message_state
+            ]);
 
-            if ($messageBack) {
-                $traning = $this->customerModel->updateMessageTraning($userID, $data_update);
+            $GPTToken = getenv('GPT_TOKEN');
+            $chatGPT = new ChatGPT([
+                'GPTToken' => $GPTToken
+            ]);
+
+            //get message to promt
+            $data_promt =  $this->customerModel->getMessageToPromt($userID);
+
+            $data_promt_new = "";
+            for ($i = 0; $i < count($data_promt); $i++) {
+                $data_promt_new .= "\n" . (string)$data_promt[$i]->message_training;
+            }
+
+            // Builder
+            $messageReplyBuilder = $chatGPT->gptBuilderChatGPT($data_promt_new);
+
+            $messageReplyBuilder_back = $this->customerModel->insertMessageTraning([
+                'user_id' => $userID,
+                'message_training' => $messageReplyBuilder,
+                'message_state' => 'A'
+            ]);
+
+            // Promt
+            $messageReplyPrompt = $chatGPT->gennaratePromtChatGPT($data_promt_new);
+            $message_data_user =  $this->userModel->getMessageTraningByID($userID);
+
+            //get setting status
+            if ($message_data_user) {
+                $data_update = [
+                    'message' => $messageReplyPrompt,
+                    'updated_at' => $buffer_datetime
+                ];
+                $traning = $this->customerModel->updateMessageSetting($userID, $data_update);
             } else {
-                $traning = $this->customerModel->insertMessageTraning([
+                $traning = $this->customerModel->insertMessageSetting([
                     'user_id' => $userID,
-                    'message' => $message,
-                    'message_status' => $message_status
+                    'message' => $messageReplyPrompt,
+                    'message_status' => 'ON'
                 ]);
             }
+
 
             $status = 200;
             $response['success'] = 1;
@@ -471,7 +503,7 @@ class SettingController extends BaseController
 
     public function message_traning_load($user_id)
     {
-        $messageBack = $this->userModel->getMessageTraningByID($user_id);
+        $messageBack = $this->customerModel->getMessageTraningByID($user_id);
 
         $status = 200;
         $response = $messageBack;
@@ -486,17 +518,18 @@ class SettingController extends BaseController
 
     public function message_traning_testing()
     {
-        $data = $_POST['data'];
         $GPTToken = getenv('GPT_TOKEN');
         // CONNECT TO GPT
         $userID = session()->get('userID');
+        $data = $this->request->getJSON();
 
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
 
-        $dataMessage = $this->userModel->getMessageTraningByID($userID);
-        $messageReplyToCustomer = $chatGPT->askChatGPT($data, $dataMessage->message);
+        $dataMessage = $this->customerModel->getMessageSettingByID($userID);
+        $messageReplyToCustomer = $chatGPT->askChatGPT($data->message, $dataMessage->message);
+
 
         $status = 200;
         $response = $messageReplyToCustomer;

@@ -2264,7 +2264,7 @@ html[data-bs-theme="light"]
   background-color: var(--bs-secondary-bg);
   border-radius: 8px;
   padding: 16px;
-  position: absolute;
+  /* position: absolute; */
   width: 100%;
   left: 0;
   bottom: 0;
@@ -4273,3 +4273,21 @@ ul.listree-submenu-items li a {
   padding-bottom: 12px;
 }
 /*# sourceMappingURL=app.min.css.map */
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 2px solid indigo;
+  border-radius: 50%;
+  border-top-color: #0001;
+  display: inline-block;
+  animation: loadingspinner 0.7s linear infinite;
+}
+@keyframes loadingspinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
