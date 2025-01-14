@@ -96,7 +96,7 @@ class ChatGPT
                         ],
                         [
                             'role' => 'user',
-                            'content' => 'Task, Goal, or Current Prompt:\n' . $question
+                            'content' => 'Current Prompt:\n' . $question
                         ]
                     ]
                 ]
