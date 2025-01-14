@@ -81,7 +81,7 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            // log_message("info", "message_setting: " . $message_user);
+            log_message("info", "message_setting: " . $message_setting);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -103,6 +103,7 @@ class ChatGPT
             ]);
 
             $responseBody = json_decode($response->getBody(), true);
+            log_message("info", "message_gpt: " . $responseBody['choices'][0]['message']['content']);
             return $responseBody['choices'][0]['message']['content'];
         } catch (Exception $e) {
             return 'Error: ' . $e->getMessage();
