@@ -81,7 +81,6 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            $message_user = $message_setting;
             // log_message("info", "message_setting: " . $message_user);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
@@ -93,7 +92,7 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => $message_user
+                            'content' => $message_setting
                         ],
                         [
                             'role' => 'user',

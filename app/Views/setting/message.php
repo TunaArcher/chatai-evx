@@ -20,23 +20,62 @@
                                 </h4>
                                 <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample" style="">
                                     <div class="accordion-body">
-                                        <form id="traning-massage-form">
-                                            <div class="row">
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="message-traning">Message Training</label>
-                                                        <textarea class="form-control" rows="15" id="message-traning" name="message-traning"></textarea>
+                                        <div class="row">
+                                            <div class="chat-setting">
+                                                <div class="chat-body simplebar-scrollable-y" data-simplebar="init">
+                                                    <div class="simplebar-wrapper" style="margin: -16px;">
+                                                        <div class="simplebar-height-auto-observer-wrapper">
+                                                            <div class="simplebar-height-auto-observer"></div>
+                                                        </div>
+                                                        <div class="simplebar-mask">
+                                                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                                                <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
+                                                                    <div class="simplebar-content" style="padding: 16px;">
+                                                                        <div class="chat-detail" id="chat-detail-training">
+                                                                            <!-- <div class="d-flex">
+                                                                                <div class="ms-1 chat-box w-100">
+                                                                                    <div class="user-chat">
+                                                                                        <p class="">Good Morning !</p>
+                                                                                        <p class="">There are many variations of passages of Lorem Ipsum available.</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="d-flex flex-row-reverse">
+                                                                                <div class="me-1 chat-box w-100 reverse">
+                                                                                    <div class="user-chat">
+                                                                                        <p class="">Hi,</p>
+                                                                                        <p class="">Can be verified on any platform using docker?</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div> -->
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="simplebar-placeholder" style="width: 935px; height: 670px;"></div>
                                                     </div>
-                                                </div>
+                                                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                                                    </div>
+                                                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                                                        <div class="simplebar-scrollbar" style="height: 392px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+                                                    </div>
+                                                </div><!-- end chat-body -->
+                                                <div class="chat-footer-setting">
+                                                    <div class="row">
+                                                        <div class="col-12 col-md-8">
+                                                            <input type="text" class="form-control" id="chat_training" placeholder="send to training..." onkeydown="sendTraining(this)">
+                                                        </div><!-- col-8 -->
+                                                        <!-- <div class="col-4 text-end">
+                                                            <div class="d-none d-sm-inline-block chat-features">
+                                                                <a href="javascript:void(0);" class="text-primary" onclick="sendTraining();"><i class="iconoir-send-solid"></i></a>
+                                                            </div>
+                                                        </div> -->
+                                                    </div><!-- end row -->
+                                                </div><!-- end chat-footer -->
                                             </div>
-                                            <div class="row">
-                                                <div class="col-sm-12 text-end">
-                                                    <button type="submit" class="btn btn-primary px-4">Training</button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -94,7 +133,7 @@
                                     <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
                                         <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
                                             <div class="simplebar-content" style="padding: 16px;">
-                                                <div class="chat-detail" id="chat-detail-training">
+                                                <div class="chat-detail" id="chat-detail-training-test">
                                                     <!-- <div class="d-flex">
                                                         <div class="ms-1 chat-box w-100">
                                                             <div class="user-chat">
@@ -111,7 +150,7 @@
                                                             </div>
                                                         </div>
                                                     </div> -->
-                                                </div> 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -128,13 +167,13 @@
                         <div class="chat-footer-setting">
                             <div class="row">
                                 <div class="col-12 col-md-8">
-                                    <input type="text" class="form-control" id="chat_test_training" placeholder="Type something here...">
+                                    <input type="text" class="form-control" id="chat_test_training" placeholder="send to training test..." onkeydown="sendTestTraning(this);">
                                 </div><!-- col-8 -->
-                                <div class="col-4 text-end">
+                                <!-- <div class="col-4 text-end">
                                     <div class="d-none d-sm-inline-block chat-features">
                                         <a href="javascript:void(0);" class="text-primary" onclick="sendTraining();"><i class="iconoir-send-solid"></i></a>
                                     </div>
-                                </div><!-- end col -->
+                                </div> -->
                             </div><!-- end row -->
                         </div><!-- end chat-footer -->
                     </div>
@@ -144,3 +183,14 @@
         </div><!-- end col -->
     </div><!--end card-->
 </div><!-- container -->
+
+<div class="modal fade" id="modal-loading"  style="display: none;">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="loading-spinner mb-2"></div>
+                <div>Training...</div>
+            </div>
+        </div>
+    </div>
+</div>
