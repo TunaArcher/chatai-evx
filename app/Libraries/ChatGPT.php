@@ -81,7 +81,7 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            log_message("info", "message_setting: " . $message_setting);
+            // log_message("info", "message_setting: " . $message_user);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -96,14 +96,13 @@ class ChatGPT
                         ],
                         [
                             'role' => 'user',
-                            'content' => 'Current Prompt:\n' . $question
+                            'content' => 'Task, Goal, or Current Prompt:\n' . $question
                         ]
                     ]
                 ]
             ]);
 
             $responseBody = json_decode($response->getBody(), true);
-            log_message("info", "message_gpt: " . $responseBody['choices'][0]['message']['content']);
             return $responseBody['choices'][0]['message']['content'];
         } catch (Exception $e) {
             return 'Error: ' . $e->getMessage();
@@ -113,7 +112,7 @@ class ChatGPT
     public function gennaratePromtChatGPT($question)
     {
         try {
-    
+
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -123,12 +122,12 @@ class ChatGPT
                     'model' => 'gpt-4o',
                     'messages' => [
                         [
-                            'role' => 'developer',
-                            'content' => 'คุณคือผู้สร้าง PROMT จากข้อความผู้ของใช้งาน'
+                            'role' => 'system',
+                            'content' => 'คุณคือผู้สร้าง PROMPT จากข้อความของผู้ใช้งานเพื่อนำไปใช้งาน AI ต่อ'
                         ],
                         [
                             'role' => 'user',
-                            'content' => $question
+                            'content' => 'Task, Goal, or Current Prompt:\n' .  $question
                         ]
                     ]
                 ]
@@ -144,7 +143,7 @@ class ChatGPT
     public function gptBuilderChatGPT($question)
     {
         try {
-    
+
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
@@ -155,11 +154,11 @@ class ChatGPT
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'คุณคือ GPT Builder ที่คอยรับคำสั่งในการสรา้ง Chat AI ตามคุณสมบัติจาก User ที่ป้อนข้อมูลเข้ามาให้ (ไม่ต้องยกตัวอย่าง)'
+                            'content' => 'คุณคือ GPT Builder ที่คอยรับคำสั่งแล้วสร้าง AI จากผู้ใช้งานแล้วแจ้งผู้ว่าสำเร็จหรือไม่'
                         ],
                         [
                             'role' => 'user',
-                            'content' => $question
+                            'content' => 'Task, Goal, or Current Prompt:\n' . $question
                         ]
                     ]
                 ]
