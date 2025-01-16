@@ -91,9 +91,8 @@ class CustomerModel
     public function getMessageToPromt($user_id)
     {
         $builder = $this->db->table('message_setting_training');
-
         return $builder->where('user_id', $user_id)->where('message_state', 'Q')->get()->getResult();
-    } 
+    }
 
     public function getMessageTraningByID($user_id)
     {
@@ -105,5 +104,12 @@ class CustomerModel
     {
         $builder = $this->db->table('message_setting');
         return $builder->where('user_id', $user_id)->get()->getRow();
+    }
+
+    public function deletesMessageTraining($user_id)
+    {
+        $builder = $this->db->table('message_setting_training');
+
+        return $builder->where('user_id', $user_id)->delete();
     }
 }

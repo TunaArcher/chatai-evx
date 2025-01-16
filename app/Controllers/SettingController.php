@@ -514,8 +514,6 @@ class SettingController extends BaseController
             ->setJSON($response);
     }
 
-
-
     public function message_traning_testing()
     {
         $GPTToken = getenv('GPT_TOKEN');
@@ -533,6 +531,33 @@ class SettingController extends BaseController
 
         $status = 200;
         $response = $messageReplyToCustomer;
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function message_traning_clears()
+    {
+
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+        $status = 500;
+
+        try {
+            $data = $this->request->getJSON();
+            $status_deletes_back = $this->customerModel->deletesMessageTraining($data->user_id);
+
+            $status = 200;
+            $response['success'] = 1;
+            $response['message'] = 'Delete Traning สำเร็จ';
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
+
 
         return $this->response
             ->setStatusCode($status)
