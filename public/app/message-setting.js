@@ -185,3 +185,28 @@ function sendTestTraning(data) {
     });
   }
 }
+
+function clearTraning() {
+  var userid_send = {
+    user_id: userID,
+  };
+
+  $.ajax({
+    url: `${serverUrl}/message-traning-clears`,
+    method: "POST",
+    async: true,
+    data: JSON.stringify(userid_send),
+    beforeSend: function () {
+      $("#modal-loading").modal("show", {
+        backdrop: "static",
+        keyboard: false,
+      });
+    },
+    complete: function (response) {
+      $("#chat_test_training").val("");
+      $("#modal-loading").modal("hide");
+      $("#chat-detail-training").html("");
+    },
+    success: function (response) {},
+  });
+}

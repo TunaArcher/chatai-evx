@@ -72,6 +72,18 @@
                                                                 <a href="javascript:void(0);" class="text-primary" onclick="sendTraining();"><i class="iconoir-send-solid"></i></a>
                                                             </div>
                                                         </div> -->
+                                                        <div class="col-4 text-end">
+                                                            <div class="d-none d-sm-inline-block align-self-center">
+                                                                <div class="dropdown d-inline-block">
+                                                                    <a class="dropdown-toggle arrow-none text-muted" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="true">
+                                                                        <i class="fas fa-history"></i>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-end pb-0">
+                                                                        <a class="dropdown-item" href="#" onclick="return clearTraning();">Clear Training</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div><!-- end row -->
                                                 </div><!-- end chat-footer -->
                                             </div>
@@ -184,7 +196,7 @@
     </div><!--end card-->
 </div><!-- container -->
 
-<div class="modal fade" id="modal-loading"  style="display: none;">
+<div class="modal fade" id="modal-loading" style="display: none;">
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center">
