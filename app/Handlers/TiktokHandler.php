@@ -50,7 +50,7 @@ class TiktokHandler
 
     public function handleReplyByManual($input)
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         // ข้อความตอบกลับ
         $messageReply = $input->message;
@@ -65,7 +65,7 @@ class TiktokHandler
     public function handleReplyByAI($input, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
         $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา

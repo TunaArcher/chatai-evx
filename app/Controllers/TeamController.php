@@ -29,7 +29,7 @@ class TeamController extends BaseController
 
     public function index()
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         $data['content'] = 'team/index';
         $data['title'] = 'Team';

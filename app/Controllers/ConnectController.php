@@ -23,7 +23,7 @@ class ConnectController extends BaseController
 
     public function connectToApp()
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         $user = $this->userModel->getUserByID($userID);
 

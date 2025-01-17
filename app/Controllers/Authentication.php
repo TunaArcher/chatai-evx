@@ -13,14 +13,13 @@ class Authentication extends BaseController
 
     private $config;
 
-    private TeamModel $teamModel;
-    private TeamMemberModel $teamMemberModel;
     private UserModel $userModel;
     private SubscriptionModel $subscriptionModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->subscriptionModel = new SubscriptionModel();
     }
 
     public function index()
@@ -272,7 +271,6 @@ class Authentication extends BaseController
                     ]);
 
                     $user = $this->userModel->getUserByID($userID);
-                    // $dataMessage = $this->userModel->getMessageTraningByID($userID);
                 }
 
                 $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);

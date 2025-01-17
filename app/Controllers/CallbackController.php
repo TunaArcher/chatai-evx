@@ -96,7 +96,7 @@ HTML;
 
             $longAccessToken = $instagramAPI->getLongAccessToken($shortAccessToken);
 
-            $userID = session()->get('userID');
+            $userID = hashidsDecrypt(session()->get('userID'));
 
             $this->userModel->updateUserByID($userID, [
                 'access_token_instagram' => $longAccessToken

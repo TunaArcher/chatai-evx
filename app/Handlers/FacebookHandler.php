@@ -64,7 +64,7 @@ class FacebookHandler
 
     public function handleReplyByManual($input, $customer)
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
         $messageReplyToCustomer = $input->message;
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
 
@@ -109,7 +109,7 @@ class FacebookHandler
     {
         $GPTToken = getenv('GPT_TOKEN');
         // CONNECT TO GPT
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
         $message = $input->entry[0]->messaging[0]->message->text ?? null;
         $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
 

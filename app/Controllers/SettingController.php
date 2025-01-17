@@ -10,18 +10,14 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Libraries\ChatGPT;
 
-date_default_timezone_set('Asia/Jakarta');
-
 class SettingController extends BaseController
 {
-    private MessageRoomModel $messageRoomModel;
     private UserSocialModel $userSocialModel;
     private CustomerModel $customerModel;
     private UserModel $userModel;
 
     public function __construct()
     {
-        $this->messageRoomModel = new MessageRoomModel();
         $this->userSocialModel = new UserSocialModel();
         $this->customerModel = new CustomerModel();
         $this->userModel = new UserModel();
@@ -120,7 +116,7 @@ class SettingController extends BaseController
 
         try {
             // session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
+            $userID = hashidsDecrypt(session()->get('userID'));
 
             $data = $this->request->getJSON();
 
@@ -434,7 +430,7 @@ class SettingController extends BaseController
 
         try {
             // session()->set(['userID' => 1]);
-            $userID = session()->get('userID');
+            $userID = hashidsDecrypt(session()->get('userID'));
             $data = $this->request->getJSON();
 
             $message_training = $data->message;
@@ -518,7 +514,7 @@ class SettingController extends BaseController
     {
         $GPTToken = getenv('GPT_TOKEN');
         // CONNECT TO GPT
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
         $data = $this->request->getJSON();
 
         $chatGPT = new ChatGPT([

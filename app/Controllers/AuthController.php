@@ -64,7 +64,7 @@ class AuthController extends BaseController
 
     public function FbPagesList()
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         $user = $this->userModel->getUserByID($userID);
 
@@ -106,7 +106,7 @@ class AuthController extends BaseController
 
     public function WABListBusinessAccounts()
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         $user = $this->userModel->getUserByID($userID);
 
@@ -186,7 +186,7 @@ class AuthController extends BaseController
 
     // public function IGListBusinessAccounts()
     // {
-    //     $userID = session()->get('userID');
+    //     $userID = hashidsDecrypt(session()->get('userID'));
 
     //     $user = $this->userModel->getUserByID($userID);
 

@@ -51,7 +51,7 @@ class InstagramHandler
 
     public function handleReplyByManual($input)
     {
-        $userID = session()->get('userID');
+        $userID = hashidsDecrypt(session()->get('userID'));
 
         // ข้อความตอบกลับ
         $messageReply = $input->message;
