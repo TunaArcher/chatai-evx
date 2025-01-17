@@ -60,27 +60,78 @@ $routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
 $routes->get('/auth/callback/(:any)', 'Authentication::authCallback/$1');
 
 // -----------------------------------------------------------------------------
+// Team
+// -----------------------------------------------------------------------------
+
+$routes->group('team', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'TeamController::index');
+    $routes->post('create', 'TeamController::create');
+    $routes->post('invate-to-member', 'TeamController::invateToTeamMember');
+    $routes->get('getTeam/(:any)', 'TeamController::getTeam/$1');
+    $routes->post('update', 'TeamController::update');
+    $routes->post('destroy', 'TeamController::destroy');
+});
+
+$routes->get('/invateToTeamMember/(:any)', 'TeamController::viewInvateToTeamMember/$1');
+
+// -----------------------------------------------------------------------------
+// Profile
+// -----------------------------------------------------------------------------
+
+$routes->group('profile', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'ProfileController::index');
+});
+
+// -----------------------------------------------------------------------------
+// Help
+// -----------------------------------------------------------------------------
+
+$routes->group('help', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'HelpController::index');
+});
+
+// -----------------------------------------------------------------------------
+// Subscription
+// -----------------------------------------------------------------------------
+
+$routes->group('subscription', ['filter' => 'userAuth'], function ($routes) {
+    $routes->post('selectPlan', 'SubscriptionController::selectPlan');
+    $routes->post('handlePlan', 'SubscriptionController::handlePlan');
+});
+
+// -----------------------------------------------------------------------------
+// Payment
+// -----------------------------------------------------------------------------
+
+$routes->group('payment', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('success', 'PaymentController::success');
+    $routes->get('calcel', 'PaymentController::calcel');
+});
+
+// -----------------------------------------------------------------------------
 // Chat & Message
 // -----------------------------------------------------------------------------
 
-$routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
-$routes->get('/chatLeft', 'ChatController::messageLeft'); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
-$routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
-$routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข้อความไปยัง WebSocket
+$routes->get('/chat', 'ChatController::index', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา
+$routes->get('/chatLeft', 'ChatController::messageLeft', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
+$routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1', ['filter' => 'userAuth']); // ดึงข้อความจากห้องสนทนา
+$routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'userAuth']); // ส่งข้อความไปยัง WebSocket
 
 // -----------------------------------------------------------------------------
 // Setting
 // -----------------------------------------------------------------------------
 
-$routes->get('/setting/connect', 'SettingController::index');
-$routes->get('/setting/message', 'SettingController::index_message');
-$routes->post('/setting', 'SettingController::setting');
-$routes->post('/check/connection', 'SettingController::connection'); // เช็คการเชื่อมต่อ
-$routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ User Social
-$routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
-$routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
-$routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user   
-$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');
+$routes->group('setting', ['filter' => 'userAuth'], function ($routes) {
+    $routes->post('/', 'SettingController::setting');
+    $routes->get('connect', 'SettingController::index');
+    $routes->get('message', 'SettingController::index_message');
+    $routes->post('save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
+    $routes->post('ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
+});
+$routes->post('/check/connection', 'SettingController::connection', ['filter' => 'userAuth']); // เช็คการเชื่อมต่อ
+$routes->post('/remove-social', 'SettingController::removeSocial', ['filter' => 'userAuth']); // ลบ User Social
+$routes->post('/message-traning', 'SettingController::message_traning', ['filter' => 'userAuth']); // traning message by user   
+$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1', ['filter' => 'userAuth']);
 
 // -----------------------------------------------------------------------------
 // Webhook
@@ -89,6 +140,9 @@ $routes->get('/message-traning-load/(:any)', 'SettingController::message_traning
 $routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
 // $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+
+// Stripe
+$routes->post('/stripe/webhook/', 'StripeController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 // -----------------------------------------------------------------------------
 // Helper

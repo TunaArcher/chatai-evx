@@ -28,12 +28,14 @@ class UserModel
     public function getUserByID($id)
     {
         $builder = $this->db->table('users');
+
         return $builder->where('id', $id)->get()->getRow();
     }
 
     public function getMessageTraningByID($id)
     {
         $builder = $this->db->table('message_setting');
+        
         return $builder->where('user_id', $id)->get()->getRow();
     }
 
@@ -71,6 +73,29 @@ class UserModel
         return $builder
             ->where('sign_by_platform', $platform)
             ->where('platform_user_id', $platformUserID)
+            ->get()
+            ->getRow();
+    }
+
+    public function getUserByEmail($email)
+    {
+        $builder = $this->db->table('users');
+        return $builder->where('email', $email)->get()->getRow();
+    }
+
+    public function getUserByUserOwnerID($userOwnerID)
+    {
+        $builder = $this->db->table('users');
+
+        return $builder->where('user_owner_id', $userOwnerID)->get()->getResult();
+    }
+
+    public function getUserByStripeCustomerID($stripeCustomerID)
+    {
+        $builder = $this->db->table('users');
+
+        return $builder
+            ->where('stripe_customer_id', $stripeCustomerID)
             ->get()
             ->getRow();
     }

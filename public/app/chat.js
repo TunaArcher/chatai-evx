@@ -434,6 +434,7 @@ function updateRoom(roomElement, data) {
 // ฟังก์ชันสร้างห้องใหม่
 function createNewRoom(data) {
   const newRoom = document.createElement("div");
+  const newRoomList = document.createElement("div");
   newRoom.classList.add(
     "room-item",
     "p-2",
@@ -442,8 +443,18 @@ function createNewRoom(data) {
     "rounded",
     "mb-2"
   );
+  newRoomList.classList.add(
+    "room-item",
+    "p-2",
+    "border-dashed",
+    "border-theme-color",
+    "rounded",
+    "mb-2"
+  );
   newRoom.setAttribute("data-room-id", data.room_id);
+  newRoomList.setAttribute("data-room-id", data.room_id);
   newRoom.setAttribute("data-platform", data.platform || "Unknown");
+  newRoomList.setAttribute("data-platform", data.platform || "Unknown");
 
   newRoom.innerHTML = `
     <a href="#" class="">
@@ -468,9 +479,33 @@ function createNewRoom(data) {
         </div>
       </div>
     </a>`;
+
+  newRoomList.innerHTML = `
+  <a href="#" class="">
+    <div class="d-flex align-items-start">
+      <div class="position-relative">
+        <img src="${
+          data.sender_avatar || "default-avatar.png"
+        }" alt="user" class="thumb-lg rounded-circle">
+        <span class="position-absolute bottom-0 end-0">
+          <img src="assets/images/${getPlatformIcon(
+            data.platform || "Unknown"
+          )}" width="14">
+        </span>
+      </div>
+      <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+        <h6 class="my-0 fw-medium text-dark fs-14">${data.sender_name}
+          <small class="float-end text-muted fs-11">Now</small>
+        </h6>
+        <p class="text-muted mb-0">
+          <span class="text-primary">${data.message}</span>
+        </p>
+      </div>
+    </div>
+  </a>`;
   document.getElementById("rooms-list").prepend(newRoom);
   console.log("เพิ่มห้องใหม่:", newRoom);
-  // document.getElementById("rooms-list-menu").prepend(newRoom); // TODO:: HANDLE
+  document.getElementById("rooms-list-menu").prepend(newRoomList); // TODO:: HANDLE
 }
 
 //check collapsed

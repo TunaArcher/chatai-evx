@@ -67,7 +67,7 @@
     }
 </style>
 <div class="page-content">
-    <div class="container-xxl">
+    <div class="container-fluid">
         <div class="row my-3">
             <div class="col-12">
                 <div class="">
