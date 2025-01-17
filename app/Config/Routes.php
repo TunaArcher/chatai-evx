@@ -121,16 +121,23 @@ $routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'user
 // Setting
 // -----------------------------------------------------------------------------
 
-$routes->get('/setting/connect', 'SettingController::index');
-$routes->get('/setting/message', 'SettingController::index_message');
-$routes->post('/setting', 'SettingController::setting');
+$routes->group('setting', ['filter' => 'userAuth'], function ($routes) {
+    $routes->post('/', 'SettingController::setting');
+    // $routes->get('connect', 'SettingController::index');
+    // $routes->get('message', 'SettingController::index_message');
+    // $routes->post('save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
+    // $routes->post('ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
+    $routes->get('connect', 'SettingController::index');
+    $routes->get('message', 'SettingController::index_message');
+    $routes->post('save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
+    $routes->post('ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
+});
+
 $routes->post('/check/connection', 'SettingController::connection'); // เช็คการเชื่อมต่อ
 $routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ User Social
-$routes->post('/setting/save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
-$routes->post('/setting/ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
 $routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user   
-$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');  
-$routes->post('/message-traning-testing', 'SettingController::message_traning_testing');  
+$routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1');
+$routes->post('/message-traning-testing', 'SettingController::message_traning_testing');
 $routes->post('/message-traning-clears', 'SettingController::message_traning_clears');
 
 // -----------------------------------------------------------------------------
