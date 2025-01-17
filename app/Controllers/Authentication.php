@@ -3,14 +3,20 @@
 namespace App\Controllers;
 
 use App\Integrations\Facebook\FacebookClient;
+use App\Models\TeamModel;
+use App\Models\TeamMemberModel;
 use App\Models\UserModel;
+use App\Models\SubscriptionModel;
 
 class Authentication extends BaseController
 {
 
     private $config;
 
+    private TeamModel $teamModel;
+    private TeamMemberModel $teamMemberModel;
     private UserModel $userModel;
+    private SubscriptionModel $subscriptionModel;
 
     public function __construct()
     {
@@ -26,7 +32,7 @@ class Authentication extends BaseController
 
     public function password()
     {
-        $email = $this->request->getGet('email'); // ชื่อพารามิเตอร์คือ 'email'
+        $email = $this->request->getGet('email');
 
         $data['title'] = 'Signup';
         $data['email'] = $email;
@@ -55,6 +61,7 @@ class Authentication extends BaseController
             $username = $requestPayload->username ?? null;
             $email = $requestPayload->email ?? null;
             $password = $requestPayload->password ?? null;
+            $userOwnerID = $requestPayload->user_owner_id ? hashidsDecrypt($requestPayload->user_owner_id) : null;
 
             if (!$username || !$password) throw new \Exception('กรุณาตรวจสอบ username หรือ password ของท่าน');
 
@@ -65,22 +72,27 @@ class Authentication extends BaseController
             } else {
 
                 $userID = $this->userModel->insertUser([
+                    'login_type' => 'default',
                     'username' => $username,
                     'email' => $username,
-                    'password' => password_hash($password, PASSWORD_DEFAULT)
+                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                    'user_owner_id' => $userOwnerID,
+                    'picture' => $userOwnerID ? getAvatar() : ''
                 ]);
 
                 $user = $this->userModel->getUserByID($userID);
-                // $dataMessage =$this->userModel->getMessageTraningByID($userID);
+
+                $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                 session()->set([
-                    'userID' => $user->id,
-                    // 'username' => $user->username,
-                    'name' => $user->username,
-                    'platform' => $user->sign_by_platform,
+                    'userID' => hashidsEncrypt($user->id),
+                    'login_type' => $user->login_type,
                     'thumbnail' => $user->picture,
                     'isUserLoggedIn' => true,
-                    // 'message_setting' => $dataMessage->message,
+                    'subscription_status' => $userSubscription ? $userSubscription->status : '',
+                    'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
+                    'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
+                    'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
                 ]);
 
                 $status = 200;
@@ -110,6 +122,7 @@ class Authentication extends BaseController
             if ($this->request->getMethod() != 'post') throw new \Exception('Invalid Credentials.');
 
             $this->userModel = new \App\Models\UserModel();
+            $this->subscriptionModel = new \App\Models\SubscriptionModel();
 
             $requestPayload = $this->request->getJSON();
             $username = $requestPayload->username ?? null;
@@ -128,16 +141,20 @@ class Authentication extends BaseController
                         if (password_verify($password, $user->password)) {
 
                             $this->userModel->updateUserByID($user->id, ['login_fail' => 0]);
-                            // $dataMessage = $this->userModel->getMessageTraningByID($user->id);
+
+                            $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                             session()->set([
-                                'userID' => $user->id,
+                                'userID' => hashidsEncrypt($user->id),
                                 // 'username' => $user->username,
                                 'name' => $user->username,
-                                'platform' => $user->sign_by_platform,
+                                'login_type' => $user->login_type,
                                 'thumbnail' => $user->picture,
                                 'isUserLoggedIn' => true,
-                                // 'message_setting' => $dataMessage->message                             
+                                'subscription_status' => $userSubscription ? $userSubscription->status : '',
+                                'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
+                                'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
+                                'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
                             ]);
 
                             $status = 200;
@@ -243,7 +260,6 @@ class Authentication extends BaseController
                 $profile = $faceBookAPI->getProfile();
 
                 $user = $this->userModel->getUserByPlatFromAndID($platform, $profile->id);
-                // $dataMessage = $this->userModel->getMessageTraningByID($user->id);
 
                 if (!$user) {
 
@@ -259,14 +275,19 @@ class Authentication extends BaseController
                     // $dataMessage = $this->userModel->getMessageTraningByID($userID);
                 }
 
+                $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
+
                 session()->set([
-                    'userID' => $user->id,
+                    'userID' => hashidsEncrypt($user->id),
                     // 'username' => $user->username,
                     'name' => $user->name,
                     'platform' => $user->sign_by_platform,
                     'thumbnail' => $user->picture,
                     'isUserLoggedIn' => true,
-                    // 'message_setting' => $dataMessage->message
+                    'subscription_status' => $userSubscription ? $userSubscription->status : '',
+                    'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
+                    'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
+                    'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
                 ]);
 
                 break;

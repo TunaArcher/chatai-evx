@@ -60,13 +60,62 @@ $routes->get('/auth/login/(:any)', 'Authentication::loginByPlamform/$1');
 $routes->get('/auth/callback/(:any)', 'Authentication::authCallback/$1');
 
 // -----------------------------------------------------------------------------
+// Team
+// -----------------------------------------------------------------------------
+
+$routes->group('team', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'TeamController::index');
+    $routes->post('create', 'TeamController::create');
+    $routes->post('invate-to-member', 'TeamController::invateToTeamMember');
+    $routes->get('getTeam/(:any)', 'TeamController::getTeam/$1');
+    $routes->post('update', 'TeamController::update');
+    $routes->post('destroy', 'TeamController::destroy');
+});
+
+$routes->get('/invateToTeamMember/(:any)', 'TeamController::viewInvateToTeamMember/$1');
+
+// -----------------------------------------------------------------------------
+// Profile
+// -----------------------------------------------------------------------------
+
+$routes->group('profile', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'ProfileController::index');
+});
+
+// -----------------------------------------------------------------------------
+// Help
+// -----------------------------------------------------------------------------
+
+$routes->group('help', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('/', 'HelpController::index');
+});
+
+// -----------------------------------------------------------------------------
+// Subscription
+// -----------------------------------------------------------------------------
+
+$routes->group('subscription', ['filter' => 'userAuth'], function ($routes) {
+    $routes->post('selectPlan', 'SubscriptionController::selectPlan');
+    $routes->post('handlePlan', 'SubscriptionController::handlePlan');
+});
+
+// -----------------------------------------------------------------------------
+// Payment
+// -----------------------------------------------------------------------------
+
+$routes->group('payment', ['filter' => 'userAuth'], function ($routes) {
+    $routes->get('success', 'PaymentController::success');
+    $routes->get('calcel', 'PaymentController::calcel');
+});
+
+// -----------------------------------------------------------------------------
 // Chat & Message
 // -----------------------------------------------------------------------------
 
-$routes->get('/chat', 'ChatController::index'); // หน้าแสดงรายการห้องสนทนา
-$routes->get('/chatLeft', 'ChatController::messageLeft'); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
-$routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1'); // ดึงข้อความจากห้องสนทนา
-$routes->post('/send-message', 'ChatController::sendMessage'); // ส่งข้อความไปยัง WebSocket
+$routes->get('/chat', 'ChatController::index', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา
+$routes->get('/chatLeft', 'ChatController::messageLeft', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
+$routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1', ['filter' => 'userAuth']); // ดึงข้อความจากห้องสนทนา
+$routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'userAuth']); // ส่งข้อความไปยัง WebSocket
 
 // -----------------------------------------------------------------------------
 // Setting
@@ -91,6 +140,9 @@ $routes->post('/message-traning-clears', 'SettingController::message_traning_cle
 $routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
 // $routes->post('/webhook', 'WebhookController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
+
+// Stripe
+$routes->post('/stripe/webhook/', 'StripeController::webhook'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 // -----------------------------------------------------------------------------
 // Helper

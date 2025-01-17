@@ -17,6 +17,11 @@
     <!-- App css -->
     <link href="<?php echo base_url('/assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
     <link href="<?php echo base_url('/assets/css/icons.min.css?v=' . time()) ?>" rel="stylesheet" type="text/css" />
+
+    <?php if (isset($css_critical)) {
+        echo $css_critical;
+    } ?>
+
     <link href="<?php echo base_url('/assets/css/app.min.css?v=' . time()); ?>" rel="stylesheet" type="text/css" />
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -33,10 +38,6 @@
         }
     </style>
 
-    <?php if (isset($css_critical)) {
-        echo $css_critical;
-    } ?>
-
     <style>
         .disabled {
             opacity: 0.6;
@@ -44,7 +45,53 @@
             pointer-events: none;
         }
     </style>
+    <style>
+        /* ปุ่ม Gradient Animate */
+        .gradient-animate-btn {
+            display: inline-block;
+            font-weight: bold;
+            color: #fff !important;
+            /* สีตัวอักษร */
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(90deg, #6a11cb, #2575fc, #6a85e6, #9d50bb);
+            background-size: 300% 300%;
+            box-shadow: 0 4px 8px rgba(101, 151, 253, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: gradientAnimation 4s ease infinite;
+            /* เพิ่มการ Animate */
+        }
 
+        /* เอฟเฟกต์ Hover */
+        .gradient-animate-btn:hover {
+            /* transform: scale(1.05); */
+            /* ขยายขนาดเล็กน้อย */
+            box-shadow: 0 8px 15px rgba(101, 151, 253, 0.8);
+        }
+
+        /* เอฟเฟกต์กดปุ่ม */
+        .gradient-animate-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 8px rgba(101, 151, 253, 0.6);
+        }
+
+        /* Animation สำหรับ Gradient */
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
     <script>
         var serverUrl = '<?php echo base_url(); ?>'
         var userID = '<?php echo session()->get('userID'); ?>'
@@ -272,17 +319,19 @@
                                     <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-md rounded-circle">
                                 </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?></h6>
+                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?> <span class="badge bg-info"><?php if (session()->get('subscription_status') == 'active') {
+                                                                                                                                                        echo 'อัพเกรดแล้ว';
+                                                                                                                                                    }; ?></span></h6>
                                     <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small>
                                 </div><!--end media-body-->
                             </div>
                             <div class="dropdown-divider mt-0"></div>
                             <small class="text-muted px-2 pb-1 d-block">Account</small>
-                            <a class="disabled dropdown-item" href="#"><i class="las la-user fs-18 me-1 align-text-bottom"></i> Profile</a>
+                            <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-user fs-18 me-1 align-text-bottom"></i> Profile</a>
                             <small class="text-muted px-2 py-1 d-block">Settings</small>
-                            <a class="disabled dropdown-item" href="#"><i class="las la-cog fs-18 me-1 align-text-bottom"></i>Account Settings</a>
-                            <a class="disabled dropdown-item" href="#"><i class="las la-lock fs-18 me-1 align-text-bottom"></i> Security</a>
-                            <a class="disabled dropdown-item" href="#"><i class="las la-question-circle fs-18 me-1 align-text-bottom"></i> Help Center</a>
+                            <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-cog fs-18 me-1 align-text-bottom"></i>Account Settings</a>
+                            <a class="dropdown-item disabled" href="<?php echo base_url('/profile'); ?>"><i class="las la-lock fs-18 me-1 align-text-bottom"></i> Security</a>
+                            <a class="dropdown-item" href="<?php echo base_url('/help'); ?>"><i class="las la-question-circle fs-18 me-1 align-text-bottom"></i> Help Center</a>
                             <div class="dropdown-divider mb-0"></div>
                             <a class="dropdown-item text-danger" href="<?php echo base_url('/logout'); ?>"><i class="las la-power-off fs-18 me-1 align-text-bottom"></i> ออกจากระบบ</a>
                         </div>
@@ -337,6 +386,14 @@
                         </li><!--end nav-item-->
 
                         <li class="nav-item">
+                            <a class="nav-link" href="<?php echo base_url('/team'); ?>">
+                                <i class="iconoir-community menu-icon"></i>
+                                <span>Team</span>
+                            </a>
+                        </li><!--end nav-item-->
+
+
+                        <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0);">
                                 <i class="iconoir-compact-disc menu-icon"></i>
                                 <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
@@ -386,98 +443,116 @@
                             </div>
                         </div><!--end chat-search-->
 
-                        <div class="chat-body-left px-3" data-simplebar>
-                            <div class="tab-content" id="pills-tabContent">
-                                <div class="tab-pane fade show active" id="messages_chat_menu">
-                                    <div class="row">
-                                        <div class="col">
+                        <?php if (isset($rooms)) { ?>
+                            <div class="chat-body-left px-3" data-simplebar>
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="messages_chat_menu">
+                                        <div class="row">
+                                            <div class="col">
 
-                                            <div id="rooms-list-menu">
-                                                <?php foreach ($rooms as $room): ?>
-                                                    <div class="room-item p-2 border-dashed border-theme-color rounded mb-2" data-room-id="<?php echo $room->id ?>" data-platform="<?php echo $room->platform ?>">
-                                                        <a href="#" class="">
-                                                            <div class="d-flex align-items-start">
-                                                                <div class="position-relative">
-                                                                    <?php if (($room->profile == 0) || ($room->profile == null)) {
-                                                                        $room->profile = '/assets/images/conX.png';
-                                                                    } ?>
-                                                                    <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
-                                                                    <span class="position-absolute bottom-0 end-0">
-                                                                        <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
-                                                                    </span>
-                                                                </div>
-                                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                                    <h6 class="my-0 fw-medium text-dark fs-10"><?php echo $room->customer_name; ?>
-                                                                        <!-- <small class="float-end text-muted fs-5"><?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?></small> -->
-                                                                    </h6>
-                                                                    <p class="text-muted mb-0"><span class="text-primary"><?php echo $room->last_message; ?></span>
-                                                                    </p>
-                                                                </div><!--end media-body-->
-                                                            </div><!--end media-->
-                                                        </a> <!--end-->
-                                                    </div><!--end div-->
-                                                <?php endforeach; ?>
+                                                <div id="rooms-list-menu">
+                                                    <?php foreach ($rooms as $room): ?>
+                                                        <div class="room-item p-2 border-dashed border-theme-color rounded mb-2" data-room-id="<?php echo $room->id ?>" data-platform="<?php echo $room->platform ?>">
+                                                            <a href="#" class="">
+                                                                <div class="d-flex align-items-start">
+                                                                    <div class="position-relative">
+                                                                        <?php if (($room->profile == 0) || ($room->profile == null)) {
+                                                                            $room->profile = '/assets/images/conX.png';
+                                                                        } ?>
+                                                                        <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
+                                                                        <span class="position-absolute bottom-0 end-0">
+                                                                            <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                                        <h6 class="my-0 fw-medium text-dark fs-10"><?php echo $room->customer_name; ?>
+                                                                            <!-- <small class="float-end text-muted fs-5"><?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?></small> -->
+                                                                        </h6>
+                                                                        <p class="text-muted mb-0"><span class="text-primary"><?php echo $room->last_message; ?></span>
+                                                                        </p>
+                                                                    </div><!--end media-body-->
+                                                                </div><!--end media-->
+                                                            </a> <!--end-->
+                                                        </div><!--end div-->
+                                                    <?php endforeach; ?>
 
-                                            </div>
-                                        </div><!--end col-->
-                                    </div><!--end row-->
-                                </div><!--end general chat-->
-
-                                <div class="tab-pane fade" id="active_chat_menu">
-                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
-                                        <a href="" class="">
-                                            <div class="d-flex align-items-start">
-                                                <div class="position-relative">
-                                                    <img src="assets/images/users/avatar-3.jpg" alt="" class="thumb-lg rounded-circle">
-                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
                                                 </div>
-                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                    <h6 class="my-0 fw-medium text-dark fs-14">Shauna Jones
-                                                        <small class="float-end text-muted fs-11">15 Feb</small>
-                                                    </h6>
-                                                    <p class="text-muted mb-0">Congratulations!</p>
-                                                </div><!--end media-body-->
-                                            </div><!--end media-->
-                                        </a> <!--end-->
-                                    </div><!--end div-->
-                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
-                                        <a href="" class="">
-                                            <div class="d-flex align-items-start">
-                                                <div class="position-relative">
-                                                    <img src="assets/images/users/avatar-5.jpg" alt="" class="thumb-lg rounded-circle">
-                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                    <h6 class="my-0 fw-medium text-dark fs-14">Frank Wei
-                                                        <small class="float-end text-muted fs-11">2 Mar</small>
-                                                    </h6>
-                                                    <p class="text-muted mb-0"><i class="iconoir-microphone"></i> Voice message!</p>
-                                                </div><!--end media-body-->
-                                            </div><!--end media-->
-                                        </a> <!--end-->
-                                    </div><!--end div-->
-                                    <div class="p-2 border-dashed border-theme-color rounded mb-2">
-                                        <a href="" class="">
-                                            <div class="d-flex align-items-start">
-                                                <div class="position-relative">
-                                                    <img src="assets/images/users/avatar-6.jpg" alt="" class="thumb-lg rounded-circle">
-                                                    <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                    <h6 class="my-0 fw-medium text-dark fs-14">Carol Maier
-                                                        <small class="float-end text-muted fs-11">14 Mar</small>
-                                                    </h6>
-                                                    <p class="text-muted mb-0">Send a pic.!</p>
-                                                </div><!--end media-body-->
-                                            </div><!--end media-->
-                                        </a> <!--end-->
-                                    </div><!--end div-->
-                                </div><!--end group chat-->
+                                            </div><!--end col-->
+                                        </div><!--end row-->
+                                    </div><!--end general chat-->
 
-                            </div><!--end tab-content-->
-                        </div>
+                                    <div class="tab-pane fade" id="active_chat_menu">
+                                        <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                            <a href="" class="">
+                                                <div class="d-flex align-items-start">
+                                                    <div class="position-relative">
+                                                        <img src="assets/images/users/avatar-3.jpg" alt="" class="thumb-lg rounded-circle">
+                                                        <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                        <h6 class="my-0 fw-medium text-dark fs-14">Shauna Jones
+                                                            <small class="float-end text-muted fs-11">15 Feb</small>
+                                                        </h6>
+                                                        <p class="text-muted mb-0">Congratulations!</p>
+                                                    </div><!--end media-body-->
+                                                </div><!--end media-->
+                                            </a> <!--end-->
+                                        </div><!--end div-->
+                                        <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                            <a href="" class="">
+                                                <div class="d-flex align-items-start">
+                                                    <div class="position-relative">
+                                                        <img src="assets/images/users/avatar-5.jpg" alt="" class="thumb-lg rounded-circle">
+                                                        <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                        <h6 class="my-0 fw-medium text-dark fs-14">Frank Wei
+                                                            <small class="float-end text-muted fs-11">2 Mar</small>
+                                                        </h6>
+                                                        <p class="text-muted mb-0"><i class="iconoir-microphone"></i> Voice message!</p>
+                                                    </div><!--end media-body-->
+                                                </div><!--end media-->
+                                            </a> <!--end-->
+                                        </div><!--end div-->
+                                        <div class="p-2 border-dashed border-theme-color rounded mb-2">
+                                            <a href="" class="">
+                                                <div class="d-flex align-items-start">
+                                                    <div class="position-relative">
+                                                        <img src="assets/images/users/avatar-6.jpg" alt="" class="thumb-lg rounded-circle">
+                                                        <span class="position-absolute bottom-0 end-0"><i class="fa-solid fa-circle text-success fs-10 border-2 border-theme-color"></i></span>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-2 text-truncate align-self-center">
+                                                        <h6 class="my-0 fw-medium text-dark fs-14">Carol Maier
+                                                            <small class="float-end text-muted fs-11">14 Mar</small>
+                                                        </h6>
+                                                        <p class="text-muted mb-0">Send a pic.!</p>
+                                                    </div><!--end media-body-->
+                                                </div><!--end media-->
+                                            </a> <!--end-->
+                                        </div><!--end div-->
+                                    </div><!--end group chat-->
+
+                                </div><!--end tab-content-->
+                            </div>
+                        <?php } ?>
+
                     </div><!--end chat-box-left -->
                 </div>
+
+                <?php if (session()->get('subscription_status') != 'active') { ?>
+                <div class="update-msg text-center">
+                    <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
+                        <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-lg rounded-circle">
+                    </div>
+                    <h5 class="mt-3">ใช้งานฟรี</h5>
+                    <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Platform</p>
+                    <p class="text-muted mb-3">ฟรี 10 คำตอบจาก AI / ต่อวัน</p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
+                    </div>
+                    <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
+                </div>
+            <?php } ?>
             </div>
         </div><!--end startbar-collapse-->
     </div><!--end startbar-menu-->

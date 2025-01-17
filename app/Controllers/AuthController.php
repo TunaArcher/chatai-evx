@@ -4,18 +4,11 @@ namespace App\Controllers;
 
 use GuzzleHttp\Client;
 
-use App\Factories\HandlerFactory;
 use App\Integrations\Facebook\FacebookClient;
 use App\Integrations\Instagram\InstagramClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
-use App\Models\CustomerModel;
-use App\Models\MessageModel;
-use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
-use App\Services\MessageService;
-use CodeIgniter\HTTP\ResponseInterface;
-
 
 class AuthController extends BaseController
 {
@@ -28,7 +21,7 @@ class AuthController extends BaseController
         $this->userSocialModel = new UserSocialModel();
     }
 
-    
+
     public function checkToken($platform)
     {
         $status = 500;
