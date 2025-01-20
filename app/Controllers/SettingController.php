@@ -206,7 +206,7 @@ class SettingController extends BaseController
     private function initializeSession(): int
     {
         // session()->set(['userID' => 1]);
-        return session()->get('userID');
+        return hashidsDecrypt(session()->get('userID'));
     }
 
     private function getRequestData(): object
