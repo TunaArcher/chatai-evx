@@ -105,7 +105,7 @@ $routes->group('subscription', ['filter' => 'userAuth'], function ($routes) {
 
 $routes->group('payment', ['filter' => 'userAuth'], function ($routes) {
     $routes->get('success', 'PaymentController::success');
-    $routes->get('calcel', 'PaymentController::calcel');
+    $routes->get('cancel', 'PaymentController::cancel');
 });
 
 // -----------------------------------------------------------------------------

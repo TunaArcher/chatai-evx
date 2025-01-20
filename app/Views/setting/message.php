@@ -1,5 +1,5 @@
 <div class="page-content">
-    <div class="container-xxl">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-6">
                 <div class="card">
