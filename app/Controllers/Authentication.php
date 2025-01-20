@@ -210,9 +210,7 @@ class Authentication extends BaseController
 
             case 'facebook':
 
-                // TODO:: HANDLE Check ถ้ามี user ให้ login ไปเลย
-
-                $state = bin2hex(random_bytes(16)); // Generate random state
+                $state = bin2hex(random_bytes(16));
                 session()->set('oauth_state', $state);
                 session()->set('platform', $platform);
 
@@ -243,7 +241,10 @@ class Authentication extends BaseController
                 if (!$state || $state !== $this->request->getGet('state')) return $this->response->setJSON(['error' => 'Invalid state parameter.']);
 
                 $code = $this->request->getGet('code');
-                if (!$code) return $this->response->setJSON(['error' => 'Authorization code not found.']);
+                if (!$code) {
+                    // return $this->response->setJSON(['error' => 'Authorization code not found.']);
+                    return redirect()->to('/login');
+                }
 
                 $redirectUri = base_url('auth/callback/facebook');
 

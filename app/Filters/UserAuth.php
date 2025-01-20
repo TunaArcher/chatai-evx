@@ -20,42 +20,6 @@ class UserAuth implements FilterInterface
         $this->subscriptionModel = new \App\Models\SubscriptionModel();
     }
 
-    // public function before(RequestInterface $request, $arguments = null)
-    // {
-    //     // Fix Bug แก้ไขปัญหากรณีถูกลบไอดีแล้ว ให้ออกจากระบบทันที
-    //     $UserModel = new \App\Models\UserModel();
-    //     $SubscriptionModel = new \App\Models\SubscriptionModel();
-
-    //     $userID = hashidsDecrypt(session()->get('userID'));
-    //     $user = $UserModel->getUserByID($userID);
-
-    //     if (!$user) {
-    //         session()->setFlashdata(['session_expired' => 'เซ็นซันหมดอายุ กรุณาล็อคอินอีกครั้ง']);
-    //         return redirect()->to('/login');
-    //     } else {
-
-    //         $userSubscription = $SubscriptionModel->getUserSubscription($userID);
-
-    //         if ($userSubscription) {
-    //             // ถ้ามีการอัพเดทสถานะ Subscription จากเดิม
-    //             if ($userSubscription->status != session()->get('subscription_status')) {
-    //                 session()->set('subscription_status', $userSubscription->status);
-    //                 session()->set('subscription_current_period_start', $userSubscription->current_period_start);
-    //                 session()->set('subscription_current_period_end', $userSubscription->current_period_end);
-    //             }
-
-    //             // หมดอายุ ไม่ก็ ยังไม่ active
-    //             if ($userSubscription->current_period_end < time() || $userSubscription->status != 'active') {
-    //                 session()->set('subscription_status', $userSubscription->status);
-    //                 session()->set('subscription_current_period_start', $userSubscription->current_period_start);
-    //                 session()->set('subscription_current_period_end', $userSubscription->current_period_end);
-    //             }
-    //         }
-    //     }
-
-    //     if (!session()->get('isUserLoggedIn')) return redirect()->to('/login');
-    // }
-
     public function before(RequestInterface $request, $arguments = null)
     {
         // ตรวจสอบการเข้าสู่ระบบ

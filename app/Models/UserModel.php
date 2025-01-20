@@ -35,7 +35,7 @@ class UserModel
     public function getMessageTraningByID($id)
     {
         $builder = $this->db->table('message_setting');
-        
+
         return $builder->where('user_id', $id)->get()->getRow();
     }
 
@@ -98,5 +98,12 @@ class UserModel
             ->where('stripe_customer_id', $stripeCustomerID)
             ->get()
             ->getRow();
+    }
+
+    public function updateUser($data)
+    {
+        $builder = $this->db->table('users');
+
+        return $builder->update($data);
     }
 }

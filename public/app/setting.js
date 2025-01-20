@@ -765,7 +765,22 @@ steps.step3.finish.on("click", function () {
     },
     error: function (xhr, status, error) {
       console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองอีกครั้ง");
+
+      // ดึงข้อความจาก response JSON
+      const errorMessage =
+        xhr.responseJSON?.message || "เกิดข้อผิดพลาดบางอย่าง";
+
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // location.reload(); // รีโหลดหน้าเว็บ
+        }
+      });
+
       $me.prop("disabled", false);
     },
   });

@@ -80,6 +80,7 @@ $routes->get('/invateToTeamMember/(:any)', 'TeamController::viewInvateToTeamMemb
 
 $routes->group('profile', ['filter' => 'userAuth'], function ($routes) {
     $routes->get('/', 'ProfileController::index');
+    $routes->get('get-free-request-limit', 'ProfileController::getFreeRequestLimit');
 });
 
 // -----------------------------------------------------------------------------
@@ -122,11 +123,7 @@ $routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'user
 // -----------------------------------------------------------------------------
 
 $routes->group('setting', ['filter' => 'userAuth'], function ($routes) {
-    $routes->post('/', 'SettingController::setting');
-    // $routes->get('connect', 'SettingController::index');
-    // $routes->get('message', 'SettingController::index_message');
-    // $routes->post('save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
-    // $routes->post('ai', 'SettingController::settingAI'); // ตั้งค่าสถานะการใช้ AI ช่วยตอบ
+    $routes->post('/', 'SettingController::setting', ['filter' => 'userCheckPackagePermission:connect']);
     $routes->get('connect', 'SettingController::index');
     $routes->get('message', 'SettingController::index_message');
     $routes->post('save-token', 'SettingController::saveToken'); // ระบุ Token ใช้กรณี Facebook
@@ -163,6 +160,15 @@ $routes->get('/auth/WABListBusinessAccounts', 'AuthController::WABListBusinessAc
 // $routes->get('/auth/IGListBusinessAccounts', 'AuthController::IGListBusinessAccounts');
 
 $routes->post('/connect/connectToApp', 'ConnectController::connectToApp');
+
+/*
+ * --------------------------------------------------------------------
+ * CRONJOB
+ * --------------------------------------------------------------------
+ */
+
+// Reset free request
+$routes->cli('cronjob/reset-free-request-limit', 'Reset::run', ['namespace' => 'App\Controllers\cronjob']);
 
 /*
  * --------------------------------------------------------------------
