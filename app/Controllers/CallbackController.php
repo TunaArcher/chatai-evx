@@ -69,7 +69,7 @@ HTML;
         $data = json_decode($response->getBody(), true);
         $accessToken = $data['access_token'];
 
-        $this->userModel->updateUserByID(session()->get('userID'), [
+        $this->userModel->updateUserByID(hashidsDecrypt(session()->get('userID')), [
             'meta_access_token' => $accessToken
         ]);
     }

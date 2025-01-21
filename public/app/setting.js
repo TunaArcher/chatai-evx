@@ -281,7 +281,7 @@ function openOAuthFacebookPopup() {
   const popupInterval = setInterval(() => {
     if (popup.closed) {
       clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
+      // alert("Login completed! Please check your session or token.");
 
       FbPagesList();
     }
