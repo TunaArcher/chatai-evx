@@ -233,7 +233,7 @@ function openOAuthWhatsAppPopup() {
   const popupInterval = setInterval(() => {
     if (popup.closed) {
       clearInterval(popupInterval);
-      alert("Login completed! Please check your session or token.");
+      // alert("Login completed! Please check your session or token.");
 
       WABListBusinessAccounts();
     }
@@ -636,6 +636,7 @@ steps.step1.next.on("click", function () {
       })
         .done(function (res) {
           let $data = res.data;
+          console.log($data);
           if ($data == "NO TOKEN") {
             openOAuthFacebookPopup();
           } else {

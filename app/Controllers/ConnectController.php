@@ -37,7 +37,7 @@ class ConnectController extends BaseController
                 $pageToken = '';
 
                 $faceBookAPI = new FacebookClient([
-                    'accessToken' => $user->access_token_meta
+                    'accessToken' => $user->meta_access_token
                 ]);
                 $getFbPagesList = $faceBookAPI->getFbPagesList();
                 foreach ($getFbPagesList->data as $page) {
@@ -77,7 +77,7 @@ class ConnectController extends BaseController
                 $name = $input->pageName;
 
                 $whatsAppAPI = new WhatsAppClient([
-                    'whatsAppToken' => $user->access_token_whatsapp
+                    'whatsAppToken' => $user->whatsapp_access_token
                 ]);
 
                 $whatsappPhoneNumberID = $whatsAppAPI->getPhoneNumberId($WABID);

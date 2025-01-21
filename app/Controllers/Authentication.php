@@ -267,7 +267,8 @@ class Authentication extends BaseController
                         'main_sign_in_by' => $platform,
                         'email' => $profile->email ?? '',
                         'name' => $profile->name,
-                        'picture' => $profile->picture->data->url
+                        'picture' => $profile->picture->data->url,
+                        'meta_access_token' => $oauthAccessToken->access_token,
                     ]);
 
                     $userAccount = $this->userAccountModel->insertUserAccount([
@@ -294,7 +295,8 @@ class Authentication extends BaseController
                     $this->userModel->updateUserByID($user->id, [
                         'name' => $profile->name,
                         'email' => $profile->email ?? '',
-                        'picture' => $profile->picture->data->url
+                        'picture' => $profile->picture->data->url,
+                        'meta_access_token' => $oauthAccessToken->access_token,
                     ]);
 
                     $this->userAccountModel->updateUserAccountByID($userAccount->id, [

@@ -53,7 +53,7 @@
             color: #fff !important;
             /* สีตัวอักษร */
             border: none;
-            border-radius: 25px;
+            /* border-radius: 25px; */
             cursor: pointer;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             background: linear-gradient(90deg, #6a11cb, #2575fc, #6a85e6, #9d50bb);
@@ -553,7 +553,7 @@
                         </div>
                         <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                     </div>
-            <?php } ?>
+                <?php } ?>
             </div>
         </div><!--end startbar-collapse-->
     </div><!--end startbar-menu-->

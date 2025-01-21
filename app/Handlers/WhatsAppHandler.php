@@ -157,7 +157,7 @@ class WhatsAppHandler
         return new WhatsAppClient([
             'phoneNumberID' => $userSocial->whatsapp_phone_number_id,
             // 'whatsAppToken' => $userSocial->whatsapp_token
-            'whatsAppToken' => $user->access_token_whatsapp
+            'whatsAppToken' => $user->whatsapp_access_token
         ]);
     }
 
