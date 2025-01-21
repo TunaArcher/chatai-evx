@@ -162,7 +162,7 @@ class FacebookClient
 
             $response = $this->http->request('GET', $endPoint, [
                 'query' => [
-                    'fields' => 'id,name,picture',
+                    'fields' => 'id,name,email,picture',
                     'access_token' => $this->accessToken,
                 ],
             ]);

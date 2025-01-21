@@ -61,7 +61,8 @@ class SubscriptionController extends BaseController
 
             // ตรวจสอบว่า user มี stripe_customer_id แล้วหรือไม่
             if ($user->stripe_customer_id == null || $user->stripe_customer_id == '') {
-                $userStripe = $stripeService->createCustomer($user->username, $user->email);
+                
+                $userStripe = $stripeService->createCustomer($user->name, $user->email);
 
                 $this->userModel->updateUserByID($user->id, [
                     'stripe_customer_id' => $userStripe->id
