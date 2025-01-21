@@ -151,7 +151,7 @@ class TeamController extends BaseController
                 'icon' => $teamLogo,
                 'name' => $teamName,
                 'note' => $teamNote,
-                'owner_id' => session()->get('userID')
+                'owner_id' => hashidsDecrypt(session()->get('userID'))
             ];
 
             $teamID = $this->teamModel->insertTeam($data);
@@ -250,7 +250,7 @@ class TeamController extends BaseController
 
             $data = [
                 'note' => $teamNote,
-                // 'owner_id' => session()->get('userID')
+                // 'owner_id' => hashidsDecrypt(session()->get('userID'))
             ];
 
             if ($this->teamModel->updateTeamByID($teamID, $data)) {

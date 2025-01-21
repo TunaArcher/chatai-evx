@@ -60,7 +60,7 @@ class Authentication extends BaseController
             $requestPayload = $this->request->getJSON();
             $email = $requestPayload->email ?? null;
             $password = $requestPayload->password ?? null;
-            $userOwnerID = isset($requestPayload->user_owner_id) ? hashidsDecrypt($requestPayload->user_owner_id) : null;
+            $userOwnerID = isset($requestPayload->user_owner_id) ? $requestPayload->user_owner_id : null;
 
             if (!$email || !$password) throw new \Exception('กรุณาตรวจสอบ email หรือ password ของท่าน');
 
@@ -81,6 +81,7 @@ class Authentication extends BaseController
             $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
             session()->set([
+                'user_owner_id' => hashidsEncrypt($user->user_owner_id),
                 'userID' => hashidsEncrypt($user->id),
                 'main_sign_in_by' => $user->main_sign_in_by,
                 'email' => $user->email,
@@ -142,6 +143,7 @@ class Authentication extends BaseController
                             $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                             session()->set([
+                                'user_owner_id' => hashidsEncrypt($user->user_owner_id),
                                 'userID' => hashidsEncrypt($user->id),
                                 'main_sign_in_by' => $user->main_sign_in_by,
                                 'email' => $user->email,
@@ -309,6 +311,7 @@ class Authentication extends BaseController
                 $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                 session()->set([
+                    'user_owner_id' => hashidsEncrypt($user->user_owner_id),
                     'userID' => hashidsEncrypt($user->id),
                     'main_sign_in_by' => $user->main_sign_in_by,
                     'email' => $user->email,
