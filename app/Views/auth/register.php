@@ -167,7 +167,7 @@
 
             // ดึงค่าข้อมูลจากฟอร์ม
             const formData = {
-                username: $('input[name="email"]').val(),
+                email: $('input[name="email"]').val(),
                 password: $('input[name="password"]').val(),
                 confirm_password: $('input[name="Confirmpassword"]').val(),
             };

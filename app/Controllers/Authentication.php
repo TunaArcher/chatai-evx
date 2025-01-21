@@ -3,9 +3,8 @@
 namespace App\Controllers;
 
 use App\Integrations\Facebook\FacebookClient;
-use App\Models\TeamModel;
-use App\Models\TeamMemberModel;
 use App\Models\UserModel;
+use App\Models\UserAccountModel;
 use App\Models\SubscriptionModel;
 
 class Authentication extends BaseController
@@ -14,11 +13,13 @@ class Authentication extends BaseController
     private $config;
 
     private UserModel $userModel;
+    private UserAccountModel $userAccountModel;
     private SubscriptionModel $subscriptionModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->userAccountModel = new UserAccountModel();
         $this->subscriptionModel = new SubscriptionModel();
     }
 
@@ -57,49 +58,46 @@ class Authentication extends BaseController
             if ($this->request->getMethod() != 'post') throw new \Exception('Invalid Credentials.');
 
             $requestPayload = $this->request->getJSON();
-            $username = $requestPayload->username ?? null;
             $email = $requestPayload->email ?? null;
             $password = $requestPayload->password ?? null;
-            $userOwnerID = $requestPayload->user_owner_id ? hashidsDecrypt($requestPayload->user_owner_id) : null;
+            $userOwnerID = isset($requestPayload->user_owner_id) ? hashidsDecrypt($requestPayload->user_owner_id) : null;
 
-            if (!$username || !$password) throw new \Exception('กรุณาตรวจสอบ username หรือ password ของท่าน');
+            if (!$email || !$password) throw new \Exception('กรุณาตรวจสอบ email หรือ password ของท่าน');
 
-            $users = $this->userModel->getUser($username);
+            $users = $this->userModel->getUser($email);
+            if ($users) throw new \Exception('มียูสนี้แล้ว');
 
-            if ($users) {
-                throw new \Exception('มียูสนี้แล้ว');
-            } else {
+            $userID = $this->userModel->insertUser([
+                'main_sign_in_by' => 'default',
+                'email' => $email,
+                'name' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'user_owner_id' => $userOwnerID,
+                'picture' => $userOwnerID ? getAvatar() : ''
+            ]);
 
-                $userID = $this->userModel->insertUser([
-                    'login_type' => 'default',
-                    'username' => $username,
-                    'email' => $username,
-                    'password' => password_hash($password, PASSWORD_DEFAULT),
-                    'user_owner_id' => $userOwnerID,
-                    'picture' => $userOwnerID ? getAvatar() : ''
-                ]);
+            $user = $this->userModel->getUserByID($userID);
 
-                $user = $this->userModel->getUserByID($userID);
+            $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
-                $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
+            session()->set([
+                'userID' => hashidsEncrypt($user->id),
+                'main_sign_in_by' => $user->main_sign_in_by,
+                'email' => $user->email,
+                'name' => $user->name,
+                'thumbnail' => $user->picture,
+                'isUserLoggedIn' => true,
+                'subscription_status' => $userSubscription ? $userSubscription->status : '',
+                'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
+                'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
+                'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
+            ]);
 
-                session()->set([
-                    'userID' => hashidsEncrypt($user->id),
-                    'login_type' => $user->login_type,
-                    'thumbnail' => $user->picture,
-                    'isUserLoggedIn' => true,
-                    'subscription_status' => $userSubscription ? $userSubscription->status : '',
-                    'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
-                    'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
-                    'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
-                ]);
+            $status = 200;
+            $response['success'] = 1;
+            $response['message'] = 'เข้าสู่ระบบสำเร็จ';
 
-                $status = 200;
-                $response['success'] = 1;
-                $response['message'] = 'เข้าสู่ระบบสำเร็จ';
-
-                $response['redirect_to'] = base_url('/');
-            }
+            $response['redirect_to'] = base_url('/');
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
         }
@@ -145,9 +143,9 @@ class Authentication extends BaseController
 
                             session()->set([
                                 'userID' => hashidsEncrypt($user->id),
-                                // 'username' => $user->username,
-                                'name' => $user->username,
-                                'login_type' => $user->login_type,
+                                'main_sign_in_by' => $user->main_sign_in_by,
+                                'email' => $user->email,
+                                'name' => $user->name,
                                 'thumbnail' => $user->picture,
                                 'isUserLoggedIn' => true,
                                 'subscription_status' => $userSubscription ? $userSubscription->status : '',
@@ -210,9 +208,7 @@ class Authentication extends BaseController
 
             case 'facebook':
 
-                // TODO:: HANDLE Check ถ้ามี user ให้ login ไปเลย
-
-                $state = bin2hex(random_bytes(16)); // Generate random state
+                $state = bin2hex(random_bytes(16));
                 session()->set('oauth_state', $state);
                 session()->set('platform', $platform);
 
@@ -243,7 +239,10 @@ class Authentication extends BaseController
                 if (!$state || $state !== $this->request->getGet('state')) return $this->response->setJSON(['error' => 'Invalid state parameter.']);
 
                 $code = $this->request->getGet('code');
-                if (!$code) return $this->response->setJSON(['error' => 'Authorization code not found.']);
+                if (!$code) {
+                    // return $this->response->setJSON(['error' => 'Authorization code not found.']);
+                    return redirect()->to('/login');
+                }
 
                 $redirectUri = base_url('auth/callback/facebook');
 
@@ -258,28 +257,61 @@ class Authentication extends BaseController
 
                 $profile = $faceBookAPI->getProfile();
 
-                $user = $this->userModel->getUserByPlatFromAndID($platform, $profile->id);
+                // หาว่าเคสสมัครหรือยัง
+                $userAccount = $this->userAccountModel->getUserAccountByProviderAndProviderUserID($platform, $profile->id);
 
-                if (!$user) {
+                // หากยังไม่เคยสมัคร ให้สร้างยูสใหม่
+                if (!$userAccount) {
 
                     $userID = $this->userModel->insertUser([
-                        'sign_by_platform' => $platform,
-                        'platform_user_id' => $profile->id,
+                        'main_sign_in_by' => $platform,
+                        'email' => $profile->email ?? '',
                         'name' => $profile->name,
+                        'picture' => $profile->picture->data->url
+                    ]);
+
+                    $userAccount = $this->userAccountModel->insertUserAccount([
+                        'user_id' => $userID,
+                        'email' => $profile->email ?? '',
+                        'provider' => $platform,
+                        'provider_user_id' => $profile->id,
+                        'access_token' => $oauthAccessToken->access_token,
+                        // 'refresh_token ' => '',
+                        // 'expires_at' => '',
+                        'linked_at' => date('Y-m-d H:i:s'),
                         'picture' => $profile->picture->data->url,
-                        'access_token_meta' => $oauthAccessToken->access_token
                     ]);
 
                     $user = $this->userModel->getUserByID($userID);
+                }
+
+                // หากเคยสมัครแล้ว อัพเดทข้อมูล
+                else {
+
+                    $user = $this->userModel->getUserByID($userAccount->user_id);
+                    $userID = $user->id;
+
+                    $this->userModel->updateUserByID($user->id, [
+                        'name' => $profile->name,
+                        'email' => $profile->email ?? '',
+                        'picture' => $profile->picture->data->url
+                    ]);
+
+                    $this->userAccountModel->updateUserAccountByID($userAccount->id, [
+                        'email' => $profile->email ?? '',
+                        'access_token' => $oauthAccessToken->access_token,
+                        'picture' => $profile->picture->data->url,
+                    ]);
                 }
 
                 $userSubscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                 session()->set([
                     'userID' => hashidsEncrypt($user->id),
-                    // 'username' => $user->username,
+                    'main_sign_in_by' => $user->main_sign_in_by,
+                    'email' => $user->email,
                     'name' => $user->name,
-                    'platform' => $user->sign_by_platform,
+                    'platform' => $user->main_sign_in_by,
                     'thumbnail' => $user->picture,
                     'isUserLoggedIn' => true,
                     'subscription_status' => $userSubscription ? $userSubscription->status : '',

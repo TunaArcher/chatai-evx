@@ -267,6 +267,38 @@
                 }
             });
         });
+
+        if (!window.subscriptionStatus != 'active') {
+            function updateProgressBar(freeRequestLimit) {
+                // Calculate the width percentage (assuming max is 10)
+                let widthPercentage = (freeRequestLimit / 10) * 100;
+
+                // Update the progress bar attributes and style
+                let progressBar = $(".progress-bar");
+                progressBar.css("width", widthPercentage + "%");
+                progressBar.attr("aria-valuenow", freeRequestLimit);
+                progressBar.text(freeRequestLimit);
+            }
+
+            // AJAX request to fetch free_request_limit
+            $.ajax({
+                url: `${serverUrl}/profile/get-free-request-limit`,
+                method: "GET",
+                dataType: "json",
+                success: function(response) {
+                    console.log(response)
+                    if (response.free_request_limit !== undefined) {
+                        updateProgressBar(response.free_request_limit);
+                    } else {
+                        console.error("Response does not contain free_request_limit");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data: ", error);
+                }
+            });
+        }
+
     });
 </script>
 </body>

@@ -30,4 +30,39 @@ class ProfileController extends BaseController
 
         echo view('/app', $data);
     }
+
+    public function getFreeRequestLimit()
+    {
+
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+
+        $status = 500;
+        try {
+
+            $user = $this->userModel->getUserByID(hashidsDecrypt(session()->get('userID')));
+            
+            if (!$user) throw new \Exception('ไม่พบยูส');
+
+            $response = [
+                'success' => 1,
+                'message' => 'success',
+                'free_request_limit' => $user->free_request_limit,
+            ];
+
+            $status = 200;
+
+            return $this->response
+                ->setStatusCode($status)
+                ->setContentType('application/json')
+                ->setJSON($response);
+        } catch (\Exception $e) {
+            return $this->response
+                ->setStatusCode($status)
+                ->setContentType('application/json')
+                ->setJSON($response);
+        }
+    }
 }

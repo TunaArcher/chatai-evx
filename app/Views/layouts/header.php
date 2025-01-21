@@ -98,6 +98,7 @@
         var APP_ID = '<?php echo getenv('APP_ID'); ?>'
         var IG_APP_ID = '<?php echo getenv('IG_APP_ID'); ?>'
         const wsUrl = window.location.hostname === "localhost" ? "ws://localhost:3000" : "wss://websocket.evxcars.com:8080";
+        var subscriptionStatus = '<?php echo session()->get('subscription_status'); ?>'
     </script>
 </head>
 
@@ -540,18 +541,18 @@
                 </div>
 
                 <?php if (session()->get('subscription_status') != 'active') { ?>
-                <div class="update-msg text-center">
-                    <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
-                        <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-lg rounded-circle">
+                    <div class="update-msg text-center">
+                        <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
+                            <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-lg rounded-circle">
+                        </div>
+                        <h5 class="mt-3">ใช้งานฟรี</h5>
+                        <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Connects</p>
+                        <p class="text-muted mb-3">ฟรี AI 10 Request / ต่อวัน</p>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
+                        </div>
+                        <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                     </div>
-                    <h5 class="mt-3">ใช้งานฟรี</h5>
-                    <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Platform</p>
-                    <p class="text-muted mb-3">ฟรี 10 คำตอบจาก AI / ต่อวัน</p>
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
-                    </div>
-                    <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
-                </div>
             <?php } ?>
             </div>
         </div><!--end startbar-collapse-->
