@@ -9,6 +9,8 @@ use \GuzzleHttp\Middleware;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
+use function PHPSTORM_META\type;
+
 class ChatGPT
 {
     private $http;
@@ -159,6 +161,46 @@ class ChatGPT
                         [
                             'role' => 'user',
                             'content' => 'Task, Goal, or Current Prompt:\n' . $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function askChatGPTimg($question,  $message_setting)
+    {
+        try {
+            // log_message("info", "message_setting: " . $message_user);
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $message_setting
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' =>  [
+                                'type' => 'text',
+                                'text' => 'Task, Goal, or Current Prompt:\n' . $question
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
+                                ]
+                            ]
                         ]
                     ]
                 ]

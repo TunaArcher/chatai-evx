@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+require './vendor/autoload.php';
 
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
@@ -9,6 +10,7 @@ use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Libraries\ChatGPT;
+use Aws\S3\S3Client;
 
 class SettingController extends BaseController
 {
@@ -21,6 +23,25 @@ class SettingController extends BaseController
         $this->userSocialModel = new UserSocialModel();
         $this->customerModel = new CustomerModel();
         $this->userModel = new UserModel();
+
+
+        $this->s3_bucket = getenv('S3_BUCKET');
+        $this->s3_secret_key = getenv('SECRET_KEY');
+        $this->s3_key = getenv('KEY');
+        $this->s3_endpoint = getenv('ENDPOINT');
+        $this->s3_region = getenv('REGION');
+        $this->s3_cdn_img = getenv('CDN_IMG');
+
+        $this->$s3Client = new S3Client([
+            'version' => 'latest',
+            'region'  => $this->s3_region,
+            'endpoint' => $this->s3_endpoint,
+            'use_path_style_endpoint' => false,
+            'credentials' => [
+                'key'    => $this->s3_key,
+                'secret' => $this->s3_secret_key
+            ]
+        ]);
     }
 
     public function index()
@@ -499,7 +520,7 @@ class SettingController extends BaseController
 
     public function message_traning_load($user_id)
     {
-        $messageBack = $this->customerModel->getMessageTraningByID($user_id);
+        $messageBack = $this->customerModel->getMessageTraningByID(hashidsDecrypt($user_id));
 
         $status = 200;
         $response = $messageBack;
@@ -545,7 +566,7 @@ class SettingController extends BaseController
 
         try {
             $data = $this->request->getJSON();
-            $status_deletes_back = $this->customerModel->deletesMessageTraining($data->user_id);
+            $status_deletes_back = $this->customerModel->deletesMessageTraining(hashidsDecrypt($data->user_id));
 
             $status = 200;
             $response['success'] = 1;
