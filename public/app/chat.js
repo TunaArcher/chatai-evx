@@ -250,13 +250,26 @@ chatInput.addEventListener("keypress", (event) => {
 // จัดการข้อความใหม่ที่ได้รับผ่าน WebSocket
 ws.onmessage = (event) => {
   console.log("onmessage ข้อความใหม่:", event.data);
+
   let data = JSON.parse(event.data);
+
+  // if (data.room_id === currentRoomId) {
+  //   renderMessage(data);
+  //   scrollToBottom();
+  // } else {
+  //   addOrUpdateRoom(data);
+  // }
+
   if (data.room_id === currentRoomId) {
     renderMessage(data);
     scrollToBottom();
   } else {
-    addOrUpdateRoom(data);
+    if (data.receiver === window.userOwnerID) {
+      addOrUpdateRoom(data);
+    }
   }
+
+  userOwnerID;
 };
 // จัดการสถานะ WebSocket
 ws.onopen = () => console.log("WebSocket connection opened.");

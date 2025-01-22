@@ -107,6 +107,7 @@ class InstagramHandler
             'sender_name' => $customer->name,
             'created_at' => date('Y-m-d H:i:s'),
             'sender_avatar' => $customer->profile,
+            'receiver' => $messageRoom->user_id
         ]);
     }
 
