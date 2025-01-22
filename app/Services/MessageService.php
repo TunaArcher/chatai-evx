@@ -47,6 +47,7 @@ class MessageService
     // Logic การส่ง Socket
     public function sendToWebSocket(array $data)
     {
+        // จัดการ Data ตอนส่งไป WebSocket
         $messageRoom = $data['messageRoom'];
         $userIdLooking = [];
         $teamSocials = $this->teamSocialModel->getTeamSocialByUserSocialID($messageRoom->user_social_id);
@@ -67,6 +68,10 @@ class MessageService
         } else $userIdLooking[] = $messageRoom->user_id;
 
         $data['userIdLooking'] = $userIdLooking;
+
+        // ลบข้อมูลโดยใช้ key
+        $keyToRemove = "messageRoom";
+        if (array_key_exists($keyToRemove, $data)) unset($data[$keyToRemove]);
 
         $url = getenv('WS_URL'); // URL ของ WebSocket Server
         $ch = curl_init($url);
