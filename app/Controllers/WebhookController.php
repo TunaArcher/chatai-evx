@@ -75,7 +75,7 @@ class WebhookController extends BaseController
         $input = $this->request->getJSON();
 
         // debug
-        log_message('info', "ข้อความเข้า Webhook  " . json_encode($input, JSON_PRETTY_PRINT));
+        // log_message('info', "ข้อความเข้า Webhook  " . json_encode($input, JSON_PRETTY_PRINT));
 
         try {
             // กำหนด $userSocial ไว้ใน scope เพื่อใช้งานในภายหลัง
