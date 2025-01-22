@@ -114,7 +114,7 @@ class FacebookHandler
                 'platform' => $this->platform,
                 'message' => $messageReplyToCustomer,
 
-                'receiver_id' => hashidsEncrypt($customer->user_id),
+                'receiver_id' => hashidsEncrypt($customer->id),
                 'receiver_name' => $customer->name,
                 'receiver_avatar' => $customer->profile,
 

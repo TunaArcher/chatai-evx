@@ -150,7 +150,7 @@ class WhatsAppHandler
                 'platform' => $this->platform,
                 'message' => $message,
 
-                'receiver_id' => hashidsEncrypt($customer->user_id),
+                'receiver_id' => hashidsEncrypt($customer->id),
                 'receiver_name' => $customer->name,
                 'receiver_avatar' => $customer->profile,
 
