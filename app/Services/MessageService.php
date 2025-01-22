@@ -57,7 +57,7 @@ class MessageService
 
                     $userWatchingID[] = $team->owner_id;
 
-                    $teamMembers = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
+                    $teamMembers = $this->teamMemberModel->getTeamMemberUserIDByTeamID($team->id);
 
                     foreach ($teamMembers as $teamMember) {
                         $userWatchingID[] = $teamMember->user_id;

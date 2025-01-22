@@ -130,6 +130,20 @@ class TeamMemberModel
         }
     }
 
+    public function getTeamMemberUserIDByTeamID($teamID)
+    {
+        $sql = "
+            SELECT 
+                team_members.user_id,
+            FROM team_members
+            WHERE team_members.team_id = $teamID
+        ";
+
+        $builder = $this->db->query($sql);
+
+        return $builder->getResult();
+    }
+
     public function deleteTeamMemberByTeamID($teamID)
     {
         $builder = $this->db->table('team_members');
