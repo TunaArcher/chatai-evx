@@ -66,13 +66,13 @@ $routes->get('/auth/callback/(:any)', 'Authentication::authCallback/$1');
 $routes->group('team', ['filter' => 'userAuth'], function ($routes) {
     $routes->get('/', 'TeamController::index');
     $routes->post('create', 'TeamController::create');
-    $routes->post('invate-to-member', 'TeamController::invateToTeamMember');
+    $routes->post('invite-to-member', 'TeamController::inviteToTeamMember');
     $routes->get('getTeam/(:any)', 'TeamController::getTeam/$1');
     $routes->post('update', 'TeamController::update');
     $routes->post('destroy', 'TeamController::destroy');
 });
 
-$routes->get('/invateToTeamMember/(:any)', 'TeamController::viewInvateToTeamMember/$1');
+$routes->get('/inviteToTeamMember/(:any)', 'TeamController::viewInviteToTeamMember/$1');
 
 // -----------------------------------------------------------------------------
 // Profile

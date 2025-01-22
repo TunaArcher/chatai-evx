@@ -41,10 +41,15 @@ class TeamController extends BaseController
             <script src="app/team.js"></script>
         ';
 
-        $data['members'] = $this->userModel->getUserByUserOwnerID($userID);
         $data['userSocials'] = $this->userSocialModel->getUserSocialByUserID($userID);
-        $teams = $this->teamModel->getTeamByOwnerID($userID);
+        $members = $this->userModel->getUserByUserOwnerID($userID);
+        foreach ($members as $member) {
+            $member->status = '';
+            if ($member->accept_invite == 'waiting') $member->status = '(รอการตอบรับ)';
+        }
+        $data['members'] = $members;
 
+        $teams = $this->teamModel->getTeamByOwnerID($userID);
         foreach ($teams as $team) {
             $team->members = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
             $team->socials =  $this->teamSocialModel->getTeamSocialByTeamID($team->id);
@@ -55,11 +60,10 @@ class TeamController extends BaseController
         echo view('/app', $data);
     }
 
-    public function invateToTeamMember()
+    public function inviteToTeamMember()
     {
 
         try {
-
             $response = [
                 'success' => 0,
                 'message' => '',
@@ -70,10 +74,22 @@ class TeamController extends BaseController
             $data = $this->request->getJSON();
             $user = $this->userModel->getUserByEmail($data->email);
 
-            if ($user) throw new \Exception('มียูสนี้แล้ว');
+            if ($user) {
+                switch ($user->accept_invite) {
+                    case 'waiting':
+                        throw new \Exception('คุณเชิญผู้ใช้นี้ไปแล้ว');
+                        break;
+                    case 'done':
+                        throw new \Exception('มียูสนี้แล้ว');
+                        break;
+                    default:
+                        throw new \Exception('มียูสนี้แล้ว');
+                        break;
+                }
+            }
 
             // สร้างลิงก์สมัครสมาชิก
-            $registerLink = base_url('invateToTeamMember' . '/' . hashidsDecrypt(session()->get('userID')) . '?email=' . urlencode($data->email));
+            $registerLink = base_url('inviteToTeamMember' . '/' . session()->get('userID') . '?email=' . urlencode($data->email));
 
             // ส่งอีเมล
             $email = \Config\Services::email();
@@ -107,9 +123,16 @@ class TeamController extends BaseController
                 // แสดงข้อผิดพลาด
                 print_r($email->printDebugger(['headers', 'subject', 'body']));
             } else {
+                $this->userModel->insertUser([
+                    'accept_invite' => 'waiting',
+                    'email' => $data->email,
+                    'user_owner_id' => hashidsDecrypt(session()->get('userID')),
+                    'name' => $email,
+                    'picture' => getAvatar()
+                ]);
                 $response = [
                     'success' => 1,
-                    'message' => 'invate success',
+                    'message' => 'invite success',
                 ];
                 $status = 200;
             }
@@ -312,10 +335,10 @@ class TeamController extends BaseController
         }
     }
 
-    public function viewInvateToTeamMember($userID)
+    public function viewInviteToTeamMember($userID)
     {
-        return view('/team/invate', [
-            'content' => 'team/invate', // ชื่อไฟล์ View
+        return view('/team/invite', [
+            'content' => 'team/invite', // ชื่อไฟล์ View
             'title' => 'Team', // ชื่อหน้า
             'js_critical' => '
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>    

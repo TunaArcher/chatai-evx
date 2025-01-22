@@ -110,9 +110,39 @@
                             <div class="d-flex align-self-center mb-2 mb-md-0">
                                 <div class="img-group d-inline-flex justify-content-center">
                                     <?php if ($members) { ?>
+                                        <style>
+                                            .user-avatar {
+                                                position: relative;
+                                            }
+
+                                            .camera-icon {
+                                                bottom: 5px;
+                                                right: 5px;
+                                                width: 12px;
+                                                height: 12px;
+                                                background-color: rgba(255, 199, 40, .8) !important;
+                                                /* สีพื้นหลังเขียว */
+                                                border-radius: 50%;
+                                                /* ให้เป็นวงกลม */
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                position: absolute;
+                                                transform: translate(50%, 50%);
+                                                color: #fff;
+                                                /* สีไอคอน */
+                                                font-size: 12px;
+                                                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+                                            }
+                                        </style>
                                         <?php foreach ($members as $member) { ?>
-                                            <a class="user-avatar position-relative d-inline-block ms-n2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email"; ?>">
+                                            <a class="user-avatar position-relative d-inline-block ms-n2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email $member->status"; ?>">
                                                 <img src="<?php echo $member->picture; ?>" alt="avatar" class="thumb-md shadow-sm rounded-circle">
+                                                <?php if ($member->status !== '') { ?>
+                                                    <span class="camera-icon position-absolute">
+                                                        <i class="iconoir-warning-circle"></i>
+                                                    </span>
+                                                <?php } ?>
                                             </a>
                                         <?php } ?>
                                     <?php } ?>
@@ -122,7 +152,7 @@
                                         </a>
                                     <?php } ?>
                                 </div>
-                                <button type="button" class="gradient-animate-btn btn card-bg text-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#invateToTeamMember"><i class="fa-solid fa-plus me-1"></i> เพิ่มสมาชิก</button>
+                                <button type="button" class="gradient-animate-btn btn card-bg text-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#inviteToTeamMember"><i class="fa-solid fa-plus me-1"></i> เพิ่มสมาชิก</button>
                             </div>
                             <div class="align-self-center">
                                 <form class="row g-2">
@@ -311,7 +341,7 @@
     <!--end Rightbar-->
     <!--Start Footer-->
 
-    <div class="modal fade" id="invateToTeamMember" tabindex="-1" role="dialog" aria-labelledby="invateToTeamMember" aria-hidden="true">
+    <div class="modal fade" id="inviteToTeamMember" tabindex="-1" role="dialog" aria-labelledby="inviteToTeamMember" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -327,7 +357,7 @@
                     </div><!--end row-->
                 </div><!--end modal-body-->
                 <div class="modal-footer">
-                    <button id="btnSendInvateToTeamMember" type="button" class="btn btn-primary w-100">ยืนยัน</button>
+                    <button id="btnSendInviteToTeamMember" type="button" class="btn btn-primary w-100">ยืนยัน</button>
                 </div><!--end modal-footer-->
             </div><!--end modal-content-->
         </div><!--end modal-dialog-->
@@ -362,8 +392,7 @@
                             <select id="multiSelectSocial" class="selectr">
                                 <?php if ($userSocials) { ?>
                                     <?php foreach ($userSocials as $social): ?>
-                                        <option value="<?= htmlspecialchars($social->id) ?>"
-                                            data-image="<?php echo base_url('assets/images/' . getPlatformIcon($social->platform)); ?>">
+                                        <option value="<?= htmlspecialchars($social->id) ?>" data-image="<?php echo base_url('assets/images/' . getPlatformIcon($social->platform)); ?>">
                                             <?= htmlspecialchars($social->name) ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -378,10 +407,15 @@
                             <select id="multiSelectMember" class="selectr">
                                 <?php if ($members) { ?>
                                     <?php foreach ($members as $member): ?>
-                                        <option value="<?= htmlspecialchars($member->id) ?>"
-                                            data-image="<?= htmlspecialchars($member->picture) ?>">
-                                            <?= htmlspecialchars($member->email) ?>
-                                        </option>
+                                        <?php if ($member->accept_invite == 'waiting') { ?>
+                                            <option disabled data-image="<?= htmlspecialchars($member->picture) ?>">
+                                                <?= htmlspecialchars($member->email) ?> (รอการตอบรับ)
+                                            </option>
+                                        <?php } else { ?>
+                                            <option value="<?= htmlspecialchars($member->id) ?>" data-image="<?= htmlspecialchars($member->picture) ?>">
+                                                <?= htmlspecialchars($member->email) ?>
+                                            </option>
+                                        <?php } ?>
                                     <?php endforeach; ?>
                                 <?php } else { ?>
                                     <option disabled>--- คุณยังไม่มีสมาชิก ---</option>

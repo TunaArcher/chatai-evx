@@ -61,21 +61,42 @@ class Authentication extends BaseController
             $requestPayload = $this->request->getJSON();
             $email = $requestPayload->email ?? null;
             $password = $requestPayload->password ?? null;
-            $userOwnerID = isset($requestPayload->user_owner_id) ? $requestPayload->user_owner_id : null;
+            $userOwnerID = isset($requestPayload->user_owner_id) ? hashidsDecrypt($requestPayload->user_owner_id) : null;
 
             if (!$email || !$password) throw new \Exception('กรุณาตรวจสอบ email หรือ password ของท่าน');
 
-            $users = $this->userModel->getUser($email);
-            if ($users) throw new \Exception('มียูสนี้แล้ว');
+            if ($userOwnerID) {
 
-            $userID = $this->userModel->insertUser([
-                'main_sign_in_by' => 'default',
-                'email' => $email,
-                'name' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'user_owner_id' => $userOwnerID,
-                'picture' => $userOwnerID ? getAvatar() : ''
-            ]);
+                $user = $this->userModel->getUserByEmail($email);
+
+                if ($user->accept_invite == 'done') throw new \Exception('มียูสนี้แล้ว');
+
+                else if ($user->accept_invite == 'waiting') {
+                    $this->userModel->updateUserByID($user->id, [
+                        'accept_invite' => 'done',
+                        'main_sign_in_by' => 'default',
+                        'name' => $email,
+                        'password' => password_hash($password, PASSWORD_DEFAULT),
+                    ]);
+                }
+
+                $userID = $user->id;
+
+            } else {
+
+                $users = $this->userModel->getUser($email);
+
+                if ($users) throw new \Exception('มียูสนี้แล้ว');
+
+                $userID = $this->userModel->insertUser([
+                    'accept_invite' => $userOwnerID ? 'done' : '',
+                    'main_sign_in_by' => 'default',
+                    'email' => $email,
+                    'name' => $email,
+                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                    'user_owner_id' => $userOwnerID
+                ]);
+            }
 
             $user = $this->userModel->getUserByID($userID);
 
