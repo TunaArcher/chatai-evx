@@ -55,12 +55,12 @@ class MessageService
                 $team = $this->teamModel->getTeamByID($teamSocial->team_id);
                 if ($team) {
 
-                    $userIdLooking[] = $team->owner_id;
+                    $userIdLooking[] = hashidsEncrypt($team->owner_id);
 
                     $teamMembers = $this->teamMemberModel->getTeamMemberUserIDByTeamID($team->id);
 
                     foreach ($teamMembers as $teamMember) {
-                        $userIdLooking[] = $teamMember->user_id;
+                        $userIdLooking[] = hashidsEncrypt($teamMember->user_id);
                     }
                 }
             }
