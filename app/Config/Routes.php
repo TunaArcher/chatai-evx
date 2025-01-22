@@ -142,7 +142,7 @@ $routes->post('/message-traning-clears', 'SettingController::message_traning_cle
 // -----------------------------------------------------------------------------
 
 // Meta & Line
-$routes->get('/webhook', 'WebhookController::verifyWebhook'); // Webhook สำหรับยืนยัน Meta Developer
+$routes->get('/webhook/(:any)', 'WebhookController::verifyWebhook/$1'); // Webhook สำหรับยืนยัน Meta Developer
 $routes->post('/webhook/(:any)', 'WebhookController::webhook/$1'); // Webhook สำหรับรับข้อมูลจากแพลตฟอร์ม
 
 // Stripe
