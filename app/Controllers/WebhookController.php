@@ -27,20 +27,41 @@ class WebhookController extends BaseController
     /**
      * ตรวจสอบความถูกต้องของ Webhook ตามข้อกำหนดเฉพาะของแต่ละแพลตฟอร์ม
      */
-    public function verifyWebhook()
+    public function verifyWebhook($slug)
     {
         $hubMode = $this->request->getGet('hub_mode');
         $hubVerifyToken = $this->request->getGet('hub_verify_token');
         $hubChallenge = $this->request->getGet('hub_challenge');
 
-        if ($hubMode === 'subscribe' && $hubVerifyToken === 'HAPPY') {
-            // for fb
-            // return $this->response->setStatusCode(ResponseInterface::HTTP_OK)->setBody($hubChallenge);
+        switch ($slug) {
+            case 'facebook':
+                if ($hubVerifyToken === 'HAPPY_FACEBOOK') {
+                    // ตอบกลับสำหรับ Facebook
+                    return $this->response
+                        ->setStatusCode(ResponseInterface::HTTP_OK)
+                        ->setBody($hubChallenge);
+                }
+                break;
 
-            // for whats app
-            echo $hubChallenge; // ส่ง Challenge กลับไป
-            http_response_code(200);
-            exit;
+            case 'instagram':
+                if ($hubVerifyToken === 'HAPPY_INSTAGRAM') {
+                    // ตอบกลับสำหรับ Instagram
+                    return $this->response
+                        ->setStatusCode(ResponseInterface::HTTP_OK)
+                        ->setBody($hubChallenge);
+                }
+                break;
+
+            case 'whatsapp':
+                if ($hubVerifyToken === 'HAPPY_WHATSAPP') {
+                    // ตอบกลับสำหรับ WhatsApp
+                    echo $hubChallenge; // ส่ง Challenge กลับไป
+                    http_response_code(200);
+                    exit;
+                }
+                break;
+            default:
+                break;
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
