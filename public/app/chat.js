@@ -264,7 +264,7 @@ ws.onmessage = (event) => {
     renderMessage(data);
     scrollToBottom();
   } else {
-    if (data.userIdLooking.includes("101") === window.userID) {
+    if (data.userIdLooking.includes(window.userID)) {
       addOrUpdateRoom(data);
     }
   }
