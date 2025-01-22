@@ -82,6 +82,13 @@ class TeamSocialModel
         return $builder->where('email', $email)->get()->getRow();
     }
 
+    public function getTeamSocialByUserSocialID($userSocialID)
+    {
+        $builder = $this->db->table('team_socials');
+
+        return $builder->where('social_id', $userSocialID)->get()->getResult();
+    }
+
     public function getTeamSocialByTeamID($teamID, $select = 'ALL')
     {
 

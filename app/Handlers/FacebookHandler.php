@@ -50,6 +50,7 @@ class FacebookHandler
 
         // ส่งข้อความไปยัง WebSocket Server
         $this->messageService->sendToWebSocket([
+            'messageRoom' => $messageRoom,
             'room_id' => $messageRoom->id,
             'send_by' => 'Customer',
             'sender_id' => $customer->id,
@@ -93,6 +94,7 @@ class FacebookHandler
 
             // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([
+                'messageRoom' => $messageRoom,
                 'room_id' => $messageRoom->id,
                 'send_by' => 'Admin',
                 'sender_id' => $userID,
@@ -146,6 +148,7 @@ class FacebookHandler
 
             // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([
+                'messageRoom' => $messageRoom,
                 'room_id' => $messageRoom->id,
                 'send_by' => 'Admin',
                 'sender_id' => $userID,

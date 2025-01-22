@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
+use App\Models\TeamMemberModel;
+use App\Models\TeamModel;
+use App\Models\TeamSocialModel;
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Integrations\Facebook\FacebookClient;
@@ -15,12 +18,18 @@ class MessageService
     private CustomerModel $customerModel;
     private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
+    private TeamModel $teamModel;
+    private TeamSocialModel $teamSocialModel;
+    private TeamMemberModel $teamMemberModel;
 
     public function __construct()
     {
         $this->customerModel = new CustomerModel();
         $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
+        $this->teamModel = new TeamModel();
+        $this->teamSocialModel = new TeamSocialModel();
+        $this->teamMemberModel = new TeamMemberModel();
     }
 
     // Logic การ Save Message
@@ -38,6 +47,27 @@ class MessageService
     // Logic การส่ง Socket
     public function sendToWebSocket(array $data)
     {
+        $messageRoom = $data['messageRoom'];
+        $userWatchingID = [];
+        $teamSocials = $this->teamSocialModel->getTeamSocialByUserSocialID($messageRoom->user_social_id);
+        if ($teamSocials) {
+            foreach ($teamSocials as $teamSocial) {
+                $team = $this->teamModel->getTeamByID($teamSocial->team_id);
+                if ($team) {
+
+                    $userWatchingID[] = $team->owner_id;
+
+                    $teamMembers = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
+
+                    foreach ($teamMembers as $teamMember) {
+                        $userWatchingID[] = $teamMember->user_id;
+                    }
+                }
+            }
+        } else $userWatchingID[] = $messageRoom->user_id;
+
+        $data['userWatchingID'] = $userWatchingID;
+
         $url = getenv('WS_URL'); // URL ของ WebSocket Server
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // แปลงข้อมูลเป็น JSON

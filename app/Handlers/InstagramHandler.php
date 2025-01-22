@@ -99,6 +99,7 @@ class InstagramHandler
         );
 
         $this->messageService->sendToWebSocket([
+            'messageRoom' => $messageRoom,
             'room_id' => $messageRoom->id,
             'send_by' => $sender,
             'sender_id' => $customer->id,
@@ -121,6 +122,7 @@ class InstagramHandler
             $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender);
 
             $this->messageService->sendToWebSocket([
+                'messageRoom' => $messageRoom,
                 'room_id' => $messageRoom->id,
                 'send_by' => $sender,
                 'sender_id' => $userID,
