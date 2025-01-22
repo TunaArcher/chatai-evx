@@ -100,15 +100,23 @@ class InstagramHandler
 
         $this->messageService->sendToWebSocket([
             'messageRoom' => $messageRoom,
+
             'room_id' => $messageRoom->id,
+
             'send_by' => $sender,
+
             'sender_id' => $customer->id,
-            'message' => $message,
-            'platform' => $this->platform,
             'sender_name' => $customer->name,
-            'created_at' => date('Y-m-d H:i:s'),
             'sender_avatar' => $customer->profile,
-            'receiver' => hashidsEncrypt($messageRoom->user_id)
+
+            'platform' => $this->platform,
+            'message' => $message,
+
+            'receiver_id' => hashidsEncrypt($messageRoom->user_id),
+            'receiver_name' => 'Admin',
+            'receiver_avatar' => '',
+
+            'created_at' => date('Y-m-d H:i:s'),
         ]);
     }
 
@@ -121,16 +129,27 @@ class InstagramHandler
 
             $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender);
 
+            $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+
             $this->messageService->sendToWebSocket([
                 'messageRoom' => $messageRoom,
+
                 'room_id' => $messageRoom->id,
+
                 'send_by' => $sender,
+
                 'sender_id' => $userID,
-                'message' => $message,
-                'platform' => $this->platform,
                 'sender_name' => 'Admin',
-                'created_at' => date('Y-m-d H:i:s'),
                 'sender_avatar' => '',
+
+                'platform' => $this->platform,
+                'message' => $message,
+
+                'receiver_id' => hashidsEncrypt($customer->user_id),
+                'receiver_name' => $customer->name,
+                'receiver_avatar' => $customer->profile,
+
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
         }
     }

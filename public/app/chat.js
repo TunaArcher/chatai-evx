@@ -259,8 +259,6 @@ ws.onmessage = (event) => {
   } else {
     if (data.userIdLooking.includes(window.userID)) addOrUpdateRoom(data);
   }
-
-  userOwnerID;
 };
 // จัดการสถานะ WebSocket
 ws.onopen = () => console.log("WebSocket connection opened.");
