@@ -100,7 +100,7 @@ class FacebookHandler
                 'sender_id' => $userID,
                 'message' => $messageReplyToCustomer,
                 'platform' => $this->platform,
-                // 'sender_name' => $customer->name,
+                'sender_name' => 'Admin',
                 'created_at' => date('Y-m-d H:i:s'),
                 'sender_avatar' => '',
             ]);
@@ -154,7 +154,7 @@ class FacebookHandler
                 'sender_id' => $userID,
                 'message' => $messageReplyToCustomer,
                 'platform' => $this->platform,
-                // 'sender_name' => $customer->name,
+                'sender_name' => 'Admin',
                 'created_at' => date('Y-m-d H:i:s'),
                 'sender_avatar' => '',
             ]);
