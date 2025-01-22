@@ -112,6 +112,21 @@ class TeamMemberModel
             $builder = $this->db->query($sql);
 
             return $builder->getResult();
+        } else {
+            $sql = "
+                SELECT 
+                    team_members.id,
+                    team_members.user_id,
+                    users.email,
+                    users.picture
+                FROM team_members
+                JOIN users ON team_members.user_id = users.id
+                WHERE team_members.team_id = $teamID
+            ";
+
+            $builder = $this->db->query($sql);
+
+            return $builder->getResult();
         }
     }
 
