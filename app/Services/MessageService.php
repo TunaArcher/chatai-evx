@@ -48,25 +48,25 @@ class MessageService
     public function sendToWebSocket(array $data)
     {
         $messageRoom = $data['messageRoom'];
-        $userWatchingID = [];
+        $userIdLooking = [];
         $teamSocials = $this->teamSocialModel->getTeamSocialByUserSocialID($messageRoom->user_social_id);
         if ($teamSocials) {
             foreach ($teamSocials as $teamSocial) {
                 $team = $this->teamModel->getTeamByID($teamSocial->team_id);
                 if ($team) {
 
-                    $userWatchingID[] = $team->owner_id;
+                    $userIdLooking[] = $team->owner_id;
 
                     $teamMembers = $this->teamMemberModel->getTeamMemberUserIDByTeamID($team->id);
 
                     foreach ($teamMembers as $teamMember) {
-                        $userWatchingID[] = $teamMember->user_id;
+                        $userIdLooking[] = $teamMember->user_id;
                     }
                 }
             }
-        } else $userWatchingID[] = $messageRoom->user_id;
+        } else $userIdLooking[] = $messageRoom->user_id;
 
-        $data['userWatchingID'] = $userWatchingID;
+        $data['userIdLooking'] = $userIdLooking;
 
         $url = getenv('WS_URL'); // URL ของ WebSocket Server
         $ch = curl_init($url);

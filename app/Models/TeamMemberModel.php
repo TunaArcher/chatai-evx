@@ -134,7 +134,7 @@ class TeamMemberModel
     {
         $sql = "
             SELECT 
-                team_members.user_id,
+                team_members.user_id
             FROM team_members
             WHERE team_members.team_id = $teamID
         ";
