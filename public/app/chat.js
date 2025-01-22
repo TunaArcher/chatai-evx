@@ -253,20 +253,11 @@ ws.onmessage = (event) => {
 
   let data = JSON.parse(event.data);
 
-  // if (data.room_id === currentRoomId) {
-  //   renderMessage(data);
-  //   scrollToBottom();
-  // } else {
-  //   addOrUpdateRoom(data);
-  // }
-
   if (data.room_id === currentRoomId) {
     renderMessage(data);
     scrollToBottom();
   } else {
-    if (data.userIdLooking.includes(window.userID)) {
-      addOrUpdateRoom(data);
-    }
+    if (data.userIdLooking.includes(window.userID)) addOrUpdateRoom(data);
   }
 
   userOwnerID;
