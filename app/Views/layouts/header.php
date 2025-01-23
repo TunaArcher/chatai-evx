@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>EVX CHAT AI | DEMO</title>
+    <title>AutoConX | Beta 1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="" name="author" />
@@ -118,7 +118,7 @@
                         </button>
                     </li>
                     <li class="mx-3 welcome-text">
-                        <h3 class="mb-0 fw-bold text-truncate">Chat AI Demo</h3>
+                        <h3 class="mb-0 fw-bold text-truncate">AutoConX Beta 1.0</h3>
                         <!-- <h6 class="mb-0 fw-normal text-muted text-truncate fs-14">Here's your overview this week.</h6> -->
                     </li>
                 </ul>
@@ -132,7 +132,7 @@
                     </li>
 
                     <li class="dropdown topbar-item">
-                        <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#" role="button"
+                        <a class="nav-link dropdown-toggle arrow-none nav-icon disabled" data-bs-toggle="dropdown" href="#" role="button"
                             aria-haspopup="false" aria-expanded="false">
                             <i class="icofont-bell-alt"></i>
                             <span class="alert-badge"></span>
@@ -317,13 +317,13 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end py-0">
                             <div class="d-flex align-items-center dropdown-item py-2 bg-secondary-subtle">
-                                <div class="flex-shrink-0">
+                                <!-- <div class="flex-shrink-0">
                                     <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-md rounded-circle">
-                                </div>
+                                </div> -->
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?> <span class="badge bg-info"><?php if (session()->get('subscription_status') == 'active') {
-                                                                                                                                                        echo 'อัพเกรดแล้ว';
-                                                                                                                                                    }; ?></span></h6>
+                                    <h6 class="my-0 fw-medium text-dark fs-13">
+                                        <?php echo session()->get('name'); ?> <span class="badge bg-info"><?php if (session()->get('subscription_status') == 'active') { echo 'อัพเกรดแล้ว'; }; ?></span>
+                                    </h6>
                                     <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small>
                                 </div><!--end media-body-->
                             </div>

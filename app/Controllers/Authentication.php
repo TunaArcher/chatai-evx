@@ -81,7 +81,6 @@ class Authentication extends BaseController
                 }
 
                 $userID = $user->id;
-
             } else {
 
                 $users = $this->userModel->getUser($email);
@@ -420,8 +419,7 @@ class Authentication extends BaseController
                         'main_sign_in_by' => $platform,
                         'email' => $profile->email ?? '',
                         'name' => $profile->name,
-                        'picture' => $profile->picture ?? '',
-                        // 'meta_access_token' => $token['access_token'],
+                        'picture' => $profile->picture ?? ''
                     ]);
 
                     $userAccount = $this->userAccountModel->insertUserAccount([
@@ -447,7 +445,6 @@ class Authentication extends BaseController
                         'name' => $profile->name,
                         'email' => $profile->email ?? '',
                         'picture' => $profile->picture ?? '',
-                        'meta_access_token' => $token['access_token'],
                     ]);
 
                     $this->userAccountModel->updateUserAccountByID($userAccount->id, [
