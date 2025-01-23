@@ -72,7 +72,7 @@ class MessageModel
         return $builder->getRow();
     }
 
-    public function getMessageRoomByRoomID($roomID, $status)
+    public function getMessageRoomByRoomID($roomID, $status = '')
     {
         $sql = "
             SELECT * FROM messages
