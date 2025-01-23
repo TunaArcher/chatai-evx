@@ -47,28 +47,28 @@ class Email extends BaseConfig
      *
      * @var string
      */
-    public $SMTPHost = 'sandbox.smtp.mailtrap.io';
+    public $SMTPHost;
 
     /**
      * SMTP Username
      *
      * @var string
      */
-    public $SMTPUser = '1a550124557c4b';
+    public $SMTPUser;
 
     /**
      * SMTP Password
      *
      * @var string
      */
-    public $SMTPPass = 'afef95377a666e';
+    public $SMTPPass;
 
     /**
      * SMTP Port
      *
      * @var int
      */
-    public $SMTPPort = 2525;
+    public $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
@@ -167,4 +167,11 @@ class Email extends BaseConfig
      * @var bool
      */
     public $DSN = false;
+
+    public function __construct()
+    {
+        $this->SMTPHost = env('MAIL_HOST'); //'sandbox.smtp.mailtrap.io';
+        $this->SMTPUser = env('MAIL_USER'); //'1a550124557c4b';
+        $this->SMTPPass = env('MAIL_PASS'); // afef95377a666e
+    }
 }

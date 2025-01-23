@@ -94,17 +94,17 @@ class TeamController extends BaseController
             // ส่งอีเมล
             $email = \Config\Services::email();
             // $email->setTo($data->email);
-            $email->setFrom('from@example.com', 'AutoConX Team'); // อีเมลและชื่อผู้ส่ง
+            $email->setFrom(getenv('MAIL_USER'), 'AutoConX Team'); // อีเมลและชื่อผู้ส่ง
             $email->setTo($data->email);
             $email->setSubject('คำเชิญเข้าทีม | AutoConX');
             $email->setMessage("
                 <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 8px; text-align: center;'>
                     <div style='margin-bottom: 20px;'>
-                        <img src='https://influthai.ai/assets/images/conXx.png' alt='AutoConX Logo' style='max-width: 150px; height: auto;'>
+                        <img src='" . base_url('/assets/images/conXx.png') . "' alt='AutoConX Logo' style='max-width: 150px; height: auto;'>
                     </div>
                     <h1 style='color: #2c3e50;'>คุณถูกเชิญเข้าร่วมทีม</h1>
                     <p style='font-size: 16px; margin: 10px 0;'>
-                        ขอบคุณที่สนใจร่วมงานกับเรา! กรุณาคลิกลิงก์ด้านล่างเพื่อดำเนินการลงทะเบียนของคุณให้เสร็จสมบูรณ์:
+                        นี่คือคำเชิญเข้าร่วมทีม! กรุณาคลิกลิงก์ด้านล่างเพื่อดำเนินการลงทะเบียนของคุณให้เสร็จสมบูรณ์:
                     </p>
                     <div style='text-align: center; margin: 20px 0;'>
                         <a href='{$registerLink}' 
@@ -127,7 +127,7 @@ class TeamController extends BaseController
                     'accept_invite' => 'waiting',
                     'email' => $data->email,
                     'user_owner_id' => hashidsDecrypt(session()->get('userID')),
-                    'name' => $email,
+                    'name' => $data->email,
                     'picture' => getAvatar()
                 ]);
                 $response = [
