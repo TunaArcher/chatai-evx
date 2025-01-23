@@ -322,6 +322,7 @@
         return window.innerWidth > 1024; // เช็คว่าหน้าจอขนาดใหญ่กว่า 1024px
     }
 </script>
+
 </body>
 <!--end body-->
 
