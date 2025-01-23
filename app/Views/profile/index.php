@@ -83,11 +83,11 @@
                     <div class="card-body pt-0">
                         <p class="text-muted fw-medium mb-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam ipsam quas, exercitationem sint iste temporibus enim ex quam delectus aliquam totam eum commodi sunt iusto nobis iure hic repellat. Reprehenderit.</p>
                         <div class="mb-3">
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 1</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 2</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 3</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 4</span>
-                            <!-- <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development</span> -->
+                            <?php if (isset($teams)) { ?>
+                                <?php foreach ($teams as $team) { ?>
+                                    <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">ทีม <img width="20" src="<?php echo base_url($team->icon); ?>"><?php echo $team->name; ?></span>
+                                <?php } ?>
+                            <?php } ?>
                         </div>
                         <?php if ($subscription) { ?>
 
