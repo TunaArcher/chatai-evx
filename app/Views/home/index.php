@@ -1,3 +1,50 @@
+<style>
+    /* Fade-in Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Card Animation */
+    .card-dashboard-animate {
+        opacity: 0;
+        /* เริ่มต้นเป็นโปร่งใส */
+        transform: translateY(20px);
+        /* เริ่มต้นขยับลง */
+        transition: all 0.3s ease-in-out;
+        /* เพิ่ม transition */
+    }
+
+    .card-dashboard-animate.visible {
+        opacity: 1;
+        /* ทำให้การ์ดปรากฏ */
+        transform: translateY(0);
+        /* การ์ดเลื่อนขึ้น */
+    }
+
+    /* Hover Effect for Card */
+    .card-dashboard-animate:hover {
+        transform: scale(1.05);
+        /* การ์ดขยาย */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        /* เพิ่มเงา */
+    }
+
+    /* Button Hover Effect */
+    button.btn:hover {
+        transform: scale(1.1);
+        /* ปุ่มขยายเล็กน้อย */
+        transition: transform 0.2s ease;
+    }
+</style>
+
 <!-- Page Content-->
 <div class="page-content">
     <div class="container">
@@ -39,7 +86,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
-                <div class="card">
+                <div class="card card-dashboard-animate">
                     <div class="card-body">
                         <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
                             <div class="col-9">
@@ -58,7 +105,7 @@
                         <div class="row mt-3 align-items-center">
                             <!-- ⚙️ Flow Builder ด้านซ้าย -->
                             <div class="col text-start">
-                                <p class="mb-0 text-truncate text-muted">⚙️ Flow Builder</p>
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/setting/connect'); ?>">⚙️ Flow Builder</a></p>
                             </div>
 
                             <!-- ปุ่ม ด้านขวา -->
@@ -75,7 +122,7 @@
             </div>
             <!--end col-->
             <div class="col-md-6 col-lg-4">
-                <div class="card">
+                <div class="card card-dashboard-animate">
                     <div class="card-body">
                         <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
                             <div class="col-9">
@@ -94,7 +141,7 @@
                         <div class="row mt-3 align-items-center">
                             <!-- ⚙️ Flow Builder ด้านซ้าย -->
                             <div class="col text-start">
-                                <p class="mb-0 text-truncate text-muted">⚙️ Flow Builder</p>
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/chat'); ?>">⚙️ Flow Builder</a></p>
                             </div>
 
                             <!-- ปุ่ม ด้านขวา -->
@@ -111,7 +158,7 @@
             </div>
             <!--end col-->
             <div class="col-md-6 col-lg-4">
-                <div class="card">
+                <div class="card card-dashboard-animate">
                     <div class="card-body">
                         <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
                             <div class="col-9">
@@ -132,7 +179,7 @@
                         <div class="row mt-3 align-items-center">
                             <!-- ⚙️ Flow Builder ด้านซ้าย -->
                             <div class="col text-start">
-                                <p class="mb-0 text-truncate text-muted">⚙️ Flow Builder</p>
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/setting/message'); ?>">⚙️ Flow Builder</a></p>
                             </div>
 
                             <!-- ปุ่ม OK ด้านขวา -->

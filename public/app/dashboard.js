@@ -22,3 +22,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var typed = new Typed("#typed-text", options);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".card-dashboard-animate");
+
+  // สร้าง IntersectionObserver สำหรับ Scroll Animation
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+
+  // ใช้ Observer กับแต่ละการ์ด
+  cards.forEach((card) => {
+    observer.observe(card);
+  });
+});
