@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-require './vendor/autoload.php';
 
 use App\Integrations\Line\LineClient;
 use App\Integrations\WhatsApp\WhatsAppClient;
@@ -11,6 +10,7 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Libraries\ChatGPT;
 use Aws\S3\S3Client;
+
 
 class SettingController extends BaseController
 {
@@ -32,7 +32,7 @@ class SettingController extends BaseController
         $this->s3_region = getenv('REGION');
         $this->s3_cdn_img = getenv('CDN_IMG');
 
-        $this->$s3Client = new S3Client([
+        $this->s3Client = new S3Client([
             'version' => 'latest',
             'region'  => $this->s3_region,
             'endpoint' => $this->s3_endpoint,
@@ -537,6 +537,16 @@ class SettingController extends BaseController
         // CONNECT TO GPT
         $userID = hashidsDecrypt(session()->get('userID'));
         $data = $this->request->getJSON();
+
+        var_dump($data);
+        exit;
+
+        // $result_back = $this->s3Client->putObject([
+        //     'Bucket' => $this->s3_bucket,
+        //     'Key'    => 'uploads/img_ask_ai/' . $fileName_front,
+        //     'Body'   => fopen($file_Path_front, 'r'),
+        //     'ACL'    => 'public-read', // make file 'public'
+        // ]);
 
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken

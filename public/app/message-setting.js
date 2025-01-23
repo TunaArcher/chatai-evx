@@ -139,8 +139,11 @@ function sendTestTraning(data) {
       return;
     }
 
+    var inputImg = document.getElementById('file_img_ask');
+
     var testing_send = {
       message: data.value,
+      file_IMG: inputImg.files[0]
     };
 
     $.ajax({
@@ -209,4 +212,21 @@ function clearTraning() {
     },
     success: function (response) {},
   });
+}
+
+function readURLImgTestAI(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      document.querySelector("#img_ai").setAttribute("src", e.target.result);
+    };
+
+    reader.readAsDataURL(input.files[0]);
+    $("#div_img").show();
+  }
+}
+
+function resetImgTestAI() {
+  $("#img_ai").val("");
+  $("#div_img").hide();
 }
