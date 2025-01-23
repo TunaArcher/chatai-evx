@@ -47,7 +47,7 @@ class CallbackController extends BaseController
         </script>
 HTML;
     }
-    
+
     private function handleFacebookCallback($code)
     {
         $client = new Client();
@@ -69,8 +69,8 @@ HTML;
         $data = json_decode($response->getBody(), true);
         $accessToken = $data['access_token'];
 
-        $this->userModel->updateUserByID(session()->get('userID'), [
-            'access_token_meta' => $accessToken
+        $this->userModel->updateUserByID(hashidsDecrypt(session()->get('userID')), [
+            'meta_access_token' => $accessToken
         ]);
     }
 
@@ -148,8 +148,8 @@ HTML;
         $data = json_decode($response->getBody(), true);
         $accessToken = $data['access_token'];
 
-        $this->userModel->updateUserByID(session()->get('userID'), [
-            'access_token_whatsapp' => $accessToken
+        $this->userModel->updateUserByID(hashidsDecrypt(session()->get('userID')), [
+            'whatsapp_access_token' => $accessToken
         ]);
     }
 }

@@ -21,40 +21,31 @@ class AuthController extends BaseController
         $this->userSocialModel = new UserSocialModel();
     }
 
-
     public function checkToken($platform)
     {
+
         $status = 500;
         $response['data'] = '';
 
+        $user = $this->userModel->getUserByID(hashidsDecrypt(session()->get('userID')));
+
         switch ($platform) {
             case 'Facebook':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
-                if ($user->access_token_meta == '') $response['data'] = 'NO TOKEN';
-
+                if ($user->meta_access_token == '') $response['data'] = 'NO TOKEN';
                 $status = 200;
-
                 break;
 
             case 'Instagram':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
                 if ($user->access_token_instagram == '') $response['data'] = 'NO TOKEN';
-
                 $status = 200;
-
                 break;
 
             case 'WhatsApp':
-                $user = $this->userModel->getUserByID(session()->get('userID'));
-
-                if ($user->access_token_whatsapp == '') $response['data'] = 'NO TOKEN';
-
-                $status = 200;
-
+                if ($user->whatsapp_access_token == '') $response['data'] = 'NO TOKEN';
                 break;
         }
+
+        $status = 200;
 
         return $this->response
             ->setStatusCode($status)
@@ -64,13 +55,10 @@ class AuthController extends BaseController
 
     public function FbPagesList()
     {
-        $userID = hashidsDecrypt(session()->get('userID'));
 
-        $user = $this->userModel->getUserByID($userID);
+        $user = $this->userModel->getUserByID(hashidsDecrypt(session()->get('userID')));
 
-        $faceBookAPI = new FacebookClient([
-            'accessToken' => $user->access_token_meta
-        ]);
+        $faceBookAPI = new FacebookClient(['accessToken' => $user->meta_access_token]);
 
         $getFbPagesList = $faceBookAPI->getFbPagesList();
 
@@ -111,7 +99,7 @@ class AuthController extends BaseController
         $user = $this->userModel->getUserByID($userID);
 
         $whatsAppAPI = new WhatsAppClient([
-            'whatsAppToken' => $user->access_token_whatsapp
+            'whatsAppToken' => $user->whatsapp_access_token
         ]);
 
         $businesses = $whatsAppAPI->getBussinessID();

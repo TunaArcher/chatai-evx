@@ -27,20 +27,41 @@ class WebhookController extends BaseController
     /**
      * ตรวจสอบความถูกต้องของ Webhook ตามข้อกำหนดเฉพาะของแต่ละแพลตฟอร์ม
      */
-    public function verifyWebhook()
+    public function verifyWebhook($slug)
     {
         $hubMode = $this->request->getGet('hub_mode');
         $hubVerifyToken = $this->request->getGet('hub_verify_token');
         $hubChallenge = $this->request->getGet('hub_challenge');
 
-        if ($hubMode === 'subscribe' && $hubVerifyToken === 'HAPPY') {
-            // for fb
-            // return $this->response->setStatusCode(ResponseInterface::HTTP_OK)->setBody($hubChallenge);
+        switch ($slug) {
+            case 'facebook':
+                if ($hubVerifyToken === 'HAPPY_FACEBOOK') {
+                    // ตอบกลับสำหรับ Facebook
+                    return $this->response
+                        ->setStatusCode(ResponseInterface::HTTP_OK)
+                        ->setBody($hubChallenge);
+                }
+                break;
 
-            // for whats app
-            echo $hubChallenge; // ส่ง Challenge กลับไป
-            http_response_code(200);
-            exit;
+            case 'instagram':
+                if ($hubVerifyToken === 'HAPPY_INSTAGRAM') {
+                    // ตอบกลับสำหรับ Instagram
+                    return $this->response
+                        ->setStatusCode(ResponseInterface::HTTP_OK)
+                        ->setBody($hubChallenge);
+                }
+                break;
+
+            case 'whatsapp':
+                if ($hubVerifyToken === 'HAPPY_WHATSAPP') {
+                    // ตอบกลับสำหรับ WhatsApp
+                    echo $hubChallenge; // ส่ง Challenge กลับไป
+                    http_response_code(200);
+                    exit;
+                }
+                break;
+            default:
+                break;
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
@@ -49,67 +70,121 @@ class WebhookController extends BaseController
     /**
      * จัดการข้อมูล Webhook จากแพลตฟอร์มต่าง ๆ
      */
-    public function webhook($userSocialID)
+    public function webhook($slug)
     {
         $input = $this->request->getJSON();
 
+        // debug
+        // log_message('info', "ข้อความเข้า Webhook  " . json_encode($input, JSON_PRETTY_PRINT));
+
         try {
+            // กำหนด $userSocial ไว้ใน scope เพื่อใช้งานในภายหลัง
+            $userSocial = null;
 
-            // Facebook
-            if (isset($input->object) && $input->object == 'page') {
-                $userSocial = $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
+            switch ($slug) {
+                case 'facebook':
+                    $userSocial = $this->handleFacebook($input);
+                    break;
+
+                case 'instagram':
+                    $userSocial = $this->handleInstagram($input);
+                    break;
+
+                case 'whatsapp':
+                    $userSocial = $this->handleWhatsApp($input);
+                    break;
+
+                default:
+                    $userSocial = $this->handleLine($slug);
+                    break;
             }
 
-            // Whats App
-            else if (isset($input->object) && $input->object == 'whatsapp_business_account') {
-                $userSocial = $this->userSocialModel->getUserSocialByPageID('WhatsApp', $input->entry[0]->id);
+            // ดำเนินการหากพบ $userSocial
+            if ($userSocial) {
+                $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+                log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
+                $handler->handleWebhook($input, $userSocial);
+
+                // กรณีเปิดใช้งานให้ AI ช่วยตอบ
+                $this->handleAIResponse($input, $userSocial);
+
+                return $this->response->setJSON(['status' => 'success']);
             }
-
-            // Instagram
-            else if (isset($input->object) && $input->object == 'instagram') {
-                $userSocial = $this->userSocialModel->getUserSocialByPageID('Instagram', $input->entry[0]->id);
-            }
-
-            // Line 
-            else {
-                $userSocial = $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
-            }
-
-            $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
-            log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
-            $handler->handleWebhook($input, $userSocial);
-
-            // กรณีเปิดใช้งานให้ AI ช่วยตอบ
-            if ($userSocial->ai === 'on') {
-
-                $user = $this->userModel->getUserByID($userSocial->user_id);
-
-                if (!$user) {
-                    return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)->setJSON(['status' => 'error', 'message' => 'User not found']);
-                }
-
-                $subscription = $this->subscriptionModel->getUserSubscription($user->id);
-
-                // ไม่มี Subscription ถือว่าเป็นยูสทั่วไป
-                if (!$subscription) {
-                    if ($user->free_request_limit <= 10) {
-                        $handler->handleReplyByAI($input, $userSocial);
-                        $this->userModel->updateUserByID($user->id, ['free_request_limit' => $user->free_request_limit + 1]);
-                    }
-                }
-
-                // มี Subscription และ Subscription ยังไม่หมดอายุ
-                else {
-                    if ($subscription->status == 'active' && $subscription->current_period_end > time()) {
-                        $handler->handleReplyByAI($input, $userSocial);
-                    }
-                }
-            }
-
-            return $this->response->setJSON(['status' => 'success']);
         } catch (\InvalidArgumentException $e) {
             log_message('error', "WebhookController error: " . $e->getMessage());
-            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
+            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                ->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * จัดการ Webhook สำหรับ Facebook
+     */
+    private function handleFacebook($input)
+    {
+        if (isset($input->object) && $input->object == 'page') {
+            return $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
+        }
+        return null;
+    }
+
+    /**
+     * จัดการ Webhook สำหรับ Instagram
+     */
+    private function handleInstagram($input)
+    {
+        if (isset($input->object) && $input->object == 'instagram') {
+            return $this->userSocialModel->getUserSocialByPageID('Instagram', $input->entry[0]->id);
+        }
+        return null;
+    }
+
+    /**
+     * จัดการ Webhook สำหรับ WhatsApp
+     */
+    private function handleWhatsApp($input)
+    {
+        if (isset($input->object) && $input->object == 'whatsapp_business_account') {
+            return $this->userSocialModel->getUserSocialByPageID('WhatsApp', $input->entry[0]->id);
+        }
+        return null;
+    }
+
+    /**
+     * จัดการ Webhook สำหรับ Line
+     */
+    private function handleLine($slug)
+    {
+        $userSocialID = $slug;
+        return $this->userSocialModel->getUserSocialByID(hashidsDecrypt($userSocialID));
+    }
+
+    /**
+     * จัดการการตอบกลับโดย AI
+     */
+    private function handleAIResponse($input, $userSocial)
+    {
+        if ($userSocial->ai === 'on') {
+            $user = $this->userModel->getUserByID($userSocial->user_id);
+
+            if (!$user) {
+                throw new \InvalidArgumentException('User not found');
+            }
+
+            $subscription = $this->subscriptionModel->getUserSubscription($user->id);
+
+            if (!$subscription) {
+                if ($user->free_request_limit <= 10) {
+                    $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+                    $handler->handleReplyByAI($input, $userSocial);
+                    $this->userModel->updateUserByID($user->id, [
+                        'free_request_limit' => $user->free_request_limit + 1
+                    ]);
+                }
+            } elseif ($subscription->status == 'active' && $subscription->current_period_end > time()) {
+                $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+                $handler->handleReplyByAI($input, $userSocial);
+            }
         }
     }
 }

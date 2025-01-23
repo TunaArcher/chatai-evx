@@ -53,10 +53,15 @@ class UserAccountModel
         return $builder->where('id', $id)->delete();
     }
 
-    public function getUserAccount($Username)
+    public function getUserAccountByUserIDAndProvider($userID, $provider)
     {
         $builder = $this->db->table('user_accounts');
-        return $builder->where('Username', $Username)->get()->getResult();
+
+        return $builder
+            ->where('user_id', $userID)
+            ->where('provider', $provider)
+            ->get()
+            ->getRow();
     }
 
     public function getUserAccountByProviderAndProviderUserID($provider, $providerUserID)
@@ -69,30 +74,7 @@ class UserAccountModel
             ->get()
             ->getRow();
     }
-
-    public function getUserAccountByEmail($email)
-    {
-        $builder = $this->db->table('user_accounts');
-        return $builder->where('email', $email)->get()->getRow();
-    }
-
-    public function getUserAccountByUserOwnerID($userOwnerID)
-    {
-        $builder = $this->db->table('user_accounts');
-
-        return $builder->where('user_owner_id', $userOwnerID)->get()->getResult();
-    }
-
-    public function getUserAccountByStripeCustomerID($stripeCustomerID)
-    {
-        $builder = $this->db->table('user_accounts');
-
-        return $builder
-            ->where('stripe_customer_id', $stripeCustomerID)
-            ->get()
-            ->getRow();
-    }
-
+    
     public function updateUserAccount($data)
     {
         $builder = $this->db->table('user_accounts');

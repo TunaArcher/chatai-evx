@@ -66,6 +66,52 @@
         left: 50%;
     }
 </style>
+<style>
+    /* ปุ่ม Gradient Animate */
+    .gradient-animate-btn {
+        display: inline-block;
+        font-weight: bold;
+        color: #fff !important;
+        /* สีตัวอักษร */
+        border: none;
+        cursor: pointer;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(90deg, #6a11cb, #2575fc, #6a85e6, #9d50bb);
+        background-size: 300% 300%;
+        box-shadow: 0 4px 8px rgba(101, 151, 253, 0.6);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: gradientAnimation 4s ease infinite;
+        /* เพิ่มการ Animate */
+    }
+
+    /* เอฟเฟกต์ Hover */
+    .gradient-animate-btn:hover {
+        /* transform: scale(1.05); */
+        /* ขยายขนาดเล็กน้อย */
+        box-shadow: 0 8px 15px rgba(101, 151, 253, 0.8);
+    }
+
+    /* เอฟเฟกต์กดปุ่ม */
+    .gradient-animate-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 4px 8px rgba(101, 151, 253, 0.6);
+    }
+
+    /* Animation สำหรับ Gradient */
+    @keyframes gradientAnimation {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+</style>
 <div class="page-content">
     <div class="container-fluid">
         <div class="row my-3">
@@ -87,49 +133,95 @@
             </div> <!-- end col -->
         </div> <!-- end row -->
         <div class="row">
-            <?php foreach ($user_socials as $user_social) { ?>
-                <div class="col-md-3" id="userSocialWrapper-<?php echo $user_social->id; ?>">
+
+            <div class="row justify-content-center">
+                <div class="col-md-12 col-lg-12">
                     <div class="card">
-                        <div class="card-body">
-                            <div class="position-absolute  end-0 me-3 userSocialStatus" data-user-social-id="<?php echo $user_social->id; ?>">
-                                <?php if ($user_social->is_connect == '1') { ?>
-                                    <span class="badge rounded text-success bg-transparent border border-primary ms-1 p-1">เชื่อมต่อแล้ว</span>
-                                <?php } else { ?>
-                                    <span class="badge rounded text-danger bg-transparent border border-danger ms-1 p-1">หลุดการเชื่อมต่อ</span>
-                                <?php } ?>
-                            </div>
-                            <div class="text-center border-dashed-bottom pb-3">
-                                <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="" height="40" class="rounded-circle d-inline-block">
-                                <h5 class="fw-bold my-2 fs-18"><?php echo $user_social->name; ?></h5>
-                                <div style="height: 96px;">
-                                    <?php if ($user_social->platform == 'Line') { ?>
-                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a></p>
-                                        <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } else if ($user_social->platform == 'Tiktok') { ?>
-                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
-                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Tiktok Developer</p>
-                                        <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between fw-semibold align-items-center  mt-3">
-                                <div>
-                                    <?php if ($user_social->platform == 'Line') { ?>
-                                        <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
-                                    <?php } ?>
-                                    <?php if ($user_social->ai == 'on') { ?>
-                                        <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> กำลังใช้งาน AI</button>
-                                    <?php } else { ?>
-                                        <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> เปิดใช้ AI</button>
-                                    <?php } ?>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-danger px-2 d-inline-flex align-items-center btnDelete" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-trash me-1"></i>*</button>
-                            </div>
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-title">การ Connect</h4>
+                                </div><!--end col-->
+                                <div class="col-auto">
+                                    <div class="dropdown">
+                                        <a href="#" class="btn bt btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="icofont-calendar fs-5 me-1"></i> Filter (In development)<i class="las la-angle-down ms-1"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="#">Line</a>
+                                            <a class="dropdown-item" href="#">Facebook</a>
+                                            <a class="dropdown-item" href="#">WhatsApp</a>
+                                            <a class="dropdown-item" href="#">Instagram</a>
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+                            </div> <!--end row-->
+                        </div><!--end card-header-->
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="border-top-0">แพลตฟอร์ม</th>
+                                            <th class="border-top-0">ชื่อ</th>
+                                            <th class="border-top-0">เงื่อนไข</th>
+                                            <th class="border-top-0">Status</th>
+                                            <th class="border-top-0">Action</th>
+                                        </tr><!--end tr-->
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($user_socials as $user_social) { ?>
+                                            <tr>
+                                                <td id="userSocialWrapper-<?php echo $user_social->id; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" height="40" class="me-3 align-self-center rounded" alt="...">
+                                                        <div class="flex-grow-1 text-truncate">
+                                                            <h6 class="m-0"><?php echo $user_social->name; ?></h6>
+                                                            <a href="#" class="fs-12 text-primary">ID: <?php echo hashidsEncrypt($user_social->id); ?></a>
+                                                        </div><!--end media body-->
+                                                    </div>
+                                                </td>
+                                                <td><?php echo $user_social->name; ?></td>
+                                                <td>
+                                                    <?php if ($user_social->platform == 'Line') { ?>
+                                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
+                                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a></p>
+                                                        <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                                    <?php } else if ($user_social->platform == 'Tiktok') { ?>
+                                                        <p class="text-dark  fs-13 fw-semibold"><span class="text-muted">URL Webhook : </span><?php echo base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?> <i class="far fa-copy" onclick="copyToClipboard('<?= base_url() . '/webhook/' . hashidsEncrypt($user_social->id); ?>')" style="cursor: pointer;;"></i></p>
+                                                        <p class="text-muted mt-0 mb-0">1. คัดลอก URL Webhook ไปตั้งค่าใน Tiktok Developer</p>
+                                                        <p class="text-muted mt-0 mb-0">2. ทดสอบโดยการ กดปุ่มเชื่อมต่อ</p>
+                                                    <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($user_social->is_connect == '1') { ?>
+                                                        <span class="badge rounded text-success bg-transparent border border-primary ms-1 p-1">เชื่อมต่อแล้ว</span>
+                                                    <?php } else { ?>
+                                                        <span class="badge rounded text-danger bg-transparent border border-danger ms-1 p-1">หลุดการเชื่อมต่อ</span>
+                                                    <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($user_social->platform == 'Line') { ?>
+                                                        <button type="button" class="btn btn-sm btn-warning px-2 d-inline-flex align-items-center btnCheckConnect" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fab fa-connectdevelop me-1"></i> เชื่อมต่อ</button>
+                                                    <?php } ?>
+                                                    <?php if ($user_social->ai == 'on') { ?>
+                                                        <button type="button" class="btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> กำลังใช้งาน AI</button>
+                                                    <?php } else { ?>
+                                                        <button type="button" class="gradient-animate-btn btn btn-sm btn-primary px-2 d-inline-flex align-items-center btnAI" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-robot me-1"></i> เปิดใช้ AI</button>
+                                                    <?php } ?>
+                                                    | <button type="button" class="btn btn-sm btn-danger px-2 d-inline-flex align-items-center btnDelete" data-platform="<?php echo $user_social->platform; ?>" data-user-social-id="<?php echo $user_social->id; ?>"><i class="fas fa-trash me-1"></i>*</button>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table> <!--end table-->
+                            </div><!--end /div-->
                         </div><!--end card-body-->
-                    </div>
-                </div>
-            <?php } ?>
+                    </div><!--end card-->
+                </div> <!--end col-->
+            </div>
+
+
         </div><!--end row-->
     </div><!-- container -->
 

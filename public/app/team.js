@@ -169,7 +169,7 @@ $(document).ready(function () {
   // -----------------------------------------------------------------------------
 
   // เชิญเข้าทีม
-  $("#btnSendInvateToTeamMember").on("click", function () {
+  $("#btnSendInviteToTeamMember").on("click", function () {
     let $me = $(this);
 
     // ดึงค่าจากช่องป้อนข้อมูล
@@ -188,14 +188,15 @@ $(document).ready(function () {
       $me.prop("disabled", true);
 
       $.ajax({
-        url: `${serverUrl}/team/invate-to-member`,
+        url: `${serverUrl}/team/invite-to-member`,
         type: "POST",
         data: JSON.stringify({ email: email }),
         contentType: "application/json",
         success: function (response) {
           if (response.success) {
             notyf(`ส่งคำเชิญไปที่ ${email} สำเร็จ`, "success");
-            $("#invateToTeamMember").modal("hide");
+            $("#inviteToTeamMember").modal("hide");
+            location.reload();
           } else {
             notyf(`${response.message}`, "error");
           }
@@ -204,15 +205,18 @@ $(document).ready(function () {
         },
         error: function (xhr, status, err) {
           const message =
-            err.responseJSON?.messages ||
+            xhr.responseJSON?.message || // ใช้ responseJSON.message เพื่อดึงข้อความที่ส่งมาจากเซิร์ฟเวอร์
             "ไม่สามารถอัพเดทได้ กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ให้บริการ";
+
           Swal.fire({
-            title: message,
+            title: message, // แสดงข้อความที่ดึงมา
             text: "Redirecting...",
             icon: "warning",
             timer: 2000,
             showConfirmButton: false,
           });
+
+          $me.prop("disabled", false);
         },
       });
     }

@@ -10,7 +10,11 @@
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+<<<<<<< HEAD
         "aws/aws-sdk-php": "^3.337",
+=======
+        "google/apiclient": "^2.18",
+>>>>>>> main
         "guzzlehttp/guzzle": "^7.3",
         "hashids/hashids": "^4.1",
         "hermawan/codeigniter4-datatables": "^0.6.1",
