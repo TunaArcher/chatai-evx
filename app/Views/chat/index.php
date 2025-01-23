@@ -43,7 +43,7 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">Messages</a>
                         </li>
-                        <li class="nav-item" role="presentation">
+                        <li class="nav-item disabled" role="presentation">
                             <a class="nav-link py-2" id="active_chat_tab" data-bs-toggle="tab" href="#active_chat" role="tab">Active</a>
                         </li>
                     </ul>

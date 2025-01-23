@@ -17,11 +17,11 @@ try {
         ? document.documentElement.setAttribute("data-bs-theme", "dark")
         : document.documentElement.setAttribute("data-bs-theme", "light");
 
-        var currentTheme = document.documentElement.getAttribute("data-bs-theme");
+      var currentTheme = document.documentElement.getAttribute("data-bs-theme");
 
-        // สลับธีมระหว่าง "light" และ "dark"
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-bs-theme", newTheme);
+      // สลับธีมระหว่าง "light" และ "dark"
+      var newTheme = currentTheme === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-bs-theme", newTheme);
     });
 } catch (e) {}
 try {
@@ -29,9 +29,23 @@ try {
   const h = document.querySelector(".startbar-overlay"),
     changeSidebarSize =
       (collapsedToggle?.addEventListener("click", function () {
-        "collapsed" == document.body.getAttribute("data-sidebar-size")
-          ? document.body.setAttribute("data-sidebar-size", "default")
-          : document.body.setAttribute("data-sidebar-size", "collapsed");
+        
+        // "collapsed" == document.body.getAttribute("data-sidebar-size")
+        //   ? document.body.setAttribute("data-sidebar-size", "default")
+        //   : document.body.setAttribute("data-sidebar-size", "collapsed");
+
+        if ("collapsed" == document.body.getAttribute("data-sidebar-size")) {
+          document.body.setAttribute("data-sidebar-size", "default");
+          // แสดง logo-dark และซ่อน logo
+          document.querySelector(".logo-dark").style.display = "block";
+          document.querySelector(".logo-sm").style.display = "none";
+        } else {
+          document.body.setAttribute("data-sidebar-size", "collapsed");
+
+          // ซ่อน logo-dark และแสดง logo
+          document.querySelector(".logo-dark").style.display = "none";
+          document.querySelector(".logo-sm").style.display = "block";
+        }
       }),
       h &&
         h.addEventListener("click", () => {

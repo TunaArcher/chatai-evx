@@ -109,7 +109,7 @@
             bottom: 0;
             right: 0;
             border-radius: 50%;
-            /* background: white; */
+            background: white;
             padding: 2px;
         }
     </style>
@@ -346,7 +346,6 @@
                                 </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
                                     <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?></h6>
-                                    <!-- <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small> -->
                                     <?php if (session()->get('subscription_status') == 'active') { ?>
                                         <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
                                     <?php } else { ?>
@@ -378,11 +377,11 @@
         <div class="brand">
             <a href="<?php echo base_url(); ?>" class="logo">
                 <span>
-                    <img width="170" height="50" src="/assets/images/conXx.png" alt="logo-small" class="logo-sm">
+                    <img src="/assets/images/logo72x72.png" alt="logo-small" class="logo-sm" style="display: none;">
                 </span>
                 <span class="">
-                    <!-- <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-large" class="logo-lg logo-light"> -->
-                    <!-- <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-large" class="logo-lg logo-dark"> -->
+                    <img width="170" height="38" src="assets/images/conXx.png" alt="logo-large" class="logo-lg logo-light">
+                    <img width="170" height="38" src="assets/images/conXx.png" alt="logo-large" class="logo-lg logo-dark">
                 </span>
             </a>
         </div>

@@ -12,12 +12,16 @@
                                     <div class="position-relative me-3">
                                         <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" height="120" class="rounded-circle">
                                         <a href="#" class="thumb-md justify-content-center d-flex align-items-center bg-primary text-white rounded-circle position-absolute end-0 bottom-0 border border-3 border-card-bg">
-                                            <i class="fas fa-camera"></i>
+                                            <img src="<?php echo base_url('/assets/images/' . getPlatformIcon(session()->get('platform'))); ?>" alt="profile-platform Icon" width="100%">
                                         </a>
                                     </div>
                                     <div class="">
                                         <h5 class="fw-semibold fs-22 mb-1"><?php echo session()->get('name'); ?></h5>
-                                        <p class="mb-0 text-muted fw-medium"><?php echo session()->get('platform'); ?></p>
+                                        <?php if (session()->get('subscription_status') == 'active') { ?>
+                                            <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
+                                        <?php } else { ?>
+                                            <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div><!--end col-->
@@ -168,7 +172,7 @@
                         Bills
                     </div> -->
                     <div class="tab-pane active" id="security" role="tabpanel">
-                        <div class="container">Development ....</div>
+                        <div class="container">In development ....</div>
                     </div>
                 </div>
             </div> <!--end col-->

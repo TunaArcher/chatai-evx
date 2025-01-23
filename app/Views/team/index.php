@@ -136,7 +136,9 @@
                                             }
                                         </style>
                                         <?php foreach ($members as $key => $member) { ?>
-                                            <a class="user-avatar position-relative d-inline-block <?php if ($key > 0 ) { echo 'ms-n2'; } ?>" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email $member->status"; ?>">
+                                            <a class="user-avatar position-relative d-inline-block <?php if ($key > 0) {
+                                                                                                        echo 'ms-n2';
+                                                                                                    } ?>" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email $member->status"; ?>">
                                                 <img src="<?php echo $member->picture; ?>" alt="avatar" class="thumb-md shadow-sm rounded-circle">
                                                 <?php if ($member->status !== '') { ?>
                                                     <span class="camera-icon position-absolute">
