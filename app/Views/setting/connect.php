@@ -317,7 +317,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="Line">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>LINE</span>
+                                    <p>LINE</p>
                                 </div>
                                 <!-- Facebook -->
                                 <div class="radio-item" data-value="Facebook">
@@ -325,7 +325,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/512px-Facebook_f_logo_%282021%29.svg.png?20210818083032" alt="Facebook">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>Facebook</span>
+                                    <p>Facebook</p>
                                 </div>
                                 <!-- WhatsApp -->
                                 <div class="radio-item" data-value="WhatsApp">
@@ -333,7 +333,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png" alt="WhatsApp">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>WhatsApp</span>
+                                    <p>WhatsApp</p>
                                 </div>
                                 <!-- Instagram -->
                                 <div class="radio-item" data-value="Instagram">
@@ -341,7 +341,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>Instagram</span>
+                                    <p>Instagram</p>
                                 </div>
                                 <!-- Tiktok -->
                                 <div class="radio-item disabled" data-value="Tiktok">
@@ -349,7 +349,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ionicons_logo-tiktok.svg/512px-Ionicons_logo-tiktok.svg.png" alt="Tiktok">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <span>Tiktok (beta)</span>
+                                    <p>Tiktok (beta)</p>
                                 </div>
                             </div>
                             <div class="mt-2">
