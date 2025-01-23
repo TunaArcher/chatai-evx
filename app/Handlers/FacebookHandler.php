@@ -98,7 +98,7 @@ class FacebookHandler
         if ($send) {
 
             // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
+            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin', 'MANUAL');
 
             // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([
@@ -160,7 +160,7 @@ class FacebookHandler
         if ($send) {
 
             // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin');
+            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin', 'AI');
 
             // ส่งข้อความไปยัง WebSocket Server
             $this->messageService->sendToWebSocket([

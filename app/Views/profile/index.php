@@ -22,29 +22,41 @@
                                 </div>
                             </div><!--end col-->
 
-                            <div class="col-lg-4 ms-auto align-self-center">
+                            <div class="col-lg-6 ms-auto align-self-center">
                                 <div class="d-flex justify-content-center">
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">75</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">68%</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">$8620</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo count($userSocials); ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">การเชื่อมต่อ</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['all']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">Message ทั้งหมด</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['reply_by_manual']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">ตอบด้วยตนเอง</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['replay_by_ai']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">ตอบโดย AI</p>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div><!--end col-->
-                            <div class="col-lg-4 align-self-center">
+                            <div class="col-lg-2 align-self-center">
                                 <div class="row row-cols-2">
                                     <div class="col text-end">
                                         <div id="complete" class="apex-charts"></div>
                                     </div>
                                     <div class="col align-self-center">
-                                        <button type="button" class="btn btn-primary  d-inline-block">Development</button>
+                                        <button type="button" class="btn btn-primary d-inline-block" onclick="alert('development')">ผูกบัญชี</button>
                                         <!-- <button type="button" class="btn btn-light  d-inline-block">Development</button> -->
                                     </div>
                                 </div>
@@ -64,7 +76,7 @@
                                 <h4 class="card-title">Personal Information</h4>
                             </div><!--end col-->
                             <div class="col-auto">
-                                <a href="#" class="float-end text-muted d-inline-flex text-decoration-underline"><i class="iconoir-edit-pencil fs-18 me-1"></i>Edit</a>
+                                <a href="#" class="float-end text-muted d-inline-flex text-decoration-underline" onclick="alert('development')"><i class="iconoir-edit-pencil fs-18 me-1"></i>Edit</a>
                             </div><!--end col-->
                         </div> <!--end row-->
                     </div><!--end card-header-->
@@ -144,7 +156,10 @@
                         <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#post" role="tab" aria-selected="true">Bills</a>
                     </li> -->
                     <li class="nav-item">
-                        <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">Security</a>
+                        <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">ตั้งค่า Security</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">ตั้งค่า อื่น ๆ</a>
                     </li>
                 </ul>
                 <!-- Tab panes -->

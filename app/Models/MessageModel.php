@@ -72,12 +72,21 @@ class MessageModel
         return $builder->getRow();
     }
 
-    public function getMessageRoomByRoomID($roomID)
+    public function getMessageRoomByRoomID($roomID, $status)
     {
         $sql = "
             SELECT * FROM messages
             WHERE room_id = '$roomID'
         ";
+
+        switch ($status) {
+            case 'MANUL':
+                $sql .= " AND reply_by = 'MANUAL'";
+                break;
+            case 'AI':
+                $sql .= " AND reply_by = 'AI'";
+                break;
+        }
 
         $builder = $this->db->query($sql);
 

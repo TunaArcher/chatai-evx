@@ -59,7 +59,7 @@ class LineHandler
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin');
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'MANUAL');
     }
 
     public function handleReplyByAI($input, $userSocial)
@@ -86,7 +86,7 @@ class LineHandler
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin');
+        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'AI');
     }
 
     // -----------------------------------------------------------------------------
@@ -125,14 +125,14 @@ class LineHandler
         ]);
     }
 
-    private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender)
+    private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender, $replyBy)
     {
         $send = $platformClient->pushMessage($UID, $message);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
         if ($send) {
 
-            $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender);
+            $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender, $replyBy);
 
             $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
 
