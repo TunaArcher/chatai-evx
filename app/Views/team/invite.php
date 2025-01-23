@@ -64,7 +64,7 @@
       height: 48px;
       font-size: 16px;
       border-radius: 6px;
-      background-color: #7fedff;
+      background-color: #00c7e6;
       border: none;
     }
 
@@ -108,6 +108,29 @@
 
     .footer a:hover {
       text-decoration: underline;
+    }
+  </style>
+  <style>
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active:focus,
+    .btn-success:not(:disabled):not(.disabled):active:focus,
+    .show>.btn-success.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgba(0, 177, 204, .5);
     }
   </style>
   <script>

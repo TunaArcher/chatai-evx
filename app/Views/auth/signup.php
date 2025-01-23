@@ -63,12 +63,12 @@
       height: 48px;
       font-size: 16px;
       border-radius: 6px;
-      background-color: #7fedff;
+      background-color: #00c7e6 !important;
       border: none;
     }
 
     .btn-success:hover {
-      background-color: #008599;
+      background-color: #008599 !important;
     }
 
     .btn-social {
@@ -147,14 +147,38 @@
       top: -10px;
       left: 10px;
       font-size: 12px;
-      color: #7fedff;
+      color: #00c7e6;
       /* เปลี่ยนสีเมื่อ Active */
     }
 
     /* เพิ่มเงาเมื่อ Focus */
     .form-control:focus {
-      border: 2px solid #7fedff;
+      border: 2px solid #00c7e6;
       box-shadow: 0 0 5px rgba(16, 163, 127, 0.5);
+    }
+  </style>
+
+  <style>
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active:focus,
+    .btn-success:not(:disabled):not(.disabled):active:focus,
+    .show>.btn-success.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgba(0, 177, 204, .5);
     }
   </style>
 </head>

@@ -63,7 +63,7 @@
       height: 48px;
       font-size: 16px;
       border-radius: 6px;
-      background-color: #7fedff;
+      background-color: #00c7e6;
       border: none;
     }
 
@@ -146,13 +146,13 @@
       top: -10px;
       left: 10px;
       font-size: 12px;
-      color: #7fedff;
+      color: #00c7e6;
       /* เปลี่ยนสีเมื่อ Active */
     }
 
     /* เพิ่มเงาเมื่อ Focus */
     .form-control:focus {
-      border: 2px solid #7fedff;
+      border: 2px solid #00c7e6;
       box-shadow: 0 0 5px rgba(16, 163, 127, 0.5);
     }
   </style>

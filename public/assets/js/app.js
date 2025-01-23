@@ -29,21 +29,24 @@ try {
   const h = document.querySelector(".startbar-overlay"),
     changeSidebarSize =
       (collapsedToggle?.addEventListener("click", function () {
-        
         // "collapsed" == document.body.getAttribute("data-sidebar-size")
         //   ? document.body.setAttribute("data-sidebar-size", "default")
         //   : document.body.setAttribute("data-sidebar-size", "collapsed");
 
         if ("collapsed" == document.body.getAttribute("data-sidebar-size")) {
+          console.log("open");
           document.body.setAttribute("data-sidebar-size", "default");
-          // แสดง logo-dark และซ่อน logo
-          document.querySelector(".logo-dark").style.display = "block";
+          // แสดง logo-x และซ่อน logo
+          document.querySelector(".logo-x").style.display = "block";
+          // document.querySelector(".logo-dark").style.display = "block";
           document.querySelector(".logo-sm").style.display = "none";
         } else {
+          console.log("close");
           document.body.setAttribute("data-sidebar-size", "collapsed");
 
-          // ซ่อน logo-dark และแสดง logo
-          document.querySelector(".logo-dark").style.display = "none";
+          // ซ่อน logo-x และแสดง logo
+          document.querySelector(".logo-x").style.display = "none";
+          // document.querySelector(".logo-dark").style.display = "block";
           document.querySelector(".logo-sm").style.display = "block";
         }
       }),

@@ -16,19 +16,18 @@
 
     <!-- App css -->
     <link href="<?php echo base_url('/assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('/assets/css/icons.min.css?v=' . time()) ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/icons.min.css') ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/app.min.css'); ?>" rel="stylesheet" type="text/css" />
+
+    <!-- Notyf -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 
     <?php if (isset($css_critical)) {
         echo $css_critical;
     } ?>
 
-    <link href="<?php echo base_url('/assets/css/app.min.css?v=' . time()); ?>" rel="stylesheet" type="text/css" />
-
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-
     <!-- เรียกใช้ Google Translate Element -->
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
@@ -36,16 +35,13 @@
         * {
             font-family: 'Kanit', sans-serif;
         }
-    </style>
 
-    <style>
         .disabled {
             opacity: 0.6;
             cursor: not-allowed;
             pointer-events: none;
         }
-    </style>
-    <style>
+
         /* ปุ่ม Gradient Animate */
         .gradient-animate-btn {
             display: inline-block;
@@ -91,8 +87,7 @@
                 background-position: 0% 50%;
             }
         }
-    </style>
-    <style>
+
         .position-relative {
             position: relative;
         }
@@ -380,8 +375,8 @@
                     <img src="<?php echo base_url('/assets/images/logo72x72.png'); ?>" alt="logo-small" class="logo-sm" style="display: none;">
                 </span>
                 <span class="">
-                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-light">
-                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-dark">
+                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-x">
+                    <!-- <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-dark"> -->
                 </span>
             </a>
         </div>
@@ -430,7 +425,7 @@
                             <div class="collapse show" id="sidebarSetting">
                                 <ul class="nav flex-column">
                                     <li class="nav-item ">
-                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>"> Connect</a>
+                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>" class="menu-connect"> Connect</a>
                                     </li><!--end nav-item-->
                                     <li class="nav-item">
                                         <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
