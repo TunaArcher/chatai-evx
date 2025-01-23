@@ -377,11 +377,11 @@
         <div class="brand">
             <a href="<?php echo base_url(); ?>" class="logo">
                 <span>
-                    <img src="/assets/images/logo72x72.png" alt="logo-small" class="logo-sm" style="display: none;">
+                    <img src="<?php echo base_url('/assets/images/logo72x72.png'); ?>" alt="logo-small" class="logo-sm" style="display: none;">
                 </span>
                 <span class="">
-                    <img width="170" height="38" src="assets/images/conXx.png" alt="logo-large" class="logo-lg logo-light">
-                    <img width="170" height="38" src="assets/images/conXx.png" alt="logo-large" class="logo-lg logo-dark">
+                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-light">
+                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-dark">
                 </span>
             </a>
         </div>
