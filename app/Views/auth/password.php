@@ -156,6 +156,29 @@
       box-shadow: 0 0 5px rgba(16, 163, 127, 0.5);
     }
   </style>
+  <style>
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active,
+    .btn-success:not(:disabled):not(.disabled):active,
+    .show>.btn-success.dropdown-toggle {
+      color: #fff;
+      background-color: #00b1cc;
+      border-color: #00b1cc;
+    }
+
+    .btn-success:not(:disabled):not(.disabled).active:focus,
+    .btn-success:not(:disabled):not(.disabled):active:focus,
+    .show>.btn-success.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgba(0, 177, 204, .5);
+    }
+  </style>
   <script>
     var serverUrl = '<?php echo base_url(); ?>'
   </script>

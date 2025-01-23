@@ -8,7 +8,7 @@ function getPlatformIcon($platform)
         'whatsapp' => 'ic-WhatsApp.png',
         'instagram' => 'ic-Instagram.svg',
         'tiktok' => 'ic-Tiktok.png',
-        default => '',
+        default => 'ic-default.png',
     };
 }
 

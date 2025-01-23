@@ -1,63 +1,108 @@
+
 <!-- Page Content-->
 <div class="page-content">
-    <div class="container-xxl">
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h4 class="card-title">Dashboard Page</h4>
-                        </div><!--end col-->
-                    </div> <!--end row-->
-                </div><!--end card-header-->
-                <div class="card-body pt-0">
-
-                </div><!--end card-body-->
-            </div><!--end card-->
+    <div class="container">
+        <div class="card" style="background-color:#000;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-auto align-self-center">
+                        <img src="https://cdn.pixabay.com/photo/2021/02/14/22/00/tik-tok-6016006_1280.png" alt="" height="90" class="rounded">
+                    </div>
+                    <div class="col">
+                        <h6 class="mb-2 mt-1 fw-medium text-white fs-18">TikTok x AutoConx. Now we're talking</h6>
+                        <p class="text-white fs-14 ">Discover new opportunities for your audience in TikTok</p>
+                    </div>
+                    <div class="col-auto align-self-center">
+                        <button class="btn btn-info" onclick="alert('in develop')">DISCOVER  <i class="iconoir-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div><!-- container -->
-
-    <!--Start Rightbar-->
-    <!--Start Rightbar/offcanvas-->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="Appearance" aria-labelledby="AppearanceLabel">
-        <div class="offcanvas-header border-bottom justify-content-between">
-            <h5 class="m-0 font-14" id="AppearanceLabel">Appearance</h5>
-            <button type="button" class="btn-close text-reset p-0 m-0 align-self-center" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="row my-5">
+            <h1>สวัสดี, <?php echo session()->get('name'); ?></h1>
+            <p>n การเชื่อมต่อ | n ข้อความ | <a href="<?php echo base_url('/setting/connect'); ?>">See Insights</a></p>
         </div>
-        <div class="offcanvas-body">
-            <h6>Account Settings</h6>
-            <div class="p-2 text-start mt-3">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch1">
-                    <label class="form-check-label" for="settings-switch1">Auto updates</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch2" checked>
-                    <label class="form-check-label" for="settings-switch2">Location Permission</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="settings-switch3">
-                    <label class="form-check-label" for="settings-switch3">Show offline Contacts</label>
-                </div><!--end form-switch-->
-            </div><!--end /div-->
-            <h6>General Settings</h6>
-            <div class="p-2 text-start mt-3">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch4">
-                    <label class="form-check-label" for="settings-switch4">Show me Online</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch5" checked>
-                    <label class="form-check-label" for="settings-switch5">Status visible to all</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="settings-switch6">
-                    <label class="form-check-label" for="settings-switch6">Notifications Popup</label>
-                </div><!--end form-switch-->
-            </div><!--end /div-->
-        </div><!--end offcanvas-body-->
+        <div class="row my-2 justify-content-between align-items-center">
+            <div class="col-auto text-left">
+                <h2>เริ่มต้น</h2>
+            </div>
+            <div class="col-auto text-right"><a href="#" onclick="alert('in develop')">Explore all Templates</a></div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h3 class="mb-2 mb-0 fw-bold">Use a lead magnet to capture qualified emails</h3>
+                                <p class="text-muted mb-0 fw-semibold fs-14">Capture customer data with a lead magnet </p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+                                    <i class="iconoir-hexagon-dice h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <p class="mb-0 text-truncate text-muted mt-3">⚙️ Flow Builder</p>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h4 class="mb-2 mb-0 fw-bold">Run a quiz for your audience.</h4>
+                                <p class="text-muted mb-0 fw-semibold fs-14">Use a quiz to qualify leads</p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+                                    <i class="iconoir-clock h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <p class="mb-0 text-truncate text-muted mt-3">⚙️ Flow Builder</p>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h4 class="mb-2 mb-0 fw-bold">Get AI to collect your follower's info, share details or tell it how to reply</h4>
+                                <p class="text-muted mb-0 fw-semibold fs-14">Automate conversations with AI</p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+                                    <i class="iconoir-percentage-circle h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <p class="mb-0 text-truncate text-muted mt-3">⚙️ Flow Builder</p>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+        </div>
     </div>
-    <!--end Rightbar/offcanvas-->
-    <!--end Rightbar-->
+</div><!-- container -->
 </div>
 <!-- end page content -->

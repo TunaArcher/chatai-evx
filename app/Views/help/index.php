@@ -1,78 +1,78 @@
 <div class="page-content">
     <div class="container-xxl">
 
-    <div class="row justify-content-center">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4 class="card-title pt-2 fw-semibold mb-2 fs-18">คำถามที่พบบ่อยเกี่ยวกับ AutoConX</h4>
-                <p><i class="la la-grip-lines text-primary fs-18"></i> <i class="la la-question-circle text-primary fs-18"></i> <i class="la la-grip-lines text-primary fs-18"></i></p>
-            </div><!--end card-header-->
-            <div class="card-body pt-0">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-hexagon-dice h5 align-self-center mb-0 text-dark"></i>
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4 class="card-title pt-2 fw-semibold mb-2 fs-18">คำถามที่พบบ่อยเกี่ยวกับ AutoConX</h4>
+                        <p><i class="la la-grip-lines text-primary fs-18"></i> <i class="la la-question-circle text-primary fs-18"></i> <i class="la la-grip-lines text-primary fs-18"></i></p>
+                    </div><!--end card-header-->
+                    <div class="card-body pt-0">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-hexagon-dice h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">AutoConX คืออะไร?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">ผู้ช่วยสื่อสารกับลูกค้าผ่านช่องทางต่าง ๆ เช่น Line, Facebook, Instagram, และ WhatsApp ได้อย่างอัตโนมัติ เพิ่มประสิทธิภาพในการสื่อสารและการบริการลูกค้า</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">AutoConX คืออะไร?</h6>
-                            </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">ผู้ช่วยสื่อสารกับลูกค้าผ่านช่องทางต่าง ๆ เช่น Facebook Messenger, Instagram, และ WhatsApp ได้อย่างอัตโนมัติ เพิ่มประสิทธิภาพในการสื่อสารและการบริการลูกค้า</p>
-                        </div>
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-flower h5 align-self-center mb-0 text-dark"></i>
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-flower h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">AutoConX ช่วยธุรกิจได้อย่างไร?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">AutoConX ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชทบอทที่ทำงานตลอด 24 ชั่วโมง</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">AutoConX ช่วยธุรกิจได้อย่างไร?</h6>
-                            </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">AutoConX ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชทบอทที่ทำงานตลอด 24 ชั่วโมง</p>
-                        </div>
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-wolf h5 align-self-center mb-0 text-dark"></i>
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-wolf h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">AutoConX รองรับภาษาไทยหรือไม่?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">แน่นอน! AutoConX รองรับภาษาไทยเต็มรูปแบบ คุณสามารถสร้างข้อความและตอบกลับลูกค้าในภาษาไทยได้อย่างง่ายดาย</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">AutoConX รองรับภาษาไทยหรือไม่?</h6>
                             </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">แน่นอน! AutoConX รองรับภาษาไทยเต็มรูปแบบ คุณสามารถสร้างข้อความและตอบกลับลูกค้าในภาษาไทยได้อย่างง่ายดาย</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-magic-wand h5 align-self-center mb-0 text-dark"></i>
+                            <div class="col-lg-6">
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-magic-wand h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">AutoConX รองรับแพลตฟอร์มอะไรบ้าง?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">AutoConX รองรับแพลตฟอร์มยอดนิยม เช่น Facebook Messenger, Instagram, WhatsApp, SMS และอีเมล</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">AutoConX รองรับแพลตฟอร์มอะไรบ้าง?</h6>
-                            </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">AutoConX รองรับแพลตฟอร์มยอดนิยม เช่น Facebook Messenger, Instagram, WhatsApp, SMS และอีเมล</p>
-                        </div>
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-emoji h5 align-self-center mb-0 text-dark"></i>
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-emoji h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">AutoConX มีค่าใช้จ่ายหรือไม่?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">AutoConX มีทั้งแพ็กเกจฟรีที่มีฟีเจอร์พื้นฐาน และแพ็กเกจพรีเมียมที่มีฟีเจอร์ขั้นสูง เริ่มต้นในราคาที่เข้าถึงได้</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">AutoConX มีค่าใช้จ่ายหรือไม่?</h6>
-                            </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">AutoConX มีทั้งแพ็กเกจฟรีที่มีฟีเจอร์พื้นฐาน และแพ็กเกจพรีเมียมที่มีฟีเจอร์ขั้นสูง เริ่มต้นในราคาที่เข้าถึงได้</p>
-                        </div>
-                        <div class="p-4 rounded mb-3 border-dashed border-theme-color">
-                            <div class="mb-2">
-                                <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
-                                    <i class="iconoir-bitcoin-circle h5 align-self-center mb-0 text-dark"></i>
+                                <div class="p-4 rounded mb-3 border-dashed border-theme-color">
+                                    <div class="mb-2">
+                                        <div class="d-inline-flex justify-content-center align-items-center thumb-md card-bg border border-secondary-subtle rounded mx-auto">
+                                            <i class="iconoir-bitcoin-circle h5 align-self-center mb-0 text-dark"></i>
+                                        </div>
+                                        <h6 class="fs-15 d-inline-block ms-1">การตั้งค่า AutoConX ใช้เวลานานแค่ไหน?</h6>
+                                    </div>
+                                    <p class="fs-14 ms-45 text-muted mb-0">คุณสามารถตั้งค่า AutoConX ได้ในเวลาไม่ถึง 1 นาที เพียงเชื่อมต่อบัญชีและเริ่มสร้างข้อความหรือฟีเจอร์ต่าง ๆ ได้ทันที</p>
                                 </div>
-                                <h6 class="fs-15 d-inline-block ms-1">การตั้งค่า AutoConX ใช้เวลานานแค่ไหน?</h6>
-                            </div>
-                            <p class="fs-14 ms-45 text-muted mb-0">คุณสามารถตั้งค่า AutoConX ได้ในเวลาไม่ถึง 1 นาที เพียงเชื่อมต่อบัญชีและเริ่มสร้างข้อความหรือฟีเจอร์ต่าง ๆ ได้ทันที</p>
-                        </div>
-                    </div><!--end col-->
-                </div> <!--end row-->
-            </div><!--end card-body-->
-        </div><!--end card-->
-    </div> <!--end col-->
-</div><!--end row-->
+                            </div><!--end col-->
+                        </div> <!--end row-->
+                    </div><!--end card-body-->
+                </div><!--end card-->
+            </div> <!--end col-->
+        </div><!--end row-->
 
     </div><!-- container -->
     <!--Start Rightbar-->

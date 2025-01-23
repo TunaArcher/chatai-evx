@@ -21,6 +21,7 @@
 
     <!-- Notyf -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@sjmc11/tourguidejs/dist/css/tour.min.css">
 
     <?php if (isset($css_critical)) {
         echo $css_critical;
@@ -108,6 +109,16 @@
             padding: 2px;
         }
     </style>
+    <style>
+        .tg-backdrop,
+        .tg-dialog {
+            z-index: 9999 !important;
+        }
+
+        .tg-dialog .tg-dialog-footer button.tg-dialog-btn {
+            background-color: #fff;
+        }
+    </style>
     <script>
         var serverUrl = '<?php echo base_url(); ?>'
         var userID = '<?php echo session()->get('userID'); ?>'
@@ -134,7 +145,7 @@
                         </button>
                     </li>
                     <li class="mx-3 welcome-text">
-                        <h3 class="mb-0 fw-bold text-truncate">AutoConX Beta 1.0</h3>
+                        <h3 class="mb-0 fw-bold text-truncate">v.Beta 1.0</h3>
                         <!-- <h6 class="mb-0 fw-normal text-muted text-truncate fs-14">Here's your overview this week.</h6> -->
                     </li>
                 </ul>
@@ -402,7 +413,7 @@
                             </a>
                         </li><!--end nav-item-->
 
-                        <li class="nav-item">
+                        <li class="nav-item" data-tg-order="2" data-tg-tour='แชทจากแพลตฟอร์มต่าง ๆ ถูกรวมไว้ที่นี่ ทำให้สามารถจัดการได้ง่าย !' data-tg-title="2. แชทจากทุกแพลตฟอร์มถูกรวมไว้ที่เดียว">
                             <a class="nav-link" href="<?php echo base_url('/chat'); ?>">
                                 <i class="iconoir-view-grid menu-icon"></i>
                                 <span>Chat</span>
@@ -424,10 +435,10 @@
                             </a>
                             <div class="collapse show" id="sidebarSetting">
                                 <ul class="nav flex-column">
-                                    <li class="nav-item ">
+                                    <li class="nav-item " data-tg-order="1" data-tg-tour='คุณสามารถเชื่อมต่อแพลตฟอร์มยอดนิยม เช่น Line, Facebook, Instagram, WhatsApp ได้ในเวลาไม่ถึง 1 นาที และสามารถใช้งานระบบได้ทันที! 🚀' data-tg-title="ขั้นตอนแรก สร้างการเชื่อมต่อ">
                                         <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>" class="menu-connect"> Connect</a>
                                     </li><!--end nav-item-->
-                                    <li class="nav-item">
+                                    <li class="nav-item" data-tg-order="3" data-tg-tour='เรามีระบบ AutoConX AI ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชท AI ที่ทำงานตลอด 24 ชั่วโมง' data-tg-title="3. Training">
                                         <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
@@ -574,7 +585,7 @@
                         <div class="progress mb-3">
                             <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
                         </div>
-                        <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
+                        <a data-tg-order="4" data-tg-tour='เพื่อปลดล็อคความสามารถ สามารถใช้ได้ทุกฟีเจอร์ โนลิมิต' data-tg-title="เพิ่มความสามารถ 🎉" href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                     </div>
                 <?php } ?>
             </div>
