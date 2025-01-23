@@ -92,6 +92,27 @@
             }
         }
     </style>
+    <style>
+        .position-relative {
+            position: relative;
+        }
+
+        .profile-thumb-md {
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .profile-platform-icon {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            bottom: 0;
+            right: 0;
+            border-radius: 50%;
+            /* background: white; */
+            padding: 2px;
+        }
+    </style>
     <script>
         var serverUrl = '<?php echo base_url(); ?>'
         var userID = '<?php echo session()->get('userID'); ?>'
@@ -317,16 +338,23 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end py-0">
                             <div class="d-flex align-items-center dropdown-item py-2 bg-secondary-subtle">
-                                <!-- <div class="flex-shrink-0">
-                                    <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-md rounded-circle">
-                                </div> -->
+                                <div class="position-relative">
+                                    <!-- รูปโปรไฟล์ -->
+                                    <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="Profile Picture" class="thumb-md profile-thumb-md rounded-circle">
+                                    <!-- ไอคอน -->
+                                    <img src="<?php echo base_url('/assets/images/' . getPlatformIcon(session()->get('platform'))); ?>" alt="profile-platform Icon" class="profile-platform-icon">
+                                </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                    <h6 class="my-0 fw-medium text-dark fs-13">
-                                        <?php echo session()->get('name'); ?> <span class="badge bg-info"><?php if (session()->get('subscription_status') == 'active') { echo 'อัพเกรดแล้ว'; }; ?></span>
-                                    </h6>
-                                    <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small>
+                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?></h6>
+                                    <!-- <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small> -->
+                                    <?php if (session()->get('subscription_status') == 'active') { ?>
+                                        <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
+                                    <?php } else { ?>
+                                        <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                    <?php } ?>
                                 </div><!--end media-body-->
                             </div>
+
                             <div class="dropdown-divider mt-0"></div>
                             <small class="text-muted px-2 pb-1 d-block">Account</small>
                             <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-user fs-18 me-1 align-text-bottom"></i> Profile</a>

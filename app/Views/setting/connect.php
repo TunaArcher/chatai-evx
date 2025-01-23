@@ -59,7 +59,7 @@
         display: flex;
     }
 
-    .thumb-md {
+    .thumb-md-custom {
         position: absolute;
         top: 50%;
         -ms-transform: translateY(-50%);
@@ -349,7 +349,7 @@
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ionicons_logo-tiktok.svg/512px-Ionicons_logo-tiktok.svg.png" alt="Tiktok">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <p>Tiktok (beta)</p>
+                                    <p>Tiktok (in develop)</p>
                                 </div>
                             </div>
                             <div class="mt-2">
@@ -492,7 +492,7 @@
                                     <div class="justify-content-center inner">
                                         <div class="col-12">
                                             <div class="" style="height: 710px; position: relative;">
-                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                                <div id="preloader" class="spinner-grow thumb-md-custom text-secondary ms-1" role="status"></div>
                                             </div><!--end card-->
                                         </div> <!--end col-->
                                     </div><!--end row-->
@@ -512,7 +512,7 @@
                                     <div class="justify-content-center inner">
                                         <div class="col-12">
                                             <div class="" style="height: 710px; position: relative;">
-                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                                <div id="preloader" class="spinner-grow thumb-md-custom text-secondary ms-1" role="status"></div>
                                             </div><!--end card-->
                                         </div> <!--end col-->
                                     </div><!--end row-->
@@ -532,7 +532,7 @@
                                     <div class="justify-content-center inner">
                                         <div class="col-12">
                                             <div class="" style="height: 710px; position: relative;">
-                                                <div id="preloader" class="spinner-grow thumb-md text-secondary ms-1" role="status"></div>
+                                                <div id="preloader" class="spinner-grow thumb-md-custom text-secondary ms-1" role="status"></div>
                                             </div><!--end card-->
                                         </div> <!--end col-->
                                     </div><!--end row-->
