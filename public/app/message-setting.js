@@ -134,20 +134,30 @@ function loadMessageTraning() {
 
 function sendTestTraning(data) {
   if (event.key === "Enter") {
-    if (data.value == "") {
+    if (data.value == "" && $("#file_img_ask")[0].files[0] == null) {
       notyf_message.error("ไม่อนุญาติให้มีค่าว่าง");
       return;
     }
 
     var testing_send = {
       message: data.value,
+      // file_IMG: inputImg.files[0]
     };
+
+    var datafile = new FormData();
+
+    datafile.append("message", data.value);
+    datafile.append("file_IMG", $("#file_img_ask")[0].files[0]);
 
     $.ajax({
       url: `${serverUrl}/message-traning-testing`,
       method: "POST",
       async: true,
-      data: JSON.stringify(testing_send),
+      data: datafile,
+      dataType: "json",
+      cache: false,
+      contentType: false,
+      processData: false,
       beforeSend: function () {
         $("#modal-loading").modal("show", {
           backdrop: "static",
@@ -155,31 +165,64 @@ function sendTestTraning(data) {
         });
       },
       complete: function (response) {
+
         $("#chat_test_training").val("");
         $("#modal-loading").modal("hide");
-        // console.log(response.responseText);
-        $("#chat-detail-training-test").append(
-          '<div class="d-flex flex-row-reverse">' +
-            '<div class="me-1 chat-box w-100 reverse">' +
-            '<div class="user-chat">' +
-            '<p class="">' +
-            testing_send.message +
-            "</p>" +
-            "</div>" +
-            "</div>" +
-            "</div>"
-        );
+
+        if (response.responseJSON.img_link == "") {
+          $("#chat-detail-training-test").append(
+            '<div class="d-flex flex-row-reverse">' +
+              '<div class="me-1 chat-box w-100 reverse">' +
+              '<div class="user-chat">' +
+              '<p class="">' +
+              testing_send.message +
+              "</p>" +
+              "</div>" +
+              "</div>" +
+              "</div>"
+          );
+        } else if( testing_send.message == ""){
+          $("#chat-detail-training-test").append(
+            '<div class="d-flex flex-row-reverse">' +
+              '<div class="me-1 chat-box w-100 reverse">' +
+              '<div class="user-chat">' +
+              '<img src="' +
+              response.responseJSON.img_link +
+              '" height="90" class="me-3 rounded" alt="..."></img>' +
+              "</div>" +
+              "</div>" +
+              "</div>"
+          );
+        } else {
+          $("#chat-detail-training-test").append(
+            '<div class="d-flex flex-row-reverse">' +
+              '<div class="me-1 chat-box w-100 reverse">' +
+              '<div class="user-chat">' +
+              '<img src="' +
+              response.responseJSON.img_link +
+              '" height="90" class="me-3 rounded" alt="..."></img>' +
+              '<p class="">' +
+              testing_send.message +
+              "</p>" +
+              "</div>" +
+              "</div>" +
+              "</div>"
+          );
+        }
+
         $("#chat-detail-training-test").append(
           '<div class="d-flex">' +
             '<div class="ms-1 chat-box w-100">' +
             '<div class="user-chat">' +
             '<p class="">' +
-            response.responseText +
+            response.responseJSON.message +
             "</p>" +
             "</div>" +
             "</div>" +
             "</div>"
         );
+
+        resetImgTestAI();
       },
       success: function (response) {},
     });
@@ -209,4 +252,21 @@ function clearTraning() {
     },
     success: function (response) {},
   });
+}
+
+function readURLImgTestAI(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      document.querySelector("#img_ai").setAttribute("src", e.target.result);
+    };
+
+    reader.readAsDataURL(input.files[0]);
+    $("#div_img").show();
+  }
+}
+
+function resetImgTestAI() {
+  $("#file_img_ask").val("");
+  $("#div_img").hide();
 }

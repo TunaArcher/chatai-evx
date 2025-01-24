@@ -74,7 +74,7 @@
                                                         </div> -->
                                                         <div class="col-4 text-end">
                                                             <div class="d-none d-sm-inline-block align-self-center">
-                                                                <div class="dropdown d-inline-block">
+                                                                <div class="dropdown d-inline-block col-form-label">
                                                                     <a class="dropdown-toggle arrow-none text-muted" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="true">
                                                                         <i class="fas fa-history"></i>
                                                                     </a>
@@ -179,13 +179,18 @@
                         <div class="chat-footer-setting">
                             <div class="row">
                                 <div class="col-12 col-md-8">
+                                    <div class="card col-2" style="display: none;" id="div_img">
+                                        <button type="button" class="btn-close" style="height: 20px; width: 20px;" onclick="resetImgTestAI();" ></button>
+                                        <img src="" alt="No Image" id="img_ai" style='height:80px;'>
+                                    </div>
                                     <input type="text" class="form-control" id="chat_test_training" placeholder="send to training test..." onkeydown="sendTestTraning(this);">
                                 </div><!-- col-8 -->
-                                <!-- <div class="col-4 text-end">
+                                <div class="col-4 text-end">
                                     <div class="d-none d-sm-inline-block chat-features">
-                                        <a href="javascript:void(0);" class="text-primary" onclick="sendTraining();"><i class="iconoir-send-solid"></i></a>
+                                        <a href="javascript:void(0);" class="col-form-label"><label for="file_img_ask"><i class="iconoir-attachment"></i></label></a>
+                                        <input id="file_img_ask" type="file" accept='image/*' style="display: none;" onchange="readURLImgTestAI(this)" />
                                     </div>
-                                </div> -->
+                                </div>
                             </div><!-- end row -->
                         </div><!-- end chat-footer -->
                     </div>
