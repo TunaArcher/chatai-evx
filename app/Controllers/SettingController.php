@@ -533,31 +533,56 @@ class SettingController extends BaseController
 
     public function message_traning_testing()
     {
+
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
         $GPTToken = getenv('GPT_TOKEN');
         // CONNECT TO GPT
         $userID = hashidsDecrypt(session()->get('userID'));
-        $data = $this->request->getJSON();
+        $message = $this->request->getPost('message');
+        $file_askAI = $this->request->getFile('file_IMG');
 
-        var_dump($data);
-        exit;
+        if ($file_askAI != NULL) {
 
-        // $result_back = $this->s3Client->putObject([
-        //     'Bucket' => $this->s3_bucket,
-        //     'Key'    => 'uploads/img_ask_ai/' . $fileName_front,
-        //     'Body'   => fopen($file_Path_front, 'r'),
-        //     'ACL'    => 'public-read', // make file 'public'
-        // ]);
+            $file_askAI_name = $file_askAI->getRandomName();
+            $file_askAI->move('uploads', $file_askAI_name);
+            $file_Path = 'uploads/' . $file_askAI_name;
+
+            $result_back = $this->s3Client->putObject([
+                'Bucket' => $this->s3_bucket,
+                'Key'    => 'uploads/img_ask_ai/' . $file_askAI_name,
+                'Body'   => fopen($file_Path, 'r'),
+                'ACL'    => 'public-read', // make file 'public'
+            ]);
+
+            if ($result_back['ObjectURL'] != "") {
+                unlink('uploads/' . $file_askAI_name);
+            }
+        }
 
         $chatGPT = new ChatGPT([
             'GPTToken' => $GPTToken
         ]);
 
         $dataMessage = $this->customerModel->getMessageSettingByID($userID);
-        $messageReplyToCustomer = $chatGPT->askChatGPT($data->message, $dataMessage->message);
+        $img_link_back = "";
+
+        if ($file_askAI == NULL) {
+            $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
+        } else {
+            $messageReplyToCustomer = $chatGPT->askChatGPTimg($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
+            $img_link_back = $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name;
+        }
 
 
         $status = 200;
-        $response = $messageReplyToCustomer;
+        $response = [
+            'success' => 1,
+            'message' => $messageReplyToCustomer,
+            'img_link' => $img_link_back
+        ];
 
         return $this->response
             ->setStatusCode($status)

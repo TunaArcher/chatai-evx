@@ -187,7 +187,7 @@
                                 </div><!-- col-8 -->
                                 <div class="col-4 text-end">
                                     <div class="d-none d-sm-inline-block chat-features">
-                                        <a href="javascript:void(0);" class="col-form-label"><label for="file-input"><i class="iconoir-attachment"></i></label></a>
+                                        <a href="javascript:void(0);" class="col-form-label"><label for="file_img_ask"><i class="iconoir-attachment"></i></label></a>
                                         <input id="file_img_ask" type="file" accept='image/*' style="display: none;" onchange="readURLImgTestAI(this)" />
                                     </div>
                                 </div>

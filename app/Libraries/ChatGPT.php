@@ -98,7 +98,7 @@ class ChatGPT
                         ],
                         [
                             'role' => 'user',
-                            'content' => 'Task, Goal, or Current Prompt:\n' . $question
+                            'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
                         ]
                     ]
                 ]
@@ -173,7 +173,7 @@ class ChatGPT
         }
     }
 
-    public function askChatGPTimg($question,  $message_setting)
+    public function askChatGPTimg($question,  $message_setting, $file_name)
     {
         try {
             // log_message("info", "message_setting: " . $message_user);
@@ -191,14 +191,16 @@ class ChatGPT
                         ],
                         [
                             'role' => 'user',
-                            'content' =>  [
-                                'type' => 'text',
-                                'text' => 'Task, Goal, or Current Prompt:\n' . $question
-                            ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
+                            'content' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                                ],
+                                [
+                                    'type' => 'image_url',
+                                    'image_url' => [
+                                        'url' => $file_name
+                                    ]
                                 ]
                             ]
                         ]
