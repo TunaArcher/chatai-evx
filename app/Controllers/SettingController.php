@@ -40,7 +40,8 @@ class SettingController extends BaseController
             'credentials' => [
                 'key'    => $this->s3_key,
                 'secret' => $this->s3_secret_key
-            ]
+            ],
+            'suppress_php_deprecation_warning' => true, // ปิดข้อความเตือน
         ]);
     }
 

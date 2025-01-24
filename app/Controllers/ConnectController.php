@@ -34,6 +34,7 @@ class ConnectController extends BaseController
             case 'Facebook':
 
                 $pageID = $input->pageID;
+                $src = $input->src;
                 $pageToken = '';
 
                 $faceBookAPI = new FacebookClient([
@@ -59,7 +60,8 @@ class ConnectController extends BaseController
                         'name' => $pageName,
                         'fb_token' => $pageToken,
                         'is_connect' => '1',
-                        'page_id' => $pageID
+                        'page_id' => $pageID,
+                        'src' => $src
                     ]);
 
                     $status = 200;

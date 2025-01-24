@@ -304,10 +304,9 @@ function FbPagesList() {
 
       // วนลูปข้อมูลเพจ
       $pages.forEach((page) => {
-        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Facebook" data-page-id="${page.id}">เชื่อมต่อ</button>`;
+        let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Facebook" data-page-id="${page.id}" data-src="${page.ava}">เชื่อมต่อ</button>`;
         if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Facebook" data-page-id="${page.id}">เชื่อมต่อแล้ว</button>`;
-        }
+          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Facebook" data-page-id="${page.id}" data-src="${page.ava}">เชื่อมต่อแล้ว</button>`;        }
         let pageHtml = `
               <div class="card">
                 <div class="card-body py-0">
@@ -1074,10 +1073,12 @@ $(".step2-facebook-wrapper").on("click", ".btnConnectToApp", function () {
 
   let $platform = $me.data("platform");
   let $pageID = $me.data("page-id");
+  let $src = $me.data("src");
 
   dataObj = {
     platform: $platform,
     pageID: $pageID,
+    src: $src
   };
 
   $me.prop("disabled", true);

@@ -174,11 +174,23 @@
                                             <tr>
                                                 <td id="userSocialWrapper-<?php echo $user_social->id; ?>">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" height="40" class="me-3 align-self-center rounded" alt="...">
-                                                        <div class="flex-grow-1 text-truncate">
-                                                            <h6 class="m-0"><?php echo $user_social->name; ?></h6>
-                                                            <a href="#" class="fs-12 text-primary">ID: <?php echo hashidsEncrypt($user_social->id); ?></a>
-                                                        </div><!--end media body-->
+                                                        <?php if ($user_social->platform == 'Facebook') { ?>
+                                                            <div class="position-relative me-3 align-self-center rounded">
+                                                                <img src="<?php echo $user_social->src; ?>" alt="Profile Picture" class="thumb-md rounded-circle">
+                                                                <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" alt="profile-platform Icon" class="profile-platform-icon">
+                                                            </div>
+                                                            <div class="flex-grow-1 text-truncate">
+                                                                <h6 class="m-0"><?php echo $user_social->name; ?></h6>
+                                                                <a href="#" class="fs-12 text-primary">ID: <?php echo hashidsEncrypt($user_social->id); ?></a>
+                                                            </div><!--end media body-->
+                                                        <?php } else { ?>
+                                                            <img src="<?php echo base_url('assets/images/' . getPlatformIcon($user_social->platform)); ?>" height="40" class="me-3 align-self-center rounded" alt="...">
+                                                            <div class="flex-grow-1 text-truncate">
+                                                                <h6 class="m-0"><?php echo $user_social->name; ?></h6>
+                                                                <a href="#" class="fs-12 text-primary">ID: <?php echo hashidsEncrypt($user_social->id); ?></a>
+                                                            </div><!--end media body-->
+                                                        <?php } ?>
+
                                                     </div>
                                                 </td>
                                                 <td><?php echo $user_social->name; ?></td>

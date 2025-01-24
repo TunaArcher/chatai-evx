@@ -109,6 +109,7 @@ class TeamSocialModel
         } else if ($select == 'ALL') {
             $sql = "
                 SELECT 
+                    user_socials.src,
                     team_socials.id,
                     user_socials.platform,
                     user_socials.name

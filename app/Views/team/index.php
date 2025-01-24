@@ -244,9 +244,18 @@
                                     <div class="img-group d-flex justify-content-center mt-3">
                                         <?php if ($team->socials) { ?>
                                             <?php foreach ($team->socials as $social) { ?>
-                                                <a class="user-avatar position-relative d-inline-block" href="<?php echo base_url('/setting/connect'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$social->platform | $social->name"; ?>">
-                                                    <img src="assets/images/<?php echo getPlatformIcon($social->platform); ?>" alt="avatar" class="thumb-md shadow-sm rounded-circle">
-                                                </a>
+                                                <?php if ($social->platform == 'Facebook') { ?>
+                                                    <div class="position-relative">
+                                                        <a href="<?php echo base_url('/setting/connect'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$social->platform | $social->name"; ?>">
+                                                            <img src="<?php echo $social->src; ?>" alt="Profile Picture" class="thumb-md rounded-circle">
+                                                            <img src="<?php echo base_url('assets/images/' . getPlatformIcon($social->platform)); ?>" alt="profile-platform Icon" class="profile-platform-icon">
+                                                        </a>
+                                                    </div>
+                                                <?php } else { ?>
+                                                    <a class="user-avatar position-relative d-inline-block" href="<?php echo base_url('/setting/connect'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$social->platform | $social->name"; ?>">
+                                                        <img src="assets/images/<?php echo getPlatformIcon($social->platform); ?>" alt="avatar" class="thumb-md shadow-sm rounded-circle">
+                                                    </a>
+                                                <?php } ?>
                                             <?php } ?>
                                         <?php } ?>
                                     </div>
