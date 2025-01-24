@@ -66,7 +66,7 @@ class MessageService
                     }
                 }
             }
-        } else $userIdLooking[] = $messageRoom->user_id;
+        } else $userIdLooking[] = hashidsEncrypt($messageRoom->user_id);
 
         $data['userIdLooking'] = $userIdLooking;
 
