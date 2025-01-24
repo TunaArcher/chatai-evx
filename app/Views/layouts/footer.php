@@ -148,12 +148,16 @@
 <!-- vendor js -->
 <script src="<?php echo base_url('/assets/libs/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
 <script src="<?php echo base_url('/assets/libs/simplebar/simplebar.min.js'); ?>"></script>
+<script src="<?php echo base_url('/assets/js/app.js'); ?>"></script>
 
-<!-- <script src="assets/libs/apexcharts/apexcharts.min.js"></script> -->
-<script src="<?php echo base_url('/assets/data/stock-prices.js'); ?>"></script>
-<script src="<?php echo base_url('/assets/libs/jsvectormap/js/jsvectormap.min.js'); ?>"></script>
-<script src="<?php echo base_url('/assets/libs/jsvectormap/maps/world.js'); ?>"></script>
-<!-- <script src="assets/js/pages/index.init.js"></script> -->
+<!-- My CDN -->
+<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+<script src="https://unpkg.com/@sjmc11/tourguidejs/dist/tour.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<?php if (isset($js_critical)) {
+    echo $js_critical;
+}; ?>
+
 <script>
     // ดึงปุ่ม Toggle
     var themeColorToggle = document.getElementById("light-dark-mode");
@@ -181,14 +185,6 @@
             localStorage.setItem("theme", newTheme);
         });
 </script>
-<script src="<?php echo base_url('/assets/js/app.js'); ?>"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-
-<?php if (isset($js_critical)) {
-    echo $js_critical;
-}; ?>
-
 <script>
     let _bodyElement = document.body;
     let _bodySize = _bodyElement.getAttribute("data-sidebar-size");
@@ -301,6 +297,32 @@
 
     });
 </script>
+<script>
+    const hasSeenTour = localStorage.getItem('hasSeenTour');
+
+    if (!hasSeenTour && isDesktop()) {
+        const tg = new tourguide.TourGuideClient({
+            keyboardControls: true,
+            rememberStep: true
+        });
+
+        tg.addSteps([{
+            title: '👋 ยินดีต้อนรับสู่ AutoConX',
+            content: '<p class="mb-3 text-center">สวัสดีครับ ผมเป็น Ai🤖 ของ AutoConX</p><hr><p class="text-center">🤖 คุณเป็นมือใหม่ใช่มั้ยล่ะ ? ไม่ต้องกังวลไป ผมจะพาคุณใช้งานให้เป็น เพียงใน <b>3</b> ขั้นตอน</p><p>ใช้คีย์บอร์ดของคุณหรือคลิกปุ่มถัดไปเพื่อเริ่มต้นใช้งาน!</p>',
+            order: 0, // Add to start
+        }]);
+
+        tg.start();
+
+        // บันทึกว่าเคยดู Tour แล้ว
+        localStorage.setItem('hasSeenTour', 'true');
+    }
+
+    function isDesktop() {
+        return window.innerWidth > 1024; // เช็คว่าหน้าจอขนาดใหญ่กว่า 1024px
+    }
+</script>
+
 </body>
 <!--end body-->
 

@@ -101,7 +101,7 @@
     }
 </style>
 <div class="page-content">
-    <div class="container-xxl">
+    <div class="container-fluid">
         <div class="row my-3">
             <div class="col-12">
                 <div class="">
@@ -135,8 +135,10 @@
                                                 box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
                                             }
                                         </style>
-                                        <?php foreach ($members as $member) { ?>
-                                            <a class="user-avatar position-relative d-inline-block ms-n2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email $member->status"; ?>">
+                                        <?php foreach ($members as $key => $member) { ?>
+                                            <a class="user-avatar position-relative d-inline-block <?php if ($key > 0) {
+                                                                                                        echo 'ms-n2';
+                                                                                                    } ?>" href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo "$member->email $member->status"; ?>">
                                                 <img src="<?php echo $member->picture; ?>" alt="avatar" class="thumb-md shadow-sm rounded-circle">
                                                 <?php if ($member->status !== '') { ?>
                                                     <span class="camera-icon position-absolute">

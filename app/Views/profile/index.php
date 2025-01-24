@@ -12,39 +12,55 @@
                                     <div class="position-relative me-3">
                                         <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" height="120" class="rounded-circle">
                                         <a href="#" class="thumb-md justify-content-center d-flex align-items-center bg-primary text-white rounded-circle position-absolute end-0 bottom-0 border border-3 border-card-bg">
-                                            <i class="fas fa-camera"></i>
+                                            <img src="<?php echo base_url('/assets/images/' . getPlatformIcon(session()->get('platform'))); ?>" alt="profile-platform Icon" width="100%">
                                         </a>
                                     </div>
                                     <div class="">
                                         <h5 class="fw-semibold fs-22 mb-1"><?php echo session()->get('name'); ?></h5>
-                                        <p class="mb-0 text-muted fw-medium"><?php echo session()->get('platform'); ?></p>
+                                        <?php if (session()->get('subscription_status') == 'active') { ?>
+                                            <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
+                                        <?php } else { ?>
+                                            <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div><!--end col-->
 
-                            <div class="col-lg-4 ms-auto align-self-center">
+                            <div class="col-lg-6 ms-auto align-self-center">
                                 <div class="d-flex justify-content-center">
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">75</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">68%</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
-                                    <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                        <h5 class="fw-semibold fs-22 mb-1">$8620</h5>
-                                        <p class="text-muted mb-0 fw-medium">Development</p>
-                                    </div>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo count($userSocials); ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">การเชื่อมต่อ</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['all']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">Message ทั้งหมด</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['reply_by_manual']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">ตอบด้วยตนเอง</p>
+                                        </div>
+                                    <?php } ?>
+                                    <?php if (isset($userSocials)) { ?>
+                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['replay_by_ai']; ?></h5>
+                                            <p class="text-muted mb-0 fw-medium">ตอบโดย AI</p>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div><!--end col-->
-                            <div class="col-lg-4 align-self-center">
+                            <div class="col-lg-2 align-self-center">
                                 <div class="row row-cols-2">
                                     <div class="col text-end">
                                         <div id="complete" class="apex-charts"></div>
                                     </div>
                                     <div class="col align-self-center">
-                                        <button type="button" class="btn btn-primary  d-inline-block">Development</button>
+                                        <button type="button" class="btn btn-primary d-inline-block" onclick="alert('development')">ผูกบัญชี</button>
                                         <!-- <button type="button" class="btn btn-light  d-inline-block">Development</button> -->
                                     </div>
                                 </div>
@@ -64,18 +80,18 @@
                                 <h4 class="card-title">Personal Information</h4>
                             </div><!--end col-->
                             <div class="col-auto">
-                                <a href="#" class="float-end text-muted d-inline-flex text-decoration-underline"><i class="iconoir-edit-pencil fs-18 me-1"></i>Edit</a>
+                                <a href="#" class="float-end text-muted d-inline-flex text-decoration-underline" onclick="alert('development')"><i class="iconoir-edit-pencil fs-18 me-1"></i>Edit</a>
                             </div><!--end col-->
                         </div> <!--end row-->
                     </div><!--end card-header-->
                     <div class="card-body pt-0">
                         <p class="text-muted fw-medium mb-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam ipsam quas, exercitationem sint iste temporibus enim ex quam delectus aliquam totam eum commodi sunt iusto nobis iure hic repellat. Reprehenderit.</p>
                         <div class="mb-3">
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 1</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 2</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 3</span>
-                            <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development 4</span>
-                            <!-- <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">Development</span> -->
+                            <?php if (isset($teams)) { ?>
+                                <?php foreach ($teams as $team) { ?>
+                                    <span class="badge bg-transparent border border-light text-gray-700 fs-12 fw-medium mb-1">ทีม <img width="20" src="<?php echo base_url($team->icon); ?>"><?php echo $team->name; ?></span>
+                                <?php } ?>
+                            <?php } ?>
                         </div>
                         <?php if ($subscription) { ?>
 
@@ -144,7 +160,10 @@
                         <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#post" role="tab" aria-selected="true">Bills</a>
                     </li> -->
                     <li class="nav-item">
-                        <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">Security</a>
+                        <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">ตั้งค่า Security</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" data-bs-toggle="tab" href="#security" role="tab" aria-selected="false">ตั้งค่า อื่น ๆ</a>
                     </li>
                 </ul>
                 <!-- Tab panes -->
@@ -153,7 +172,7 @@
                         Bills
                     </div> -->
                     <div class="tab-pane active" id="security" role="tabpanel">
-                        <div class="container">Development ....</div>
+                        <div class="container">In development ....</div>
                     </div>
                 </div>
             </div> <!--end col-->

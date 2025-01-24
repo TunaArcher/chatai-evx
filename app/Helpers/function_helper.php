@@ -2,13 +2,13 @@
 
 function getPlatformIcon($platform)
 {
-    return match ($platform) {
-        'Facebook' => 'ic-Facebook.png',
-        'Line' => 'ic-Line.png',
-        'WhatsApp' => 'ic-WhatsApp.png',
-        'Instagram' => 'ic-Instagram.svg',
-        'Tiktok' => 'ic-Tiktok.png',
-        default => '',
+    return match (strtolower($platform)) {
+        'facebook' => 'ic-Facebook.png',
+        'line' => 'ic-Line.png',
+        'whatsapp' => 'ic-WhatsApp.png',
+        'instagram' => 'ic-Instagram.svg',
+        'tiktok' => 'ic-Tiktok.png',
+        default => 'ic-default.png',
     };
 }
 

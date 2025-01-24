@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>EVX CHAT AI | DEMO</title>
+    <title>AutoConX | Beta 1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="" name="author" />
@@ -16,19 +16,19 @@
 
     <!-- App css -->
     <link href="<?php echo base_url('/assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url('/assets/css/icons.min.css?v=' . time()) ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/icons.min.css') ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('/assets/css/app.min.css'); ?>" rel="stylesheet" type="text/css" />
+
+    <!-- Notyf -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@sjmc11/tourguidejs/dist/css/tour.min.css">
 
     <?php if (isset($css_critical)) {
         echo $css_critical;
     } ?>
 
-    <link href="<?php echo base_url('/assets/css/app.min.css?v=' . time()); ?>" rel="stylesheet" type="text/css" />
-
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-
     <!-- เรียกใช้ Google Translate Element -->
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
@@ -36,16 +36,13 @@
         * {
             font-family: 'Kanit', sans-serif;
         }
-    </style>
 
-    <style>
         .disabled {
             opacity: 0.6;
             cursor: not-allowed;
             pointer-events: none;
         }
-    </style>
-    <style>
+
         /* ปุ่ม Gradient Animate */
         .gradient-animate-btn {
             display: inline-block;
@@ -91,6 +88,36 @@
                 background-position: 0% 50%;
             }
         }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .profile-thumb-md {
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .profile-platform-icon {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            bottom: 0;
+            right: 0;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+        }
+    </style>
+    <style>
+        .tg-backdrop,
+        .tg-dialog {
+            z-index: 9999 !important;
+        }
+
+        .tg-dialog .tg-dialog-footer button.tg-dialog-btn {
+            background-color: #fff;
+        }
     </style>
     <script>
         var serverUrl = '<?php echo base_url(); ?>'
@@ -118,7 +145,7 @@
                         </button>
                     </li>
                     <li class="mx-3 welcome-text">
-                        <h3 class="mb-0 fw-bold text-truncate">Chat AI Demo</h3>
+                        <h3 class="mb-0 fw-bold text-truncate">v.Beta 1.0</h3>
                         <!-- <h6 class="mb-0 fw-normal text-muted text-truncate fs-14">Here's your overview this week.</h6> -->
                     </li>
                 </ul>
@@ -132,7 +159,7 @@
                     </li>
 
                     <li class="dropdown topbar-item">
-                        <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#" role="button"
+                        <a class="nav-link dropdown-toggle arrow-none nav-icon disabled" data-bs-toggle="dropdown" href="#" role="button"
                             aria-haspopup="false" aria-expanded="false">
                             <i class="icofont-bell-alt"></i>
                             <span class="alert-badge"></span>
@@ -317,16 +344,22 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end py-0">
                             <div class="d-flex align-items-center dropdown-item py-2 bg-secondary-subtle">
-                                <div class="flex-shrink-0">
-                                    <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-md rounded-circle">
+                                <div class="position-relative">
+                                    <!-- รูปโปรไฟล์ -->
+                                    <img src="<?php echo session()->get('thumbnail') ?: base_url('/assets/images/conX.png'); ?>" alt="Profile Picture" class="thumb-md profile-thumb-md rounded-circle">
+                                    <!-- ไอคอน -->
+                                    <img src="<?php echo base_url('/assets/images/' . getPlatformIcon(session()->get('platform'))); ?>" alt="profile-platform Icon" class="profile-platform-icon">
                                 </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?> <span class="badge bg-info"><?php if (session()->get('subscription_status') == 'active') {
-                                                                                                                                                        echo 'อัพเกรดแล้ว';
-                                                                                                                                                    }; ?></span></h6>
-                                    <small class="text-muted mb-0"><?php echo session()->get('platform'); ?></small>
+                                    <h6 class="my-0 fw-medium text-dark fs-13"><?php echo session()->get('name'); ?></h6>
+                                    <?php if (session()->get('subscription_status') == 'active') { ?>
+                                        <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
+                                    <?php } else { ?>
+                                        <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                    <?php } ?>
                                 </div><!--end media-body-->
                             </div>
+
                             <div class="dropdown-divider mt-0"></div>
                             <small class="text-muted px-2 pb-1 d-block">Account</small>
                             <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-user fs-18 me-1 align-text-bottom"></i> Profile</a>
@@ -350,11 +383,11 @@
         <div class="brand">
             <a href="<?php echo base_url(); ?>" class="logo">
                 <span>
-                    <img width="170" height="50" src="/assets/images/conXx.png" alt="logo-small" class="logo-sm">
+                    <img src="<?php echo base_url('/assets/images/logo72x72.png'); ?>" alt="logo-small" class="logo-sm" style="display: none;">
                 </span>
                 <span class="">
-                    <!-- <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-large" class="logo-lg logo-light"> -->
-                    <!-- <img width="94" height="38" src="https://evxspst.sgp1.cdn.digitaloceanspaces.com/uploads/img/1680594044_952ae0ae19a1a2531a7d.png" alt="logo-large" class="logo-lg logo-dark"> -->
+                    <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-x">
+                    <!-- <img width="170" height="38" src="<?php echo base_url('/assets/images/conXx.png'); ?>" alt="logo-large" class="logo-lg logo-dark"> -->
                 </span>
             </a>
         </div>
@@ -380,7 +413,7 @@
                             </a>
                         </li><!--end nav-item-->
 
-                        <li class="nav-item">
+                        <li class="nav-item" data-tg-order="2" data-tg-tour='แชทจากแพลตฟอร์มต่าง ๆ ถูกรวมไว้ที่นี่ ทำให้สามารถจัดการได้ง่าย !' data-tg-title="2. แชทจากทุกแพลตฟอร์มถูกรวมไว้ที่เดียว">
                             <a class="nav-link" href="<?php echo base_url('/chat'); ?>">
                                 <i class="iconoir-view-grid menu-icon"></i>
                                 <span>Chat</span>
@@ -402,10 +435,10 @@
                             </a>
                             <div class="collapse show" id="sidebarSetting">
                                 <ul class="nav flex-column">
-                                    <li class="nav-item ">
-                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>"> Connect</a>
+                                    <li class="nav-item " data-tg-order="1" data-tg-tour='คุณสามารถเชื่อมต่อแพลตฟอร์มยอดนิยม เช่น Line, Facebook, Instagram, WhatsApp ได้ในเวลาไม่ถึง 1 นาที และสามารถใช้งานระบบได้ทันที! 🚀' data-tg-title="ขั้นตอนแรก สร้างการเชื่อมต่อ">
+                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>" class="menu-connect"> Connect</a>
                                     </li><!--end nav-item-->
-                                    <li class="nav-item">
+                                    <li class="nav-item" data-tg-order="3" data-tg-tour='เรามีระบบ AutoConX AI ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชท AI ที่ทำงานตลอด 24 ชั่วโมง' data-tg-title="3. Training">
                                         <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
                                     </li><!--end nav-item-->
                                 </ul><!--end nav-->
@@ -552,7 +585,7 @@
                         <div class="progress mb-3">
                             <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
                         </div>
-                        <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
+                        <a data-tg-order="4" data-tg-tour='เพื่อปลดล็อคความสามารถ สามารถใช้ได้ทุกฟีเจอร์ โนลิมิต' data-tg-title="เพิ่มความสามารถ 🎉" href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                     </div>
                 <?php } ?>
             </div>

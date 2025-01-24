@@ -1,91 +1,202 @@
+<style>
+    /* Fade-in Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Card Animation */
+    .card-dashboard-animate {
+        opacity: 0;
+        /* เริ่มต้นเป็นโปร่งใส */
+        transform: translateY(20px);
+        /* เริ่มต้นขยับลง */
+        transition: all 0.3s ease-in-out;
+        /* เพิ่ม transition */
+    }
+
+    .card-dashboard-animate.visible {
+        opacity: 1;
+        /* ทำให้การ์ดปรากฏ */
+        transform: translateY(0);
+        /* การ์ดเลื่อนขึ้น */
+    }
+
+    /* Hover Effect for Card */
+    .card-dashboard-animate:hover {
+        transform: scale(1.05);
+        /* การ์ดขยาย */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        /* เพิ่มเงา */
+    }
+
+    /* Button Hover Effect */
+    button.btn:hover {
+        transform: scale(1.1);
+        /* ปุ่มขยายเล็กน้อย */
+        transition: transform 0.2s ease;
+    }
+</style>
+
 <!-- Page Content-->
 <div class="page-content">
-    <div class="container-xxl">
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h4 class="card-title">Dashboard Page</h4>
-                        </div><!--end col-->
-                    </div> <!--end row-->
-                </div><!--end card-header-->
-                <div class="card-body pt-0">
-
-                </div><!--end card-body-->
-            </div><!--end card-->
-        </div>
-    </div><!-- container -->
-
-    <!--Start Rightbar-->
-    <!--Start Rightbar/offcanvas-->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="Appearance" aria-labelledby="AppearanceLabel">
-        <div class="offcanvas-header border-bottom justify-content-between">
-            <h5 class="m-0 font-14" id="AppearanceLabel">Appearance</h5>
-            <button type="button" class="btn-close text-reset p-0 m-0 align-self-center" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <h6>Account Settings</h6>
-            <div class="p-2 text-start mt-3">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch1">
-                    <label class="form-check-label" for="settings-switch1">Auto updates</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch2" checked>
-                    <label class="form-check-label" for="settings-switch2">Location Permission</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="settings-switch3">
-                    <label class="form-check-label" for="settings-switch3">Show offline Contacts</label>
-                </div><!--end form-switch-->
-            </div><!--end /div-->
-            <h6>General Settings</h6>
-            <div class="p-2 text-start mt-3">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch4">
-                    <label class="form-check-label" for="settings-switch4">Show me Online</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="settings-switch5" checked>
-                    <label class="form-check-label" for="settings-switch5">Status visible to all</label>
-                </div><!--end form-switch-->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="settings-switch6">
-                    <label class="form-check-label" for="settings-switch6">Notifications Popup</label>
-                </div><!--end form-switch-->
-            </div><!--end /div-->
-        </div><!--end offcanvas-body-->
-    </div>
-    <!--end Rightbar/offcanvas-->
-    <!--end Rightbar-->
-    <!--Start Footer-->
-
-    <footer class="footer text-center text-sm-start d-print-none">
-        <div class="container-xxl">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mb-0 rounded-bottom-0">
-                        <div class="card-body">
-                            <p class="text-muted mb-0">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>
-                                Rizz
-                                <span
-                                    class="text-muted d-none d-sm-inline-block float-end">
-                                    Crafted with
-                                    <i class="iconoir-heart text-danger"></i>
-                                    by Mannatthemes</span>
-                            </p>
-                        </div>
+    <div class="container">
+        <div class="card" style="background-color:#000;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-auto align-self-center">
+                        <img src="https://cdn.pixabay.com/photo/2021/02/14/22/00/tik-tok-6016006_1280.png" alt="" height="90" class="rounded">
+                    </div>
+                    <div class="col">
+                        <h6 class="mb-2 mt-1 fw-medium text-white fs-18">TikTok x AutoConx. Now we're talking</h6>
+                        <p class="text-white fs-14 ">Discover new opportunities for your audience in TikTok</p>
+                    </div>
+                    <div class="col-auto align-self-center">
+                        <button class="btn btn-info" onclick="alert('in develop')">DISCOVER <i class="iconoir-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+        <div class="row my-5">
+            <h1 id="typed-text-container" data-username="<?php echo session()->get('name'); ?>">
+                <span id="typed-text"></span><span class="typed-cursor"></span>
+            </h1>
+            <p>
+                <?php if (isset($userSocials)) { ?>
+                    <?php echo count($userSocials); ?> การเชื่อมต่อ ⚡
+                <?php } ?>
+                <?php if (isset($counterMessages)) { ?>
+                    <?php echo $counterMessages['all']; ?> ข้อความ 📑
+                <?php } ?>
+                <a href="<?php echo base_url('/chat'); ?>"><u>See Insights</u></a>
+            </p>
+        </div>
+        <div class="row my-2 justify-content-between align-items-center">
+            <div class="col-auto text-left">
+                <h2>เริ่มต้น</h2>
+            </div>
+            <div class="col-auto text-right"><a href="#" onclick="alert('in develop')">Explore all Templates</a></div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-dashboard-animate">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h3 class="mb-2 mb-0 fw-bold">1. สร้างการเชื่อมต่อ</h3>
+                                <p class="text-muted mb-0 fw-semibold fs-14">เชื่อมต่อแพลตฟอร์มยอดนิยม เช่น Line, Facebook, Instagram, WhatsApp ได้ในเวลาไม่ถึง 1 นาที และสามารถใช้งานระบบได้ทันที! 🚀 </p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+                                    <i class="iconoir-hexagon-dice h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <div class="row mt-3 align-items-center">
+                            <!-- ⚙️ Flow Builder ด้านซ้าย -->
+                            <div class="col text-start">
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/setting/connect'); ?>">⚙️ Flow Builder</a></p>
+                            </div>
 
-    <!--end footer-->
+                            <!-- ปุ่ม ด้านขวา -->
+                            <!-- <div class="col-auto text-end">
+                                <button type="button" class="btn btn-dark btn-sm">
+                                    AI
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-dashboard-animate">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h4 class="mb-2 mb-0 fw-bold">2. แชทจากทุกแพลตฟอร์มถูกรวมไว้ที่เดียว</h4>
+                                <p class="text-muted mb-0 fw-semibold fs-14">แชทจากแพลตฟอร์มต่าง ๆ ถูกรวมไว้ที่นี่ ทำให้สามารถจัดการได้ง่าย !</p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+                                    <i class="iconoir-percentage-circle h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <div class="row mt-3 align-items-center">
+                            <!-- ⚙️ Flow Builder ด้านซ้าย -->
+                            <div class="col text-start">
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/chat'); ?>">⚙️ Flow Builder</a></p>
+                            </div>
+
+                            <!-- ปุ่ม ด้านขวา -->
+                            <!-- <div class="col-auto text-end">
+                                <button type="button" class="btn btn-dark btn-sm">
+                                    AI
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-dashboard-animate">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center border-dashed-bottom pb-3">
+                            <div class="col-9">
+                                <h4 class="mb-2 mb-0 fw-bold">Automate conversations with AI</h4>
+                                <p class="text-muted mb-0 fw-semibold fs-14">เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชท AI ที่ทำงานตลอด 24/7</p>
+                            </div>
+                            <!--end col-->
+                            <div class="col-3 align-self-center">
+                                <div class="d-flex justify-content-center align-items-center thumb-xl bg-light rounded-circle mx-auto">
+
+                                    <i class="iconoir-clock h1 align-self-center mb-0 text-secondary"></i>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                        <!-- Row ใหม่สำหรับ ⚙️ Flow Builder และปุ่ม OK -->
+                        <div class="row mt-3 align-items-center">
+                            <!-- ⚙️ Flow Builder ด้านซ้าย -->
+                            <div class="col text-start">
+                                <p class="mb-0 text-truncate text-muted"><a href="<?php echo base_url('/setting/message'); ?>">⚙️ Flow Builder</a></p>
+                            </div>
+
+                            <!-- ปุ่ม OK ด้านขวา -->
+                            <div class="col-auto text-end">
+                                <button type="button" class="btn btn-dark btn-sm py-0">
+                                    AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+        </div>
+    </div>
+</div><!-- container -->
 </div>
 <!-- end page content -->
