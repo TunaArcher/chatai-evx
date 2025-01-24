@@ -4,7 +4,6 @@ Today
 Note ที่ต้องทำ
 - Facebook Access Token มีอายุ 2ชม. ต้องทำ Refresh Token
 - Instagram AccessToken มีอายุ 60วัน ต้องทำ Refresh Token
-- จัดการ กรณี User ไม่ยอมรับ Access
 - Full Test บน Production
 
 Note หมายเหตุ
