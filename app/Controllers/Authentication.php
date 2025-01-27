@@ -77,6 +77,7 @@ class Authentication extends BaseController
                         'main_sign_in_by' => 'default',
                         'name' => $email,
                         'password' => password_hash($password, PASSWORD_DEFAULT),
+                        'permission_ids' => '1,2,3,5'
                     ]);
                 }
 
@@ -93,7 +94,8 @@ class Authentication extends BaseController
                     'email' => $email,
                     'name' => $email,
                     'password' => password_hash($password, PASSWORD_DEFAULT),
-                    'user_owner_id' => $userOwnerID
+                    'user_owner_id' => $userOwnerID,
+                    'permission_ids' => '1,2,3,4,5,6'
                 ]);
             }
 
@@ -317,6 +319,7 @@ class Authentication extends BaseController
                         'name' => $profile->name,
                         'picture' => $profile->picture->data->url,
                         'meta_access_token' => $oauthAccessToken->access_token,
+                        'permission_ids' => '1,2,3,4,5,6'
                     ]);
 
                     $userAccount = $this->userAccountModel->insertUserAccount([
@@ -422,7 +425,8 @@ class Authentication extends BaseController
                         'main_sign_in_by' => $platform,
                         'email' => $profile->email ?? '',
                         'name' => $profile->name,
-                        'picture' => $profile->picture ?? ''
+                        'picture' => $profile->picture ?? '',
+                        'permission_ids' => '1,2,3,4,5,6'
                     ]);
 
                     $userAccount = $this->userAccountModel->insertUserAccount([
