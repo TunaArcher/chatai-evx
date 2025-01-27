@@ -113,6 +113,7 @@ class Authentication extends BaseController
                 'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
                 'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
                 'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
+                'permissions' => $user->permission_ids,
             ]);
 
             $status = 200;
@@ -175,6 +176,7 @@ class Authentication extends BaseController
                                 'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
                                 'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
                                 'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
+                                'permissions' => $user->permission_ids,
                             ]);
 
                             $status = 200;
@@ -367,6 +369,7 @@ class Authentication extends BaseController
                     'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
                     'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
                     'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
+                    'permissions' => $user->permission_ids,
                 ]);
 
                 break;
@@ -473,6 +476,7 @@ class Authentication extends BaseController
                     'subscription_current_period_start' => $userSubscription ? $userSubscription->current_period_start : '',
                     'subscription_current_period_end' => $userSubscription ? $userSubscription->current_period_end : '',
                     'subscription_cancel_at_period_end' => $userSubscription ? $userSubscription->cancel_at_period_end : '',
+                    'permissions' => $user->permission_ids,
                 ]);
 
                 break;

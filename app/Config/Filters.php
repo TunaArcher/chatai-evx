@@ -28,6 +28,7 @@ class Filters extends BaseConfig
             \App\Filters\UserAuth::class
         ],
         'userCheckPackagePermission' => \App\Filters\UserCheckPackagePermission::class,
+        'checkPermissions' => \App\Filters\CheckPermissions::class,
     ];
 
     /**

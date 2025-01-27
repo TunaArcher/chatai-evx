@@ -117,4 +117,17 @@ class UserSocialModel
         ->get()
         ->getRow();
     }
+
+    public function getUserSocialByTeamID($teamID)
+    {
+        $builder = $this->db->table('user_socials');
+
+        return $builder
+            ->where('team_id', $teamID) 
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'DESC')
+            ->get()
+            ->getResult();
+    }
+
 }

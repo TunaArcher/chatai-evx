@@ -20,51 +20,56 @@
                                         <?php if (session()->get('subscription_status') == 'active') { ?>
                                             <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
                                         <?php } else { ?>
-                                            <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                            <?php if (session()->get('user_owner_id') == '') { ?>
+                                                <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                            <?php } else if (session()->get('user_owner_id') != '') { ?>
+                                                <span class="badge rounded-pill bg-warning-subtle text-warning">Team</span>
+                                            <?php } ?>
                                         <?php } ?>
                                     </div>
                                 </div>
                             </div><!--end col-->
-
-                            <div class="col-lg-6 ms-auto align-self-center">
-                                <div class="d-flex justify-content-center">
-                                    <?php if (isset($userSocials)) { ?>
-                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo count($userSocials); ?></h5>
-                                            <p class="text-muted mb-0 fw-medium">การเชื่อมต่อ</p>
-                                        </div>
-                                    <?php } ?>
-                                    <?php if (isset($userSocials)) { ?>
-                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['all']; ?></h5>
-                                            <p class="text-muted mb-0 fw-medium">Message ทั้งหมด</p>
-                                        </div>
-                                    <?php } ?>
-                                    <?php if (isset($userSocials)) { ?>
-                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['reply_by_manual']; ?></h5>
-                                            <p class="text-muted mb-0 fw-medium">ตอบด้วยตนเอง</p>
-                                        </div>
-                                    <?php } ?>
-                                    <?php if (isset($userSocials)) { ?>
-                                        <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
-                                            <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['replay_by_ai']; ?></h5>
-                                            <p class="text-muted mb-0 fw-medium">ตอบโดย AI</p>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                            </div><!--end col-->
-                            <div class="col-lg-2 align-self-center">
-                                <div class="row row-cols-2">
-                                    <div class="col text-end">
-                                        <div id="complete" class="apex-charts"></div>
+                            <?php if (session()->get('user_owner_id') == '') { ?>
+                                <div class="col-lg-6 ms-auto align-self-center">
+                                    <div class="d-flex justify-content-center">
+                                        <?php if (isset($userSocials)) { ?>
+                                            <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                                <h5 class="fw-semibold fs-22 mb-1"><?php echo count($userSocials); ?></h5>
+                                                <p class="text-muted mb-0 fw-medium">การเชื่อมต่อ</p>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if (isset($userSocials)) { ?>
+                                            <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                                <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['all']; ?></h5>
+                                                <p class="text-muted mb-0 fw-medium">Message ทั้งหมด</p>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if (isset($userSocials)) { ?>
+                                            <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                                <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['reply_by_manual']; ?></h5>
+                                                <p class="text-muted mb-0 fw-medium">ตอบด้วยตนเอง</p>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if (isset($userSocials)) { ?>
+                                            <div class="border-dashed rounded border-theme-color p-2 me-2 flex-grow-1 flex-basis-0">
+                                                <h5 class="fw-semibold fs-22 mb-1"><?php echo $counterMessages['replay_by_ai']; ?></h5>
+                                                <p class="text-muted mb-0 fw-medium">ตอบโดย AI</p>
+                                            </div>
+                                        <?php } ?>
                                     </div>
-                                    <div class="col align-self-center">
-                                        <button type="button" class="btn btn-primary d-inline-block" onclick="alert('development')">ผูกบัญชี</button>
-                                        <!-- <button type="button" class="btn btn-light  d-inline-block">Development</button> -->
+                                </div><!--end col-->
+                                <div class="col-lg-2 align-self-center">
+                                    <div class="row row-cols-2">
+                                        <div class="col text-end">
+                                            <div id="complete" class="apex-charts"></div>
+                                        </div>
+                                        <div class="col align-self-center">
+                                            <button type="button" class="btn btn-primary d-inline-block" onclick="alert('development')">ผูกบัญชี</button>
+                                            <!-- <button type="button" class="btn btn-light  d-inline-block">Development</button> -->
+                                        </div>
                                     </div>
-                                </div>
-                            </div><!--end col-->
+                                </div><!--end col-->
+                            <?php } ?>
                         </div><!--end row-->
                     </div><!--end card-body-->
                 </div><!--end card-->
@@ -94,7 +99,6 @@
                             <?php } ?>
                         </div>
                         <?php if ($subscription) { ?>
-
                             <?php if ($subscription->status == 'active') { ?>
                                 <div class="p-3  border-info border-dashed bg-info-subtle  mt-3 rounded">
                                     <div class="row d-flex justify-content-center">
@@ -108,14 +112,16 @@
                                                 <?php } ?>
                                             </div>
                                         </div>
-                                        <div class="col-auto align-self-center text-center">
-                                            <p class="text-muted fw-semibold fs-13">หมดอายุ <?php echo date('Y-m-d H:i', $subscription->current_period_end); ?></p>
-                                            <?php if ($subscription->cancel_at_period_end) { ?>
-                                                <button class="btn btn-light text-right btn-sm btnHandlePlan">ยกเลิกแล้ว</button>
-                                            <?php } else { ?>
-                                                <button class="btn btn-light text-right btn-sm btnHandlePlan">ยกเลิก Subscription</button>
-                                            <?php } ?>
-                                        </div>
+                                        <?php if (session()->get('user_owner_id') == '') { ?>
+                                            <div class="col-auto align-self-center text-center">
+                                                <p class="text-muted fw-semibold fs-13">หมดอายุ <?php echo date('Y-m-d H:i', $subscription->current_period_end); ?></p>
+                                                <?php if ($subscription->cancel_at_period_end) { ?>
+                                                    <button class="btn btn-light text-right btn-sm btnHandlePlan">ยกเลิกแล้ว</button>
+                                                <?php } else { ?>
+                                                    <button class="btn btn-light text-right btn-sm btnHandlePlan">ยกเลิก Subscription</button>
+                                                <?php } ?>
+                                            </div>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             <?php } else { ?>
@@ -136,20 +142,21 @@
                                 </div>
                             <?php } ?>
                         <?php } else { ?>
-                            <div class="p-3  border-dark border-dashed bg-dark-subtle  mt-3 rounded">
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col">
-                                        <div class=" ">
-                                            <a href="#" class="fw-bold me-1 text-muted">No Active Subscription</a>
-                                            <hr>
-                                            อัพเกรดเพื่อเข้าถึงคุณสมบัติเพิ่มเติม
-                                        </div>
-                                    </div><!--end col-->
+                            <?php if (session()->get('user_owner_id') == '') { ?>
+                                <div class="p-3  border-dark border-dashed bg-dark-subtle  mt-3 rounded">
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col">
+                                            <div class=" ">
+                                                <a href="#" class="fw-bold me-1 text-muted">No Active Subscription</a>
+                                                <hr>
+                                                อัพเกรดเพื่อเข้าถึงคุณสมบัติเพิ่มเติม
+                                            </div>
+                                        </div><!--end col-->
 
-                                </div><!--end row-->
-                            </div>
+                                    </div><!--end row-->
+                                </div>
+                            <?php } ?>
                         <?php } ?>
-
 
                     </div><!--end card-body-->
                 </div><!--end card-->

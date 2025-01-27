@@ -53,12 +53,6 @@ class MessageRoomModel
         return $builder->where('id', $id)->delete();
     }
 
-    public function getMessageRoom($MessageRoomname)
-    {
-        $builder = $this->db->table('message_rooms');
-        return $builder->where('MessageRoomname', $MessageRoomname)->get()->getResult();
-    }
-
     public function getMessageRoomByUserID($userID)
     {
         $sql = "
@@ -90,5 +84,16 @@ class MessageRoomModel
         $builder = $this->db->table('message_rooms');
 
         return $builder->where('customer_id', $customerID)->get()->getRow();
+    }
+
+    public function getMessageRoomByUserSocialID($userSocialID)
+    {
+        $builder = $this->db->table('message_rooms');
+
+        return $builder
+            ->where('user_social_id', $userSocialID)
+            ->orderBy('created_at', 'DESC')
+            ->get()
+            ->getResult();
     }
 }

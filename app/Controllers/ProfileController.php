@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\SubscriptionModel;
 use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
+use App\Models\TeamMemberModel;
 use App\Models\TeamModel;
 use App\Models\TeamSocialModel;
 use App\Models\UserModel;
@@ -15,6 +16,7 @@ class ProfileController extends BaseController
     private SubscriptionModel $subscriptionModel;
     private TeamModel $teamModel;
     private TeamSocialModel $teamSocialModel;
+    private TeamMemberModel $teamMemberModel;
     private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
@@ -25,6 +27,7 @@ class ProfileController extends BaseController
         $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->teamModel = new TeamModel();
+        $this->teamMemberModel = new TeamMemberModel();
         $this->teamSocialModel = new TeamSocialModel();
         $this->subscriptionModel = new SubscriptionModel();
         $this->userSocialModel = new UserSocialModel();
@@ -41,34 +44,49 @@ class ProfileController extends BaseController
             <script src="app/profile.js"></script>
         ';
 
-        $data['subscription'] = $this->subscriptionModel->getUserSubscription(hashidsDecrypt(session()->get('userID')));
-        
-        $counterMessages = [
-            'all' => 0,
-            'reply_by_manual' => 0,
-            'replay_by_ai' => 0,
-        ];
+        if (session()->get('user_owner_id') == '') {
+            $counterMessages = [
+                'all' => 0,
+                'reply_by_manual' => 0,
+                'replay_by_ai' => 0,
+            ];
 
-        $userSocials = $this->userSocialModel->getUserSocialByUserID(hashidsDecrypt(session()->get('userID')));
-        foreach ($userSocials as $userSocial) {
-            
-            $messageRooms = $this->messageRoomModel->getMessageRoomByUserID(hashidsDecrypt(session()->get('userID')));
+            $userSocials = $this->userSocialModel->getUserSocialByUserID(hashidsDecrypt(session()->get('userID')));
+            foreach ($userSocials as $userSocial) {
 
-            foreach ($messageRooms as $room) {
-                $messages = $this->messageModel->getMessageRoomByRoomID($room->id, 'ALL');
-                $messagesManul = $this->messageModel->getMessageRoomByRoomID($room->id, 'MANUL');
-                $messagesAI = $this->messageModel->getMessageRoomByRoomID($room->id, 'AI');
-                $counterMessages['all'] += count($messages);
-                $counterMessages['reply_by_manual'] += count($messagesManul);
-                $counterMessages['replay_by_ai'] += count($messagesAI);
-            }   
-            
-            $userSocial->id = hashidsEncrypt($userSocial->id);
+                $messageRooms = $this->messageRoomModel->getMessageRoomByUserID(hashidsDecrypt(session()->get('userID')));
+
+                foreach ($messageRooms as $room) {
+                    $messages = $this->messageModel->getMessageRoomByRoomID($room->id, 'ALL');
+                    $messagesManul = $this->messageModel->getMessageRoomByRoomID($room->id, 'MANUL');
+                    $messagesAI = $this->messageModel->getMessageRoomByRoomID($room->id, 'AI');
+                    $counterMessages['all'] += count($messages);
+                    $counterMessages['reply_by_manual'] += count($messagesManul);
+                    $counterMessages['replay_by_ai'] += count($messagesAI);
+                }
+
+                $userSocial->id = hashidsEncrypt($userSocial->id);
+            }
+
+            $data['userSocials'] = $userSocials;
+            $data['counterMessages'] = $counterMessages;
+            $data['teams'] = $this->teamModel->getTeamByOwnerID(hashidsDecrypt(session()->get('userID')));
+            $data['subscription'] = $this->subscriptionModel->getUserSubscription(hashidsDecrypt(session()->get('userID')));
+        } else {
+            $teams = [];
+            $userID = hashidsDecrypt(session()->get('userID'));
+            $teamMembers = $this->teamMemberModel->getTeamMemberByUserID($userID);
+
+            foreach ($teamMembers as $teamMember) {
+                // px($teamMember);
+                $team = $this->teamModel->getTeamByID($teamMember->team_id);
+
+                $teams[] = $team;
+            }
+
+            $data['teams']  =  $teams;
+            $data['subscription'] = $this->subscriptionModel->getUserSubscription(hashidsDecrypt(session()->get('user_owner_id')));
         }
-
-        $data['userSocials'] = $userSocials;
-        $data['counterMessages'] = $counterMessages;
-        $data['teams'] = $this->teamModel->getTeamByOwnerID(hashidsDecrypt(session()->get('userID')));
 
         echo view('/app', $data);
     }
@@ -85,7 +103,7 @@ class ProfileController extends BaseController
         try {
 
             $user = $this->userModel->getUserByID(hashidsDecrypt(session()->get('userID')));
-            
+
             if (!$user) throw new \Exception('ไม่พบยูส');
 
             $response = [

@@ -355,7 +355,12 @@
                                     <?php if (session()->get('subscription_status') == 'active') { ?>
                                         <span class="badge rounded-pill bg-info-subtle text-info"><img style="margin-bottom: 2px;" width="14" src="https://cdn-icons-png.flaticon.com/512/5524/5524802.png" alt=""> อัพเกรดแล้ว</span>
                                     <?php } else { ?>
-                                        <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                        <?php if (session()->get('user_owner_id') == '') { ?>
+                                            <span class="badge rounded-pill bg-dark-subtle text-dark">Free</span>
+                                        <?php } else if (session()->get('user_owner_id') != '') { ?>
+                                            <span class="badge rounded-pill bg-warning-subtle text-warning">Team</span>
+                                        <?php } ?>
+
                                     <?php } ?>
                                 </div><!--end media-body-->
                             </div>
@@ -365,7 +370,7 @@
                             <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-user fs-18 me-1 align-text-bottom"></i> Profile</a>
                             <small class="text-muted px-2 py-1 d-block">Settings</small>
                             <a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="las la-cog fs-18 me-1 align-text-bottom"></i>Account Settings</a>
-                            <a class="dropdown-item disabled" href="<?php echo base_url('/profile'); ?>"><i class="las la-lock fs-18 me-1 align-text-bottom"></i> Security</a>
+                            <!-- <a class="dropdown-item disabled" href="<?php echo base_url('/profile'); ?>"><i class="las la-lock fs-18 me-1 align-text-bottom"></i> Security</a> -->
                             <a class="dropdown-item" href="<?php echo base_url('/help'); ?>"><i class="las la-question-circle fs-18 me-1 align-text-bottom"></i> Help Center</a>
                             <div class="dropdown-divider mb-0"></div>
                             <a class="dropdown-item text-danger" href="<?php echo base_url('/logout'); ?>"><i class="las la-power-off fs-18 me-1 align-text-bottom"></i> ออกจากระบบ</a>
@@ -427,23 +432,26 @@
                             </a>
                         </li><!--end nav-item-->
 
+                        <?php if (session()->get('user_owner_id') == '') { ?>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="javascript:void(0);">
-                                <i class="iconoir-compact-disc menu-icon"></i>
-                                <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
-                            </a>
-                            <div class="collapse show" id="sidebarSetting">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item " data-tg-order="1" data-tg-tour='คุณสามารถเชื่อมต่อแพลตฟอร์มยอดนิยม เช่น Line, Facebook, Instagram, WhatsApp ได้ในเวลาไม่ถึง 1 นาที และสามารถใช้งานระบบได้ทันที! 🚀' data-tg-title="ขั้นตอนแรก สร้างการเชื่อมต่อ">
-                                        <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>" class="menu-connect"> Connect</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item" data-tg-order="3" data-tg-tour='เรามีระบบ AutoConX AI ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชท AI ที่ทำงานตลอด 24 ชั่วโมง' data-tg-title="3. Training">
-                                        <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div>
-                        </li><!--end nav-item-->
+                            <li class="nav-item">
+                                <a class="nav-link" href="javascript:void(0);">
+                                    <i class="iconoir-compact-disc menu-icon"></i>
+                                    <span>Setting <span class="badge rounded-pill bg-success-subtle text-success">New</span></span>
+                                </a>
+                                <div class="collapse show" id="sidebarSetting">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item " data-tg-order="1" data-tg-tour='คุณสามารถเชื่อมต่อแพลตฟอร์มยอดนิยม เช่น Line, Facebook, Instagram, WhatsApp ได้ในเวลาไม่ถึง 1 นาที และสามารถใช้งานระบบได้ทันที! 🚀' data-tg-title="ขั้นตอนแรก สร้างการเชื่อมต่อ">
+                                            <a class="nav-link" href="<?php echo base_url('/setting/connect'); ?>" class="menu-connect"> Connect</a>
+                                        </li><!--end nav-item-->
+                                        <li class="nav-item" data-tg-order="3" data-tg-tour='เรามีระบบ AutoConX AI ช่วยธุรกิจของคุณโดยการตอบคำถามลูกค้าอัตโนมัติ เพิ่มยอดขายผ่านการส่งโปรโมชั่น และลดเวลาในการทำงานด้วยระบบแชท AI ที่ทำงานตลอด 24 ชั่วโมง' data-tg-title="3. Training">
+                                            <a class="nav-link" href="<?php echo base_url('/setting/message'); ?>"> Training</a>
+                                        </li><!--end nav-item-->
+                                    </ul><!--end nav-->
+                                </div>
+                            </li><!--end nav-item-->
+
+                        <?php } ?>
                     </ul><!--end navbar-nav--->
                 </div>
 
@@ -574,19 +582,21 @@
                     </div><!--end chat-box-left -->
                 </div>
 
-                <?php if (session()->get('subscription_status') != 'active') { ?>
-                    <div class="update-msg text-center">
-                        <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
-                            <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-lg rounded-circle">
+                <?php if (session()->get('user_owner_id') == '') { ?>
+                    <?php if (session()->get('subscription_status') != 'active') { ?>
+                        <div class="update-msg text-center">
+                            <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
+                                <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="" class="thumb-lg rounded-circle">
+                            </div>
+                            <h5 class="mt-3">ใช้งานฟรี</h5>
+                            <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Connects</p>
+                            <p class="text-muted mb-3">ฟรี AI 10 Request / ต่อวัน</p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
+                            </div>
+                            <a data-tg-order="4" data-tg-tour='เพื่อปลดล็อคความสามารถ สามารถใช้ได้ทุกฟีเจอร์ โนลิมิต' data-tg-title="เพิ่มความสามารถ 🎉" href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                         </div>
-                        <h5 class="mt-3">ใช้งานฟรี</h5>
-                        <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Connects</p>
-                        <p class="text-muted mb-3">ฟรี AI 10 Request / ต่อวัน</p>
-                        <div class="progress mb-3">
-                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
-                        </div>
-                        <a data-tg-order="4" data-tg-tour='เพื่อปลดล็อคความสามารถ สามารถใช้ได้ทุกฟีเจอร์ โนลิมิต' data-tg-title="เพิ่มความสามารถ 🎉" href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
-                    </div>
+                    <?php } ?>
                 <?php } ?>
             </div>
         </div><!--end startbar-collapse-->

@@ -34,7 +34,7 @@ $routes->set404Override('App\Controllers\Errors::show404');
  * --------------------------------------------------------------------
  */
 
-$routes->get('/', 'HomeController::index', ['filter' => 'userAuth']);
+$routes->get('/', 'HomeController::index', ['filter' => ['userAuth', 'checkPermissions:dashboard']]);
 $routes->get('/policy', 'HomeController::policy', ['filter' => 'userNoAuth']);
 
 /*
@@ -63,7 +63,7 @@ $routes->get('/auth/callback/(:any)', 'Authentication::authCallback/$1');
 // Team
 // -----------------------------------------------------------------------------
 
-$routes->group('team', ['filter' => 'userAuth'], function ($routes) {
+$routes->group('team', ['filter' => ['userAuth', 'checkPermissions:team']], function ($routes) {
     $routes->get('/', 'TeamController::index');
     $routes->post('create', 'TeamController::create');
     $routes->post('invite-to-member', 'TeamController::inviteToTeamMember');
@@ -78,7 +78,7 @@ $routes->get('/inviteToTeamMember/(:any)', 'TeamController::viewInviteToTeamMemb
 // Profile
 // -----------------------------------------------------------------------------
 
-$routes->group('profile', ['filter' => 'userAuth'], function ($routes) {
+$routes->group('profile', ['filter' => ['userAuth', 'checkPermissions:profile']], function ($routes) {
     $routes->get('/', 'ProfileController::index');
     $routes->get('get-free-request-limit', 'ProfileController::getFreeRequestLimit');
 });
@@ -95,7 +95,7 @@ $routes->group('help', ['filter' => 'userAuth'], function ($routes) {
 // Subscription
 // -----------------------------------------------------------------------------
 
-$routes->group('subscription', ['filter' => 'userAuth'], function ($routes) {
+$routes->group('subscription', ['filter' => ['userAuth', 'checkPermissions:payment']], function ($routes) {
     $routes->post('selectPlan', 'SubscriptionController::selectPlan');
     $routes->post('handlePlan', 'SubscriptionController::handlePlan');
 });
@@ -104,7 +104,7 @@ $routes->group('subscription', ['filter' => 'userAuth'], function ($routes) {
 // Payment
 // -----------------------------------------------------------------------------
 
-$routes->group('payment', ['filter' => 'userAuth'], function ($routes) {
+$routes->group('payment', ['filter' => ['userAuth', 'checkPermissions:payment']], function ($routes) {
     $routes->get('success', 'PaymentController::success');
     $routes->get('cancel', 'PaymentController::cancel');
 });
@@ -113,7 +113,7 @@ $routes->group('payment', ['filter' => 'userAuth'], function ($routes) {
 // Chat & Message
 // -----------------------------------------------------------------------------
 
-$routes->get('/chat', 'ChatController::index', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา
+$routes->get('/chat', 'ChatController::index', ['filter' => ['userAuth', 'checkPermissions:chat']]); // หน้าแสดงรายการห้องสนทนา
 $routes->get('/chatLeft', 'ChatController::messageLeft', ['filter' => 'userAuth']); // หน้าแสดงรายการห้องสนทนา ด้านซ้าย
 $routes->get('/messages/(:num)', 'ChatController::fetchMessages/$1', ['filter' => 'userAuth']); // ดึงข้อความจากห้องสนทนา
 $routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'userAuth']); // ส่งข้อความไปยัง WebSocket
@@ -122,7 +122,7 @@ $routes->post('/send-message', 'ChatController::sendMessage', ['filter' => 'user
 // Setting
 // -----------------------------------------------------------------------------
 
-$routes->group('setting', ['filter' => 'userAuth'], function ($routes) {
+$routes->group('setting', ['filter' => ['userAuth', 'checkPermissions:setting']], function ($routes) {
     $routes->post('/', 'SettingController::setting', ['filter' => 'userCheckPackagePermission:connect']);
     $routes->get('connect', 'SettingController::index');
     $routes->get('message', 'SettingController::index_message');

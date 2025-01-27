@@ -95,7 +95,8 @@ class TeamSocialModel
         if ($select == 'ONLY_ID') {
             $sql = "
                 SELECT 
-                    user_socials.id AS id
+                    user_socials.id AS id,
+                    team_socials.social_id AS user_social_id
                 FROM team_socials
                 JOIN user_socials ON user_socials.id = team_socials.social_id
                 WHERE team_socials.team_id = $teamID
@@ -112,7 +113,8 @@ class TeamSocialModel
                     user_socials.src,
                     team_socials.id,
                     user_socials.platform,
-                    user_socials.name
+                    user_socials.name,
+                    team_socials.social_id AS user_social_id
                 FROM team_socials
                 JOIN user_socials ON user_socials.id = team_socials.social_id
                 WHERE team_socials.team_id = $teamID

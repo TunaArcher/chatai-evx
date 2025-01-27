@@ -41,22 +41,40 @@ class TeamController extends BaseController
             <script src="app/team.js"></script>
         ';
 
-        $data['userSocials'] = $this->userSocialModel->getUserSocialByUserID($userID);
-        $members = $this->userModel->getUserByUserOwnerID($userID);
-        foreach ($members as $member) {
-            $member->status = '';
-            if ($member->accept_invite == 'waiting') $member->status = '(รอการตอบรับ)';
+        echo 'a';
+        exit();
+        if (session()->get('user_owner_id') == '') {
+
+            $data['userSocials'] = $this->userSocialModel->getUserSocialByUserID($userID);
+            $members = $this->userModel->getUserByUserOwnerID($userID);
+            foreach ($members as $member) {
+                $member->status = '';
+                if ($member->accept_invite == 'waiting') $member->status = '(รอการตอบรับ)';
+            }
+            $data['members'] = $members;
+
+            $teams = $this->teamModel->getTeamByOwnerID($userID);
+            foreach ($teams as $team) {
+                $team->members = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
+                $team->socials =  $this->teamSocialModel->getTeamSocialByTeamID($team->id);
+            }
+
+            $data['teams'] = $teams;
+        } else {
+
+            $teams = [];
+            px($teams);
+            $teamMembers = $this->teamMemberModel->getTeamMemberByUserID($userID);
+
+            foreach ($teamMembers as $teamMember) {
+                // px($teamMember);
+                $team = $this->teamModel->getTeamByID($teamMember->team_id);
+
+                $teams[] = $team;
+            }
         }
-        $data['members'] = $members;
 
-        $teams = $this->teamModel->getTeamByOwnerID($userID);
-        foreach ($teams as $team) {
-            $team->members = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
-            $team->socials =  $this->teamSocialModel->getTeamSocialByTeamID($team->id);
-        }
-
-        $data['teams'] = $teams;
-
+        px($teams);
         echo view('/app', $data);
     }
 

@@ -28,13 +28,8 @@ class TeamMemberModel
     public function getTeamMemberByID($id)
     {
         $builder = $this->db->table('team_members');
-        return $builder->where('id', $id)->get()->getRow();
-    }
 
-    public function getMessageTraningByID($id)
-    {
-        $builder = $this->db->table('message_setting');
-        return $builder->where('TeamMember_id', $id)->get()->getRow();
+        return $builder->where('id', $id)->get()->getRow();
     }
 
     public function insertTeamMember($data)
@@ -58,12 +53,6 @@ class TeamMemberModel
         return $builder->where('id', $id)->delete();
     }
 
-    public function getTeamMember($TeamMembername)
-    {
-        $builder = $this->db->table('team_members');
-        return $builder->where('TeamMembername', $TeamMembername)->get()->getResult();
-    }
-
     public function getTeamMemberByPlatFromAndID($platform, $platformTeamMemberID)
     {
         $builder = $this->db->table('team_members');
@@ -73,12 +62,6 @@ class TeamMemberModel
             ->where('platform_TeamMember_id', $platformTeamMemberID)
             ->get()
             ->getRow();
-    }
-
-    public function getTeamMemberByEmail($email)
-    {
-        $builder = $this->db->table('team_members');
-        return $builder->where('email', $email)->get()->getRow();
     }
 
     public function getTeamMemberByTeamID($teamID, $select = 'ALL')
@@ -149,6 +132,16 @@ class TeamMemberModel
         $builder = $this->db->table('team_members');
 
         return $builder->where('team_id', $teamID)->delete();
+    }
+
+    public function getTeamMemberByUserID($userID)
+    {
+        $builder = $this->db->table('team_members');
+
+        return $builder
+            ->where('user_id', $userID)
+            ->get()
+            ->getResult();
     }
 
 }
