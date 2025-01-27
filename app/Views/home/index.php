@@ -417,7 +417,7 @@
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <!-- Close Button -->
-                    <span class="close" data-dismiss="modal" aria-label="Close">&times;</span>
+                    <span class="close" data-bs-dismiss="modal" aria-label="Close">&times;</span>
                     <div class="modal-body">
                         <!-- Left Section -->
                         <div class="left-section">
@@ -472,7 +472,7 @@
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <!-- Close Button -->
-                    <span class="close" data-dismiss="modal" aria-label="Close">&times;</span>
+                    <span class="close" data-bs-dismiss="modal" aria-label="Close">&times;</span>
                     <div class="modal-body">
                         <!-- Left Section -->
                         <div class="left-section">
@@ -521,7 +521,7 @@
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <!-- Close Button -->
-                    <span class="close" data-dismiss="modal" aria-label="Close">&times;</span>
+                    <span class="close" data-bs-dismiss="modal" aria-label="Close">&times;</span>
                     <div class="modal-body">
                         <!-- Left Section -->
                         <div class="left-section">
