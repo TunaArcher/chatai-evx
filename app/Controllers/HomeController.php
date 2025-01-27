@@ -60,6 +60,10 @@ class HomeController extends BaseController
         echo view('/policy');
     }
 
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
     public function prepareTeamHomePageData(array $data, string $userOwnerID): array
     {
         $userID = hashidsDecrypt(session()->get('userID'));

@@ -41,8 +41,6 @@ class TeamController extends BaseController
             <script src="app/team.js"></script>
         ';
 
-        echo 'a';
-        exit();
         if (session()->get('user_owner_id') == '') {
 
             $data['userSocials'] = $this->userSocialModel->getUserSocialByUserID($userID);
@@ -63,7 +61,7 @@ class TeamController extends BaseController
         } else {
 
             $teams = [];
-            px($teams);
+
             $teamMembers = $this->teamMemberModel->getTeamMemberByUserID($userID);
 
             foreach ($teamMembers as $teamMember) {
@@ -72,9 +70,15 @@ class TeamController extends BaseController
 
                 $teams[] = $team;
             }
+
+            foreach ($teams as $team) {
+                $team->members = $this->teamMemberModel->getTeamMemberByTeamID($team->id);
+                $team->socials =  $this->teamSocialModel->getTeamSocialByTeamID($team->id);
+            }
+
+            $data['teams'] = $teams;
         }
 
-        px($teams);
         echo view('/app', $data);
     }
 

@@ -36,57 +36,20 @@ class ProfileController extends BaseController
 
     public function index()
     {
-        $data['content'] = 'profile/index';
-        $data['title'] = 'Profile';
-        $data['css_critical'] = '';
-        $data['js_critical'] = ' 
-            <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-            <script src="app/profile.js"></script>
-        ';
+        $data = [
+            'content' => 'profile/index',
+            'title' => 'Profile',
+            'css_critical' => '',
+            'js_critical' => '
+                <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+                <script src="app/profile.js"></script>
+            ',
+        ];
 
-        if (session()->get('user_owner_id') == '') {
-            $counterMessages = [
-                'all' => 0,
-                'reply_by_manual' => 0,
-                'replay_by_ai' => 0,
-            ];
-
-            $userSocials = $this->userSocialModel->getUserSocialByUserID(hashidsDecrypt(session()->get('userID')));
-            foreach ($userSocials as $userSocial) {
-
-                $messageRooms = $this->messageRoomModel->getMessageRoomByUserID(hashidsDecrypt(session()->get('userID')));
-
-                foreach ($messageRooms as $room) {
-                    $messages = $this->messageModel->getMessageRoomByRoomID($room->id, 'ALL');
-                    $messagesManul = $this->messageModel->getMessageRoomByRoomID($room->id, 'MANUL');
-                    $messagesAI = $this->messageModel->getMessageRoomByRoomID($room->id, 'AI');
-                    $counterMessages['all'] += count($messages);
-                    $counterMessages['reply_by_manual'] += count($messagesManul);
-                    $counterMessages['replay_by_ai'] += count($messagesAI);
-                }
-
-                $userSocial->id = hashidsEncrypt($userSocial->id);
-            }
-
-            $data['userSocials'] = $userSocials;
-            $data['counterMessages'] = $counterMessages;
-            $data['teams'] = $this->teamModel->getTeamByOwnerID(hashidsDecrypt(session()->get('userID')));
-            $data['subscription'] = $this->subscriptionModel->getUserSubscription(hashidsDecrypt(session()->get('userID')));
-        } else {
-            $teams = [];
-            $userID = hashidsDecrypt(session()->get('userID'));
-            $teamMembers = $this->teamMemberModel->getTeamMemberByUserID($userID);
-
-            foreach ($teamMembers as $teamMember) {
-                // px($teamMember);
-                $team = $this->teamModel->getTeamByID($teamMember->team_id);
-
-                $teams[] = $team;
-            }
-
-            $data['teams']  =  $teams;
-            $data['subscription'] = $this->subscriptionModel->getUserSubscription(hashidsDecrypt(session()->get('user_owner_id')));
-        }
+        $userOwnerID = session()->get('user_owner_id');
+        $data = $userOwnerID
+            ? $this->prepareTeamProfileData($data, $userOwnerID)
+            : $this->prepareSingleProfileData($data, session()->get('userID'));
 
         echo view('/app', $data);
     }
@@ -124,5 +87,71 @@ class ProfileController extends BaseController
                 ->setContentType('application/json')
                 ->setJSON($response);
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    public function prepareSingleProfileData(array $data, string $userID): array
+    {
+        $userID = hashidsDecrypt($userID);
+
+        $counterMessages = [
+            'all' => 0,
+            'reply_by_manual' => 0,
+            'replay_by_ai' => 0,
+        ];
+
+        $userSocials = $this->userSocialModel->getUserSocialByUserID($userID);
+
+        foreach ($userSocials as $userSocial) {
+            $messageRooms = $this->messageRoomModel->getMessageRoomByUserID($userID);
+
+            foreach ($messageRooms as $room) {
+                $counterMessages = $this->aggregateMessageCounts($counterMessages, $room->id);
+            }
+
+            $userSocial->id = hashidsEncrypt($userSocial->id);
+        }
+
+        $data['userSocials'] = $userSocials;
+        $data['counterMessages'] = $counterMessages;
+        $data['teams'] = $this->teamModel->getTeamByOwnerID($userID);
+        $data['subscription'] = $this->subscriptionModel->getUserSubscription($userID);
+
+        return $data;
+    }
+
+    public function prepareTeamProfileData(array $data, string $userOwnerID): array
+    {
+        $teams = [];
+        $userID = hashidsDecrypt(session()->get('userID'));
+        $userOwnerID = hashidsDecrypt($userOwnerID);
+
+        $teamMembers = $this->teamMemberModel->getTeamMemberByUserID($userID);
+
+        foreach ($teamMembers as $teamMember) {
+            $team = $this->teamModel->getTeamByID($teamMember->team_id);
+            $teams[] = $team;
+        }
+
+        $data['teams'] = $teams;
+        $data['subscription'] = $this->subscriptionModel->getUserSubscription($userOwnerID);
+
+        return $data;
+    }
+
+    private function aggregateMessageCounts(array $counterMessages, string $roomID): array
+    {
+        $messages = $this->messageModel->getMessageRoomByRoomID($roomID, 'ALL');
+        $messagesManual = $this->messageModel->getMessageRoomByRoomID($roomID, 'MANUL');
+        $messagesAI = $this->messageModel->getMessageRoomByRoomID($roomID, 'AI');
+
+        $counterMessages['all'] += count($messages);
+        $counterMessages['reply_by_manual'] += count($messagesManual);
+        $counterMessages['replay_by_ai'] += count($messagesAI);
+
+        return $counterMessages;
     }
 }
