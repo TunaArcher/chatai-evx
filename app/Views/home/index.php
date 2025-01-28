@@ -505,9 +505,9 @@
                                     <source srcset="<?php echo base_url('assets/images/screen-hero-1.jpg'); ?> 1x, <?php echo base_url('assets/images/screen-hero-1@2x.jpg'); ?> 2x" media="(min-width: 768px)">
                                     <img src="<?php echo base_url('assets/images/screen-hero-1-xs@2x.jpg'); ?>" width="571" height="367"> -->
 
-                                        <source srcset="<?php echo base_url('assets/images/start1.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(max-width: 767px)">
-                                        <source srcset="<?php echo base_url('assets/images/start1.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(min-width: 768px)">
-                                        <img src="<?php echo base_url('assets/images/start1.gif'); ?>" width="571" height="367">
+                                        <source srcset="<?php echo base_url('assets/images/start2.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(max-width: 767px)">
+                                        <source srcset="<?php echo base_url('assets/images/start2.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(min-width: 768px)">
+                                        <img src="<?php echo base_url('assets/images/start2.gif'); ?>" width="571" height="367">
                                     </picture>
                                 </div>
                             </div>
@@ -560,9 +560,9 @@
                                     <source srcset="<?php echo base_url('assets/images/screen-hero-1.jpg'); ?> 1x, <?php echo base_url('assets/images/screen-hero-1@2x.jpg'); ?> 2x" media="(min-width: 768px)">
                                     <img src="<?php echo base_url('assets/images/screen-hero-1-xs@2x.jpg'); ?>" width="571" height="367"> -->
 
-                                        <source srcset="<?php echo base_url('assets/images/start1.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(max-width: 767px)">
-                                        <source srcset="<?php echo base_url('assets/images/start1.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(min-width: 768px)">
-                                        <img src="<?php echo base_url('assets/images/start1.gif'); ?>" width="571" height="367">
+                                        <source srcset="<?php echo base_url('assets/images/start3.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(max-width: 767px)">
+                                        <source srcset="<?php echo base_url('assets/images/start3.gif'); ?> 1x, <?php echo base_url('assets/images/start1.gif'); ?> 2x" media="(min-width: 768px)">
+                                        <img src="<?php echo base_url('assets/images/start3.gif'); ?>" width="571" height="367">
                                     </picture>
                                 </div>
                             </div>
