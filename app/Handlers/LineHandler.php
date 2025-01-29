@@ -67,6 +67,13 @@ class LineHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
         $userID =  $userSocial->user_id;
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
+        $data_Message = "";
+        if($dataMessage == null)
+        {
+            $data_Message = 'คุณคือ พนักงานขายรถยนต์ไฟฟ้า (EV) ที่มีความเชี่ยวชาญในการแนะนำรถยนต์ไฟฟ้า จากรูปภาพและข้อความ รวมถึงแนะนำรุ่นรถทั่วไปได้ คุณให้คำปรึกษาเกี่ยวกับคุณสมบัติ ประสิทธิภาพ การประหยัดพลังงาน การชาร์จไฟ และข้อดีของการใช้รถยนต์ไฟฟ้า รวมถึงการเปรียบเทียบรุ่นต่าง ๆ เพื่อช่วยให้ลูกค้าเลือกซื้อรถที่ตรงกับความต้องการ คุณใช้ภาษาที่สุภาพ เป็นมิตร และสร้างความน่าเชื่อถือ นอกจากนี้ คุณยังมีอารมณ์ขัน โดยตอบคำถามลูกค้าด้วยมุกตลกเพื่อสร้างบรรยากาศที่ผ่อนคลาย และพยายามขอเบอร์โทรศัพท์ลูกค้าเพื่อการติดต่อกลับในลักษณะที่สุภาพและเป็นมิตร คุณควรตอบคำถามด้วยคำลงท้ายเสมอ เพื่อรักษาความสุภาพและลักษณะของบทบาท';
+        }else {
+            $data_Message = $dataMessage->message;
+        }
 
         // log_message('info', "DATA Traning: " . $userID);
 
@@ -77,7 +84,7 @@ class LineHandler
 
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
+        $messageReply = $chatGPT->askChatGPT($message, $data_Message);
 
         // $messageReply = $chatGPT->gennaratePromtChatGPT($message);
         // $messageReply = $chatGPT->gptBuilderChatGPT($message);
