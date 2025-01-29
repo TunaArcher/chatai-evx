@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Factories\HandlerFactory;
+use App\Models\MessageModel;
+use App\Models\MessageRoomModel;
 use App\Models\SubscriptionModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
@@ -12,6 +14,9 @@ use CodeIgniter\HTTP\ResponseInterface;
 class WebhookController extends BaseController
 {
     private MessageService $messageService;
+
+    private MessageModel $messageModel;
+    private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
     private SubscriptionModel $subscriptionModel;
@@ -19,6 +24,8 @@ class WebhookController extends BaseController
     public function __construct()
     {
         $this->messageService = new MessageService();
+        $this->messageModel = new MessageModel();
+        $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
         $this->subscriptionModel = new SubscriptionModel();
@@ -101,18 +108,53 @@ class WebhookController extends BaseController
 
             // ดำเนินการหากพบ $userSocial
             if ($userSocial) {
-                $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+
                 log_message('info', "ข้อความเข้า Webhook {$userSocial->platform}: " . json_encode($input, JSON_PRETTY_PRINT));
-                $handler->handleWebhook($input, $userSocial);
+
+                $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+                $messageRoom = $handler->handleWebhook($input, $userSocial);
 
                 // กรณีเปิดใช้งานให้ AI ช่วยตอบ
-                $this->handleAIResponse($input, $userSocial);
+                if ($userSocial->ai === 'on' && $messageRoom) {
+
+                    // TODO:: จริง ๆ ต้องใช้ระบบ  Queue 
+                    $messageRoomID = $messageRoom->id;
+
+                    $lastContextTimestamp = $this->messageModel->lastContextTimestamp($messageRoomID);
+
+                    // 2025-01-29 12:48:00
+
+                    // ตั้ง Timeout
+                    $timeoutSeconds = 5;
+                    sleep($timeoutSeconds);
+
+                    $newContextCount = $this->messageModel->newContextCount($messageRoomID, $lastContextTimestamp->_time);
+
+                    log_message('info', "Debug lastContextTimestamp {$lastContextTimestamp->_time} newContextCount: " . json_encode($newContextCount, JSON_PRETTY_PRINT));
+
+                    if ($newContextCount->_count > 0) {
+                        // log_message('info', "timeout: ");
+                        // มีข้อความใหม่เข้ามาในช่วง Timeout
+                        return;
+                    }
+
+                    // log_message('info', "ข้อความเข้า Webhook 1: ");
+
+                    // AI ตอบ
+                    $this->handleAIResponse($messageRoom, $userSocial);
+
+                    // ลบบริบทหลังจากใช้งาน
+                    $this->messageModel->clearUserContext($messageRoomID);
+                }
 
                 return $this->response->setJSON(['status' => 'success']);
             }
         } catch (\InvalidArgumentException $e) {
+
             log_message('error', "WebhookController error: " . $e->getMessage());
-            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+
+            return $this->response
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
                 ->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
@@ -122,6 +164,10 @@ class WebhookController extends BaseController
      */
     private function handleFacebook($input)
     {
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            return $this->userSocialModel->getUserSocialByPageID('Facebook', '1741273556202429');
+        }
+
         if (isset($input->object) && $input->object == 'page') {
             return $this->userSocialModel->getUserSocialByPageID('Facebook', $input->entry[0]->id);
         }
@@ -162,29 +208,25 @@ class WebhookController extends BaseController
     /**
      * จัดการการตอบกลับโดย AI
      */
-    private function handleAIResponse($input, $userSocial)
+    private function handleAIResponse($messageRoom, $userSocial)
     {
-        if ($userSocial->ai === 'on') {
-            $user = $this->userModel->getUserByID($userSocial->user_id);
+        $user = $this->userModel->getUserByID($userSocial->user_id);
 
-            if (!$user) {
-                throw new \InvalidArgumentException('User not found');
-            }
+        if (!$user) throw new \InvalidArgumentException('User not found');
 
-            $subscription = $this->subscriptionModel->getUserSubscription($user->id);
+        $subscription = $this->subscriptionModel->getUserSubscription($user->id);
 
-            if (!$subscription) {
-                if ($user->free_request_limit <= 10) {
-                    $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
-                    $handler->handleReplyByAI($input, $userSocial);
-                    $this->userModel->updateUserByID($user->id, [
-                        'free_request_limit' => $user->free_request_limit + 1
-                    ]);
-                }
-            } elseif ($subscription->status == 'active' && $subscription->current_period_end > time()) {
+        if (!$subscription) {
+            if ($user->free_request_limit <= 10) {
                 $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
-                $handler->handleReplyByAI($input, $userSocial);
+                $handler->handleReplyByAI($messageRoom, $userSocial);
+                $this->userModel->updateUserByID($user->id, [
+                    'free_request_limit' => $user->free_request_limit + 1
+                ]);
             }
+        } elseif ($subscription->status == 'active' && $subscription->current_period_end > time()) {
+            $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+            $handler->handleReplyByAI($messageRoom, $userSocial);
         }
     }
 }

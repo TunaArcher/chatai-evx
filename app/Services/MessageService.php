@@ -33,15 +33,25 @@ class MessageService
     }
 
     // Logic การ Save Message
-    public function saveMessage(int $roomId, int $senderId, string $message, string $platform, string $sendBy, string $replyBy = ''): void
-    {
+    public function saveMessage(
+        $roomId,
+        $senderId,
+        $messageType,
+        $message,
+        $platform,
+        $sendBy,
+        $replyBy = ''
+    ) {
+        
         $this->messageModel->insertMessage([
             'room_id' => $roomId,
             'send_by' => $sendBy,
             'sender_id' => $senderId,
+            'message_type' => $messageType,
             'message' => $message,
             'platform' => $platform,
-            'reply_by' => $replyBy
+            'reply_by' => $replyBy,
+            'is_context' => '1'
         ]);
     }
 
