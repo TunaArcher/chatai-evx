@@ -62,7 +62,7 @@ class WhatsAppHandler
 
     public function handleReplyByManual($input)
     {
-        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอกแบบรูปภาพ
+        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
         $messageReply = $input->message;
 
         $userID = hashidsDecrypt(session()->get('userID'));
