@@ -100,9 +100,6 @@ class LineHandler
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
 
-        var_dump($message['message_type']);
-        exit;
-
         $messageReply = $message['message_type'] == 'text' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg("", $dataMessage, $message['message']);
 
         // $messageReply = $chatGPT->askChatGPT($message['message'], $dataMessage);
