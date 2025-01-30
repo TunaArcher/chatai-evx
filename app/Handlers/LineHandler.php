@@ -94,7 +94,9 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        log_message("info", "message_type_up: " . $messages);
         $message = $this->getUserContext($messages);
+        log_message("info", "message_type_down: " . $message['message']);
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
@@ -173,13 +175,13 @@ class LineHandler
 
         switch ($eventType) {
 
-            // เคสข้อความ
+                // เคสข้อความ
             case 'text':
                 $messageType = 'text';
                 $message = $event->message->text;
                 break;
 
-            // เคสรูปภาพหรือ attachment อื่น ๆ
+                // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
 
                 $messageType = 'image';
