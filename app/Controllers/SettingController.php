@@ -568,14 +568,7 @@ class SettingController extends BaseController
         ]);
 
         $dataMessage = $this->customerModel->getMessageSettingByID($userID);
-
-        $data_Message = "";
-        if ($dataMessage == null) {
-            $data_Message = 'คุณคือ พนักงานขายรถยนต์ไฟฟ้า (EV) ที่มีความเชี่ยวชาญในการแนะนำรถยนต์ไฟฟ้า จากรูปภาพและข้อความ รวมถึงแนะนำรุ่นรถทั่วไปได้ คุณให้คำปรึกษาเกี่ยวกับคุณสมบัติ ประสิทธิภาพ การประหยัดพลังงาน การชาร์จไฟ และข้อดีของการใช้รถยนต์ไฟฟ้า รวมถึงการเปรียบเทียบรุ่นต่าง ๆ เพื่อช่วยให้ลูกค้าเลือกซื้อรถที่ตรงกับความต้องการ คุณใช้ภาษาที่สุภาพ เป็นมิตร และสร้างความน่าเชื่อถือ นอกจากนี้ คุณยังมีอารมณ์ขัน โดยตอบคำถามลูกค้าด้วยมุกตลกเพื่อสร้างบรรยากาศที่ผ่อนคลาย และพยายามขอเบอร์โทรศัพท์ลูกค้าเพื่อการติดต่อกลับในลักษณะที่สุภาพและเป็นมิตร คุณควรตอบคำถามด้วยคำลงท้ายเสมอ เพื่อรักษาความสุภาพและลักษณะของบทบาท';
-        } else {
-            $data_Message = $dataMessage->message;
-        }
-
+        $data_Message = $dataMessage ? $dataMessage->message : 'you are assistance';
         $img_link_back = "";
         if ($file_askAI == NULL) {
             $messageReplyToCustomer = $chatGPT->askChatGPT($message, $data_Message);
