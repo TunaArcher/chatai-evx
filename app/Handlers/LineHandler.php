@@ -161,13 +161,13 @@ class LineHandler
 
         switch ($eventType) {
 
-                // เคสข้อความ
+            // เคสข้อความ
             case 'text':
                 $messageType = 'text';
                 $message = $event->message->text;
                 break;
 
-                // เคสรูปภาพหรือ attachment อื่น ๆ
+            // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
 
                 $messageType = 'image';

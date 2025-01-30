@@ -164,10 +164,13 @@ class WhatsAppHandler
         $name = $contact->profile->name ?? null;
 
         switch ($messageType) {
+
+            // เคสข้อความ
             case 'text':
                 $messageContent = $messageObject->text->body ?? null;
                 break;
 
+            // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
                 $messageId = $messageObject->id;
                 $waAccessToken = $userSocial->whatsapp_access_token;

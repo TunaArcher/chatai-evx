@@ -159,10 +159,12 @@ class InstagramHandler
         $messageType = $messaging->message->attachments[0]->type ?? 'text';
 
         switch ($messageType) {
+                // เคสข้อความ
             case 'text':
                 $messageContent = $messaging->message->text ?? '';
                 break;
 
+                // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
                 $attachment = $messaging->message->attachments[0] ?? null;
                 if ($attachment && isset($attachment->payload->url)) {
@@ -277,7 +279,7 @@ class InstagramHandler
     private function getCustomerUID($messageRoom)
     {
         if (getenv('CI_ENVIRONMENT') == 'development') return '1090651699462050';
-        
+
         $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
         $UID = $customer->uid;
 
