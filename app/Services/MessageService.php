@@ -42,7 +42,7 @@ class MessageService
         $sendBy,
         $replyBy = ''
     ) {
-        
+
         $this->messageModel->insertMessage([
             'room_id' => $roomId,
             'send_by' => $sendBy,

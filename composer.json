@@ -17,6 +17,7 @@
     "hermawan/codeigniter4-datatables": "^0.6.1",
     "kint-php/kint": "^4.2",
     "laminas/laminas-escaper": "^2.9",
+    "php-amqplib/php-amqplib": "3.0",
     "psr/log": "^1.1",
     "ramsey/uuid": "^4.7",
     "stripe/stripe-php": "^16.4"

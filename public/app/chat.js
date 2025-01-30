@@ -191,7 +191,7 @@ function renderMessage(msg) {
   const messageTime = formatMessageTime(msg.created_at);
 
   if (shouldGroupWithPrevious(msg.sender_id, messageTime)) {
-    appendMessageToGroup(msg.message);
+    appendMessageToGroup(msg.message, msg.message_type);
   } else {
     createMessageBubble(msg, messageTime);
     updateRoomPreview(msg);
@@ -208,12 +208,22 @@ function shouldGroupWithPrevious(senderId, messageTime) {
 }
 
 // ฟังก์ชันเพิ่มข้อความใหม่ในกลุ่มเดิม
-function appendMessageToGroup(message) {
+function appendMessageToGroup(message, messageType) {
   const userChatDiv = currentChatGroup.querySelector(".user-chat");
   if (userChatDiv) {
-    const newMessage = document.createElement("p");
-    newMessage.textContent = message;
-    userChatDiv.appendChild(newMessage);
+    if (messageType === "text") {
+      const newMessage = document.createElement("p");
+      newMessage.textContent = message;
+      userChatDiv.appendChild(newMessage);
+    } else if (messageType === "image") {
+      const imageUrls = JSON.parse(message);
+      imageUrls.forEach((url) => {
+        const imgElement = document.createElement("img");
+        imgElement.src = url;
+        imgElement.classList.add("chat-image");
+        userChatDiv.appendChild(imgElement);
+      });
+    }
   }
 }
 
@@ -224,17 +234,67 @@ function createMessageBubble(msg, messageTime) {
   const isCustomer = msg.send_by === "Customer";
   msgDiv.classList.toggle("flex-row-reverse", !isCustomer);
 
-  msgDiv.innerHTML = `
-    <img src="${getAvatar(msg)}" alt="user" class="rounded-circle thumb-md">
-    <div class="${isCustomer ? "ms-1" : "me-1"} chat-box w-100 ${
-    isCustomer ? "" : "reverse"
-  }">
-      <div class="user-chat">
-        <p>${msg.message}</p>
-      </div>
-      <div class="chat-time">${messageTime}</div>
-    </div>
-  `;
+  const chatContent = document.createElement("div");
+  chatContent.classList.add("chat-box", "w-100", "ms-1");
+  if (!isCustomer) {
+    chatContent.classList.add("reverse");
+  }
+
+  const userChatDiv = document.createElement("div");
+  userChatDiv.classList.add("user-chat");
+
+  if (msg.message_type === "text") {
+    const textElement = document.createElement("p");
+    textElement.textContent = msg.message;
+    userChatDiv.appendChild(textElement);
+  } else if (msg.message_type === "image") {
+    try {
+      let imageUrls = [];
+
+      if (typeof msg.message === "string") {
+        msg.message = msg.message.trim(); // ลบช่องว่างที่อาจเกิดขึ้น
+        if (msg.message.startsWith("[") && msg.message.endsWith("]")) {
+          imageUrls = JSON.parse(msg.message);
+        } else {
+          imageUrls = [msg.message];
+        }
+      }
+      console.log(imageUrls);
+
+      if (Array.isArray(imageUrls)) {
+        imageUrls.forEach((url) => {
+          const imgContainer = document.createElement("a");
+          imgContainer.href = url;
+          imgContainer.target = "_blank";
+
+          const imgElement = document.createElement("img");
+          imgElement.src = url;
+          imgElement.classList.add("img-thumbnail");
+          imgElement.style.maxWidth = "200px";
+          imgElement.style.height = "auto";
+
+          imgContainer.appendChild(imgElement);
+          userChatDiv.appendChild(imgContainer);
+        });
+      } else {
+        console.error("Invalid image data format:", msg.message);
+      }
+    } catch (error) {
+      console.error("Error parsing image message:", error);
+    }
+  }
+
+  const chatTimeDiv = document.createElement("div");
+  chatTimeDiv.classList.add("chat-time");
+  chatTimeDiv.textContent = messageTime;
+
+  chatContent.appendChild(userChatDiv);
+  chatContent.appendChild(chatTimeDiv);
+
+  msgDiv.innerHTML = `<img src="${getAvatar(
+    msg
+  )}" alt="user" class="rounded-circle thumb-md">`;
+  msgDiv.appendChild(chatContent);
 
   messagesDiv.appendChild(msgDiv);
 

@@ -2,35 +2,39 @@
 
 namespace App\Handlers;
 
-use App\Models\UserSocialModel;
-use App\Models\MessageRoomModel;
-use App\Models\CustomerModel;
 use App\Integrations\Facebook\FacebookClient;
-use App\Services\MessageService;
 use App\Libraries\ChatGPT;
+use App\Models\CustomerModel;
+use App\Models\MessageModel;
+use App\Models\MessageRoomModel;
 use App\Models\UserModel;
-use CodeIgniter\HTTP\Message;
+use App\Models\UserSocialModel;
+use App\Services\MessageService;
 
 class FacebookHandler
 {
     private $platform = 'Facebook';
 
     private MessageService $messageService;
-    private MessageRoomModel $messageRoomModel;
-    private UserSocialModel $userSocialModel;
+
     private CustomerModel $customerModel;
+    private MessageModel $messageModel;
+    private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
+    private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
-        $this->messageRoomModel = new MessageRoomModel();
-        $this->userSocialModel = new UserSocialModel();
+
         $this->customerModel = new CustomerModel();
+        $this->messageModel = new MessageModel();
+        $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
+        $this->userSocialModel = new UserSocialModel();
     }
 
-    public function handleWebhook($input, $userSocial): void
+    public function handleWebhook($input, $userSocial)
     {
         // ข้อมูล Mock สำหรับ Development
         $input = $this->getMockFacebookWebhookData();
@@ -45,147 +49,103 @@ class FacebookHandler
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
-        // บันทึกข้อความในฐานข้อมูล
-        $this->messageService->saveMessage($messageRoom->id, $customer->id, $message['type'], $message['content'], $this->platform, 'Customer');
+        // บันทึกข้อความและส่งต่อ WebSocket
+        $this->processIncomingMessage(
+            $messageRoom,
+            $customer,
+            $message['type'],
+            $message['content'],
+            'Customer',
+        );
 
-        // ส่งข้อความไปยัง WebSocket Server
-        $this->messageService->sendToWebSocket([
-            'messageRoom' => $messageRoom,
-
-            'room_id' => $messageRoom->id,
-
-            'send_by' => 'Customer',
-
-            'sender_id' => $customer->id,
-            'sender_name' => $customer->name,
-            'sender_avatar' => $customer->profile,
-
-            'platform' => $this->platform,
-            'message_type' => $message['type'],
-            'message' => $message['content'],
-
-            'receiver_id' => hashidsEncrypt($messageRoom->user_id),
-            'receiver_name' => 'Admin',
-            'receiver_avatar' => '',
-
-            'created_at' => date('Y-m-d H:i:s'),
-        ]);
-
-        
+        return $messageRoom;
     }
 
-    public function handleReplyByManual($input, $customer)
+    public function handleReplyByManual($input)
     {
+        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอกแบบรูปภาพ
+        $messageReply = $input->message;
+
         $userID = hashidsDecrypt(session()->get('userID'));
-        $messageReplyToCustomer = $input->message;
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $UID = $this->getCustomerUID($messageRoom);
 
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') {
-            $UID = '9158866310814762';
-            $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
-        } else {
-            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $UID = $customer->uid;
-            $facebookToken = $userSocial->fb_token;
+        $platformClient = $this->preparePlatformClient($messageRoom);
 
-            // log_message('info', 'uid Facebook: ' . json_encode($UID, JSON_PRETTY_PRINT));
-        }
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'MANUAL'
+        );
 
-        $facebookAPI = new FacebookClient([
-            'facebookToken' => $facebookToken
-        ]);
-        $send = $facebookAPI->pushMessage($UID, $messageReplyToCustomer);
-        log_message('info', 'ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
-
-        if ($send) {
-
-            // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin', 'MANUAL');
-
-            // ส่งข้อความไปยัง WebSocket Server
-            $this->messageService->sendToWebSocket([
-                'messageRoom' => $messageRoom,
-
-                'room_id' => $messageRoom->id,
-
-                'send_by' => 'Admin',
-                'sender_id' => $userID,
-                'sender_name' => 'Admin',
-                'sender_avatar' => '',
-
-                'platform' => $this->platform,
-                'message' => $messageReplyToCustomer,
-
-                'receiver_id' => hashidsEncrypt($customer->id),
-                'receiver_name' => $customer->name,
-                'receiver_avatar' => $customer->profile,
-
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
-        }
+        $this->messageModel->clearUserContext($messageRoom->id);
     }
 
-    public function handleReplyByAI($input, $userSocial)
+    public function handleReplyByAI($messageRoom, $userSocial)
     {
-        $GPTToken = getenv('GPT_TOKEN');
-        // CONNECT TO GPT
-        $userID = hashidsDecrypt(session()->get('userID'));
-        $message = $input->entry[0]->messaging[0]->message->text ?? null;
-        $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
+        $userID =  $userSocial->user_id;
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
-        $chatGPT = new ChatGPT([
-            'GPTToken' => $GPTToken
-        ]);
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
 
-        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
-        $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
+        $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        $message = $this->getUserContext($messages);
+
+        // ข้อความตอบกลับ
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
+
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
-        // ข้อมูล Mock สำหรับ Development
-        if (getenv('CI_ENVIRONMENT') == 'development') {
-            $UID = '9158866310814762';
-            $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
-        } else {
-            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
-            $UID = $UID;
-            $facebookToken = $userSocial->fb_token;
+        $platformClient = $this->preparePlatformClient($messageRoom);
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text',
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'AI'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
+    }
+
+    private function getUserContext($messages)
+    {
+        $contextText = '';
+        // $imageUrl = null;
+
+        foreach ($messages as $message) {
+
+            switch ($message->message_type) {
+                case 'text':
+                    $contextText .= $message->message . ' ';
+                    break;
+                case 'image':
+                    // $imageUrl = $message->content;
+                    // $contextText .= 'รูป ' . $message->message . ' ';
+                    $contextText .= $message->message . ' ';
+                    break;
+            }
         }
 
-        $facebookAPI = new FacebookClient([
-            'facebookToken' => $facebookToken
-        ]);
+        // return [
+        //     'text' => trim($contextText),
+        //     'image_url' => $imageUrl,
+        // ];
 
-        $send = $facebookAPI->pushMessage($UID, $messageReplyToCustomer);
-        log_message('info', 'ข้อความตอบไปที่ลูกค้า Facebook: ' . json_encode($messageReplyToCustomer, JSON_PRETTY_PRINT));
-
-        if ($send) {
-
-            // บันทึกข้อความในฐานข้อมูล
-            $this->messageService->saveMessage($messageRoom->id, $userID, $messageReplyToCustomer, $this->platform, 'Admin', 'AI');
-
-            // ส่งข้อความไปยัง WebSocket Server
-            $this->messageService->sendToWebSocket([
-                'messageRoom' => $messageRoom,
-
-                'room_id' => $messageRoom->id,
-
-                'send_by' => 'Admin',
-                'sender_id' => $userID,
-                'sender_name' => 'Admin',
-                'sender_avatar' => '',
-
-                'platform' => $this->platform,
-                'message' => $messageReplyToCustomer,
-
-                'receiver_id' => hashidsEncrypt($customer->user_id),
-                'receiver_name' => $customer->name,
-                'receiver_avatar' => $customer->profile,
-
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
-        }
+        return $contextText;
     }
 
     // -----------------------------------------------------------------------------
@@ -228,7 +188,7 @@ class FacebookHandler
                 }
             }
 
-            $message = json_encode($attachments);
+            $message = json_encode($attachments, JSON_UNESCAPED_SLASHES);
         }
 
         return [
@@ -236,6 +196,101 @@ class FacebookHandler
             'type' => $messageType,
             'content' => $message,
         ];
+    }
+
+    private function processIncomingMessage($messageRoom, $customer, $messageType, $message, $sender)
+    {
+        $this->messageService->saveMessage(
+            $messageRoom->id,
+            $customer->id,
+            $messageType,
+            $message,
+            $this->platform,
+            $sender,
+        );
+
+        $this->messageService->sendToWebSocket([
+            'messageRoom' => $messageRoom,
+
+            'room_id' => $messageRoom->id,
+
+            'send_by' => $sender,
+
+            'sender_id' => $customer->id,
+            'sender_name' => $customer->name,
+            'sender_avatar' => $customer->profile,
+
+            'platform' => $this->platform,
+            'message_type' => $messageType,
+            'message' => $message,
+
+            'receiver_id' => hashidsEncrypt($messageRoom->user_id),
+            'receiver_name' => 'Admin',
+            'receiver_avatar' => '',
+
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    private function sendMessageToPlatform($platformClient, $UID, $messageType, $message, $messageRoom, $userID, $sender, $replyBy)
+    {
+        $send = $platformClient->pushMessage($UID, $message);
+        log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
+
+        if ($send) {
+
+            $this->messageService->saveMessage($messageRoom->id, $userID, $messageType, $message, $this->platform, $sender, $replyBy);
+
+            $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+
+            $this->messageService->sendToWebSocket([
+                'messageRoom' => $messageRoom,
+
+                'room_id' => $messageRoom->id,
+
+                'send_by' => $sender,
+
+                'sender_id' => $userID,
+                'sender_name' => 'Admin',
+                'sender_avatar' => '',
+
+                'platform' => $this->platform,
+                'message_type' => $messageType,
+                'message' => $message,
+
+                'receiver_id' => hashidsEncrypt($customer->id),
+                'receiver_name' => $customer->name,
+                'receiver_avatar' => $customer->profile,
+
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+    }
+
+    private function preparePlatformClient($messageRoom)
+    {
+        $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
+        } else {
+            $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
+            $facebookToken = $userSocial->fb_token;
+        }
+
+        return new FacebookClient([
+            'facebookToken' => $facebookToken
+        ]);
+    }
+
+    private function getCustomerUID($messageRoom)
+    {
+        if (getenv('CI_ENVIRONMENT') == 'development') return '9158866310814762';
+
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
+
+        return $UID;
     }
 
     private function getMockFacebookWebhookData()
@@ -249,7 +304,7 @@ class FacebookHandler
         //             "messaging": [
         //                 {
         //                     "sender": {
-        //                         "id": "9158866310814762"
+        //                         "id": "6953738848083835"
         //                     },
         //                     "recipient": {
         //                         "id": "436618552864074"

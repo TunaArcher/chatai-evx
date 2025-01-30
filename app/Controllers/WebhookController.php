@@ -10,25 +10,27 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Services\MessageService;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\RabbitMQPublisher;
 
 class WebhookController extends BaseController
 {
     private MessageService $messageService;
 
-    private MessageModel $messageModel;
-    private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
     private SubscriptionModel $subscriptionModel;
 
+    private RabbitMQPublisher $rabbitMQPublisher;
+
     public function __construct()
     {
         $this->messageService = new MessageService();
-        $this->messageModel = new MessageModel();
-        $this->messageRoomModel = new MessageRoomModel();
+
         $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
         $this->subscriptionModel = new SubscriptionModel();
+
+        $this->rabbitMQPublisher = new RabbitMQPublisher();
     }
 
     /**
@@ -116,35 +118,8 @@ class WebhookController extends BaseController
 
                 // กรณีเปิดใช้งานให้ AI ช่วยตอบ
                 if ($userSocial->ai === 'on' && $messageRoom) {
-
-                    // TODO:: จริง ๆ ต้องใช้ระบบ  Queue 
-                    $messageRoomID = $messageRoom->id;
-
-                    $lastContextTimestamp = $this->messageModel->lastContextTimestamp($messageRoomID);
-
-                    // 2025-01-29 12:48:00
-
-                    // ตั้ง Timeout
-                    $timeoutSeconds = 5;
-                    sleep($timeoutSeconds);
-
-                    $newContextCount = $this->messageModel->newContextCount($messageRoomID, $lastContextTimestamp->_time);
-
-                    log_message('info', "Debug lastContextTimestamp {$lastContextTimestamp->_time} newContextCount: " . json_encode($newContextCount, JSON_PRETTY_PRINT));
-
-                    if ($newContextCount->_count > 0) {
-                        // log_message('info', "timeout: ");
-                        // มีข้อความใหม่เข้ามาในช่วง Timeout
-                        return;
-                    }
-
-                    // log_message('info', "ข้อความเข้า Webhook 1: ");
-
-                    // AI ตอบ
-                    $this->handleAIResponse($messageRoom, $userSocial);
-
-                    // ลบบริบทหลังจากใช้งาน
-                    $this->messageModel->clearUserContext($messageRoomID);
+                    // ส่งข้อความไปที่ RabbitMQ แทนการรอ 5 วินาที
+                    $this->rabbitMQPublisher->publishMessage($messageRoom, $userSocial);
                 }
 
                 return $this->response->setJSON(['status' => 'success']);
