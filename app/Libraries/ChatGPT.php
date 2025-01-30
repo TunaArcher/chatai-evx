@@ -176,7 +176,7 @@ class ChatGPT
     public function askChatGPTimg($question,  $message_setting, $file_name)
     {
         try {
-            log_message("info", "message_setting: " . $file_name);
+            log_message("info", "message_filename: " . $file_name);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToekn,
