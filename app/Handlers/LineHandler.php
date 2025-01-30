@@ -94,7 +94,7 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
-        log_message("info", "message_type_up: " . $messages);
+        log_message("info", "message_type_up: ");
         $message = $this->getUserContext($messages);
         log_message("info", "message_type_down: " . $message['message']);
 
