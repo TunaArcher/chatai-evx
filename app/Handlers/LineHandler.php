@@ -5,6 +5,7 @@ namespace App\Handlers;
 use App\Integrations\Line\LineClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
+use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
@@ -15,18 +16,22 @@ class LineHandler
     private $platform = 'Line';
 
     private MessageService $messageService;
+
     private CustomerModel $customerModel;
+    private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
-    private UserSocialModel $userSocialModel;
     private UserModel $userModel;
+    private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
+
         $this->customerModel = new CustomerModel();
+        $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
-        $this->userSocialModel = new UserSocialModel();
         $this->userModel = new UserModel();
+        $this->userSocialModel = new UserSocialModel();
     }
 
     public function handleWebhook($input, $userSocial)
@@ -34,37 +39,54 @@ class LineHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $event = $input->events[0];
-        $UID = $event->source->userId;
-        $message = $event->message->text;
+        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
+        $customer = $this->messageService->getOrCreateCustomer($message['UID'], $this->platform, $userSocial);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
         // บันทึกข้อความและส่งต่อ WebSocket
-        $this->processIncomingMessage($messageRoom, $customer, $message, 'Customer');
+        $this->processIncomingMessage(
+            $messageRoom,
+            $customer,
+            $message['type'],
+            $message['content'],
+            'Customer',
+        );
+
+        return $messageRoom;
     }
 
     public function handleReplyByManual($input)
     {
-        $userID = hashidsDecrypt(session()->get('userID'));
-
-        // ข้อความตอบกลับ
+        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอกแบบรูปภาพ
         $messageReply = $input->message;
 
+        $userID = hashidsDecrypt(session()->get('userID'));
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'MANUAL');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'MANUAL'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
     }
 
-    public function handleReplyByAI($input, $userSocial)
+    public function handleReplyByAI($messageRoom, $userSocial)
     {
-        $input = $this->prepareWebhookInput($input, $userSocial);
         $userID =  $userSocial->user_id;
         $dataMessage = $this->userModel->getMessageTraningByID($userID);
         $data_Message = "";
@@ -75,39 +97,124 @@ class LineHandler
             $data_Message = $dataMessage->message;
         }
 
-        // log_message('info', "DATA Traning: " . $userID);
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
 
-        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $event = $input->events[0];
-        $UID = $event->source->userId;
-        $message = $event->message->text;
+        $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        $message = $this->getUserContext($messages);
 
-        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $data_Message);
-
-        // $messageReply = $chatGPT->gennaratePromtChatGPT($message);
-        // $messageReply = $chatGPT->gptBuilderChatGPT($message);
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'AI');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text',
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'AI'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
+    }
+
+    private function getUserContext($messages)
+    {
+        $contextText = '';
+        // $imageUrl = null;
+
+        foreach ($messages as $message) {
+
+            switch ($message->message_type) {
+                case 'text':
+                    $contextText .= $message->message . ' ';
+                    break;
+                case 'image':
+                    // $imageUrl = $message->content;
+                    // $contextText .= 'รูป ' . $message->message . ' ';
+                    $contextText .= $message->message . ' ';
+                    break;
+            }
+        }
+
+        // return [
+        //     'text' => trim($contextText),
+        //     'image_url' => $imageUrl,
+        // ];
+
+        return $contextText;
     }
 
     // -----------------------------------------------------------------------------
     // Helper
     // -----------------------------------------------------------------------------
 
-    private function processIncomingMessage($messageRoom, $customer, $message, $sender)
+    private function processMessage($input, $userSocial)
+    {
+        $event = $input->events[0];
+        $UID = $event->source->userId;
+        // $message = $event->message->text;
+
+        $eventType = $event->message->type;
+
+        switch ($eventType) {
+
+                // เคสข้อความ
+            case 'text':
+                $messageType = 'text';
+                $message = $event->message->text;
+                break;
+
+                // เคสรูปภาพหรือ attachment อื่น ๆ
+            case 'image':
+
+                $messageType = 'image';
+
+                $messageId = $event->message->id;
+                $lineAccessToken = $userSocial->line_channel_access_token;
+
+                $url = "https://api-data.line.me/v2/bot/message/{$messageId}/content";
+                $headers = ["Authorization: Bearer {$lineAccessToken}"];
+
+                // ดึงข้อมูลไฟล์จาก Webhook LINE
+                $fileContent = fetchFileFromWebhook($url, $headers);
+
+                // ตั้งชื่อไฟล์แบบสุ่ม
+                $fileName = uniqid('line_') . '.jpg';
+
+                // อัปโหลดไปยัง Spaces
+                $message = uploadToSpaces($fileContent, $fileName);
+
+                break;
+
+            default;
+        }
+
+        return [
+            'UID' => $UID,
+            'type' => $messageType,
+            'content' => $message,
+        ];
+    }
+
+    private function processIncomingMessage($messageRoom, $customer, $messageType, $message, $sender)
     {
         $this->messageService->saveMessage(
             $messageRoom->id,
             $customer->id,
+            $messageType,
             $message,
             $this->platform,
-            $sender
+            $sender,
         );
 
         $this->messageService->sendToWebSocket([
@@ -122,6 +229,7 @@ class LineHandler
             'sender_avatar' => $customer->profile,
 
             'platform' => $this->platform,
+            'message_type' => $messageType,
             'message' => $message,
 
             'receiver_id' => hashidsEncrypt($messageRoom->user_id),
@@ -132,14 +240,14 @@ class LineHandler
         ]);
     }
 
-    private function sendMessageToPlatform($platformClient, $UID, $message, $messageRoom, $userID, $sender, $replyBy)
+    private function sendMessageToPlatform($platformClient, $UID, $messageType, $message, $messageRoom, $userID, $sender, $replyBy)
     {
         $send = $platformClient->pushMessage($UID, $message);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
         if ($send) {
 
-            $this->messageService->saveMessage($messageRoom->id, $userID, $message, $this->platform, $sender, $replyBy);
+            $this->messageService->saveMessage($messageRoom->id, $userID, $messageType, $message, $this->platform, $sender, $replyBy);
 
             $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
 
@@ -155,6 +263,7 @@ class LineHandler
                 'sender_avatar' => '',
 
                 'platform' => $this->platform,
+                'message_type' => $messageType,
                 'message' => $message,
 
                 'receiver_id' => hashidsEncrypt($customer->id),
@@ -170,7 +279,7 @@ class LineHandler
     {
         if (getenv('CI_ENVIRONMENT') === 'development') {
             $input = $this->getMockLineWebhookData();
-            $userSocial->line_channel_access_token = 'z7HhG1tz7PyWrRTt5kg79J2OZ7WZEKyA4wuyHzK65GoO/MnFugfaow/ob0iKSlFjr4U9+UVPpWY5xsNSPZznX2Z7KlPqAq8v/SJ1XiW8kgWmWw3gBINye4HU7yX+jWUuZlb8riafqfp5K7eUXqI1yY9PbdgDzCFqoOLOYbqAITQ=';
+            $userSocial->line_channel_access_token = 'U7mJfRwa6hGDA32w883lebP2xc+Shhc9go6eb0X5kEsPKWY4Yyb2PdpOoPx7QgMq5Zh+NUB431dT8JB01f/x7qkC6kJ0r8caM4z2dbIdSa3ZcJzTe6mElEG6W9oWQHeW2d9vI/6Ic4jetEUyiL69sY9PbdgDzCFqoOLOYbqAITQ=';
         }
 
         return $input;
@@ -191,37 +300,99 @@ class LineHandler
     private function getCustomerUID($messageRoom)
     {
         $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
-        return $customer->uid;
+        $UID = $customer->uid;
+
+        return $UID;
     }
 
     private function getMockLineWebhookData()
     {
+        // TEXT
+        // return json_decode(
+        //     '{
+        //     "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+        //     "events": [
+        //         {
+        //             "type": "message",
+        //             "message": {
+        //                 "type": "text",
+        //                 "id": "545655842000077303",
+        //                 "quoteToken": "cGR08Boi4mUH0aJ2IPb11MNt7guGiglOO3XlF2-JDmUxbTXzexfqvXiiHZ3TPfUwhlheSMslhGk-eQPiGsvziGNo4AXvbDhokDglNTnzR0gB0jIkDvCWQQbgIzVyv6D2P-k6zVQXgYl0tyyWNOFMdA",
+        //                 "text": "\u0e23\u0e16"
+        //             },
+        //             "webhookEventId": "01JJPEBMSMCCAS02MPW7RGXZWQ",
+        //             "deliveryContext": {
+        //                 "isRedelivery": false
+        //             },
+        //             "timestamp": 1738067530428,
+        //             "source": {
+        //                 "type": "user",
+        //                 "userId": "U793093e057eb0dcdecc34012361d0217"
+        //             },
+        //             "replyToken": "d618defc144e43278bf2d6715ef701e2",
+        //             "mode": "active"
+        //         }
+        //     ]
+        // }'
+        // );
+
+        // return json_decode(
+        //     '{
+        //     "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+        //     "events": [
+        //         {
+        //             "type": "message",
+        //             "message": {
+        //                 "type": "text",
+        //                 "id": "545655859934921237",
+        //                 "quoteToken": "kKZh_dz7HIZBv-ZjBsMUbeKbaGDCyPs9dNff0zcQkGlgmA9l-1PMsg6PLRQtteMGrufJtv2_fdLC0qRSJX_tbu5LQ3gjs4G3QDQJUWwAYiFcvIRV6fD49a_A16xhHvhKv0NTI68dNW0_YG8CWo6l0g",
+        //                 "text": "\u0e04\u0e31\u0e19\u0e19\u0e35\u0e49\u0e2d\u0e30\u0e44\u0e23"
+        //             },
+        //             "webhookEventId": "01JJPEBZHJCEMYFMJXD2WAPNX6",
+        //             "deliveryContext": {
+        //                 "isRedelivery": false
+        //             },
+        //             "timestamp": 1738067541066,
+        //             "source": {
+        //                 "type": "user",
+        //                 "userId": "U793093e057eb0dcdecc34012361d0217"
+        //             },
+        //             "replyToken": "a2edad6d122747cb96c331832e984be5",
+        //             "mode": "active"
+        //         }
+        //     ]
+        // }'
+        // );
+
+        // Image
         return json_decode(
             '{
-                "destination": "Udaa84d69ccfb66dc5144c24fc0bd9fa8",
-                "events": [
-                    {
-                        "type": "message",
-                        "message": {
-                            "type": "text",
-                            "id": "538866510690255010",
-                            "quoteToken": "ZvhrKXFTGXHIlM2_Tgu6yqlBiOzH1CsdVor_IUNcJ4RGlwzcRxcdmNSjR5UANOHIhH-bFEwBrMGoMetWbdGR7TaFvyFVwiE7UQ6X5FLPNFxWb6JozzZ0-TZAbABTp7SiIlKgnbt8dBBEPHXPAIOFWg",
-                            "text": "สวัสดี ทดสอบ"
-                        },
-                        "webhookEventId": "01JEXV2DVAHPZVC91Y9XPJ47JV",
-                        "deliveryContext": {
-                            "isRedelivery": false
-                        },
-                        "timestamp": 1734020773556,
-                        "source": {
-                            "type": "user",
-                            "userId": "Ua03aec3ae1aeb9aa4c704aa69e14a966"
-                        },
-                        "replyToken": "ac51a9fa11664ac68ae81855b14db6d3",
-                        "mode": "active"
-                    }
-                ]
-            }'
+            "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+            "events": [
+                {
+                    "type": "message",
+                    "message": {
+                        "type": "image",
+                        "id": "545609780438499330",
+                        "quoteToken": "2hTD5_GTcCNcOLqEXWrPFD7wqV1mRtIysYrI8USZF7dAoCJeN-tpaoi8b--yRZvrZecvrEZilPtSL75nC8bTPLh2xb_ZiVe_FmbKXZ7_nF8f_sLWreBKDDNB6j6WOUJBe3iABJv1GVv5FFPQIb-fPA",
+                        "contentProvider": {
+                            "type": "line"
+                        }
+                    },
+                    "webhookEventId": "01JJNM5SM145NRFJ1V6KYJQMN8",
+                    "deliveryContext": {
+                        "isRedelivery": false
+                    },
+                    "timestamp": 1738040075709,
+                    "source": {
+                        "type": "user",
+                        "userId": "U793093e057eb0dcdecc34012361d0217"
+                    },
+                    "replyToken": "934747a8fd95442f9b8cfcd032d7dd97",
+                    "mode": "active"
+                }
+            ]
+        }'
         );
     }
 }

@@ -408,7 +408,7 @@
                 <!--end col-->
             </div>
         <?php } ?>
-        
+
     </div>
 
     <?php if (session()->get('user_owner_id') == '') { ?>

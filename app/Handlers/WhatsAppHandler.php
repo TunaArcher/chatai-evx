@@ -5,6 +5,7 @@ namespace App\Handlers;
 use App\Integrations\WhatsApp\WhatsAppClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
+use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
@@ -15,7 +16,9 @@ class WhatsAppHandler
     private $platform = 'WhatsApp';
 
     private MessageService $messageService;
+    
     private CustomerModel $customerModel;
+    private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
     private UserModel $userModel;
     private UserSocialModel $userSocialModel;
@@ -23,7 +26,9 @@ class WhatsAppHandler
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
+
         $this->customerModel = new CustomerModel();
+        $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
         $this->userModel = new UserModel();
         $this->userSocialModel = new UserSocialModel();
@@ -34,77 +39,172 @@ class WhatsAppHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $entry = $input->entry[0] ?? null;
-        $changes = $entry->changes[0] ?? null;
-        $value = $changes->value ?? null;
-        $whatAppMessage = $value->messages[0] ?? null;
-        $UID = $whatAppMessage->from ?? null; // เบอร์ของคนที่ส่งมา
-        $message = $whatAppMessage->text->body ?? null; // ข้อความที่ส่งมา
-        $contact = $value->contacts[0] ?? null;
-        $name = $contact->profile->name ?? null;
-        $waID = $contact->wa_id[0] ?? null;
+        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial, $name);
+        $customer = $this->messageService->getOrCreateCustomer($message['UID'], $this->platform, $userSocial, $message['name'] ?? null);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
         // บันทึกข้อความและส่งต่อ WebSocket
-        $this->processIncomingMessage($messageRoom, $customer, $message, 'Customer');
+        $this->processIncomingMessage(
+            $messageRoom,
+            $customer,
+            $message['type'],
+            $message['content'],
+            'Customer'
+        );
+
+        return $messageRoom;
     }
 
     public function handleReplyByManual($input)
     {
-        $userID = hashidsDecrypt(session()->get('userID'));
-
-        // ข้อความตอบกลับ
+        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอกแบบรูปภาพ
         $messageReply = $input->message;
 
+        $userID = hashidsDecrypt(session()->get('userID'));
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'MANUAL');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'MANUAL'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
     }
 
-    public function handleReplyByAI($input, $userSocial)
+    public function handleReplyByAI($messageRoom, $userSocial)
     {
         $input = $this->prepareWebhookInput($input, $userSocial);
         $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
 
-        $data_Message = "";
-        if ($dataMessage == null) {
-            $data_Message = 'คุณคือ พนักงานขายรถยนต์ไฟฟ้า (EV) ที่มีความเชี่ยวชาญในการแนะนำรถยนต์ไฟฟ้า จากรูปภาพและข้อความ รวมถึงแนะนำรุ่นรถทั่วไปได้ คุณให้คำปรึกษาเกี่ยวกับคุณสมบัติ ประสิทธิภาพ การประหยัดพลังงาน การชาร์จไฟ และข้อดีของการใช้รถยนต์ไฟฟ้า รวมถึงการเปรียบเทียบรุ่นต่าง ๆ เพื่อช่วยให้ลูกค้าเลือกซื้อรถที่ตรงกับความต้องการ คุณใช้ภาษาที่สุภาพ เป็นมิตร และสร้างความน่าเชื่อถือ นอกจากนี้ คุณยังมีอารมณ์ขัน โดยตอบคำถามลูกค้าด้วยมุกตลกเพื่อสร้างบรรยากาศที่ผ่อนคลาย และพยายามขอเบอร์โทรศัพท์ลูกค้าเพื่อการติดต่อกลับในลักษณะที่สุภาพและเป็นมิตร คุณควรตอบคำถามด้วยคำลงท้ายเสมอ เพื่อรักษาความสุภาพและลักษณะของบทบาท';
-        } else {
-            $data_Message = $dataMessage->message;
-        }
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
 
-        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $event = $input->events[0];
-        $UID = $event->source->userId;
-        $message = $event->message->text;
+        $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        $message = $this->getUserContext($messages);
 
+        // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $data_Message);
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, session()->get('userID'), 'Admin', 'AI');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text',
+            $messageReply,
+            $messageRoom,
+            session()->get('userID'),
+            'Admin',
+            'AI'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
+    }
+
+    private function getUserContext($messages)
+    {
+        $contextText = '';
+        // $imageUrl = null;
+
+        foreach ($messages as $message) {
+
+            switch ($message->message_type) {
+                case 'text':
+                    $contextText .= $message->message . ' ';
+                    break;
+                case 'image':
+                    // $imageUrl = $message->content;
+                    // $contextText .= 'รูป ' . $message->message . ' ';
+                    $contextText .= $message->message . ' ';
+                    break;
+            }
+        }
+
+        // return [
+        //     'text' => trim($contextText),
+        //     'image_url' => $imageUrl,
+        // ];
+
+        return $contextText;
     }
 
     // -----------------------------------------------------------------------------
     // Helper
     // -----------------------------------------------------------------------------
 
-    private function processIncomingMessage($messageRoom, $customer, $message, $sender)
+    private function processMessage($input, $userSocial)
+    {
+        $entry = $input->entry[0] ?? null;
+        $changes = $entry->changes[0] ?? null;
+        $value = $changes->value ?? null;
+        $messageObject = $value->messages[0] ?? null;
+        $contact = $value->contacts[0] ?? null;
+
+        $UID = $messageObject->from ?? null;
+        $messageType = $messageObject->type ?? 'text';
+        $name = $contact->profile->name ?? null;
+
+        switch ($messageType) {
+            case 'text':
+                $messageContent = $messageObject->text->body ?? null;
+                break;
+
+            case 'image':
+                $messageId = $messageObject->id;
+                $waAccessToken = $userSocial->whatsapp_access_token;
+
+                $url = "https://graph.facebook.com/v21.0/{$messageId}/content";
+                $headers = ["Authorization: Bearer {$waAccessToken}"];
+
+                // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
+                $fileContent = fetchFileFromWebhook($url, $headers);
+
+                // ตั้งชื่อไฟล์แบบสุ่ม
+                $fileName = uniqid('wa_') . '.jpg';
+
+                // อัปโหลดไปยัง Spaces
+                $messageContent = uploadToSpaces($fileContent, $fileName);
+
+                $messageContent = json_encode($messageContent);
+                break;
+
+            default:
+                $messageContent = null;
+        }
+
+        return [
+            'UID' => $UID,
+            'type' => $messageType,
+            'content' => $messageContent,
+            'name' => $name,
+        ];
+    }
+
+    private function processIncomingMessage($messageRoom, $customer, $messageType, $message, $sender)
     {
         $this->messageService->saveMessage(
             $messageRoom->id,
             $customer->id,
+            $messageType,
             $message,
             $this->platform,
             $sender
@@ -122,6 +222,7 @@ class WhatsAppHandler
             'sender_avatar' => $customer->profile,
 
             'platform' => $this->platform,
+            'message_type' => $messageType,
             'message' => $message,
 
             'receiver_id' => hashidsEncrypt($messageRoom->user_id),
@@ -193,11 +294,12 @@ class WhatsAppHandler
 
     private function getCustomerUID($messageRoom)
     {
-        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
-
         if (getenv('CI_ENVIRONMENT') == 'development') return '66611188669';
 
-        return $customer->uid;
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
+
+        return $UID;
     }
 
     private function getMockWhatsAppWebhookData()

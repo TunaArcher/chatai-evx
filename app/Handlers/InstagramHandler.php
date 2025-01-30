@@ -5,6 +5,7 @@ namespace App\Handlers;
 use App\Integrations\Instagram\InstagramClient;
 use App\Libraries\ChatGPT;
 use App\Models\CustomerModel;
+use App\Models\MessageModel;
 use App\Models\MessageRoomModel;
 use App\Models\UserModel;
 use App\Models\UserSocialModel;
@@ -15,18 +16,22 @@ class InstagramHandler
     private $platform = 'Instagram';
 
     private MessageService $messageService;
+
     private CustomerModel $customerModel;
+    private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
-    private UserSocialModel $userSocialModel;
     private UserModel $userModel;
+    private UserSocialModel $userSocialModel;
 
     public function __construct(MessageService $messageService)
     {
         $this->messageService = $messageService;
+
         $this->customerModel = new CustomerModel();
+        $this->messageModel = new MessageModel();
         $this->messageRoomModel = new MessageRoomModel();
-        $this->userSocialModel = new UserSocialModel();
         $this->userModel = new UserModel();
+        $this->userSocialModel = new UserSocialModel();
     }
 
     public function handleWebhook($input, $userSocial)
@@ -34,72 +39,160 @@ class InstagramHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $entry = $input->entry[0] ?? null;
-        $messaging = $entry->messaging[0] ?? null;
-        $UID = $messaging->sender->id ?? null;
-        $message = $messaging->message->text ?? null;
+        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
-        $customer = $this->messageService->getOrCreateCustomer($UID, $this->platform, $userSocial);
+        $customer = $this->messageService->getOrCreateCustomer($message['UID'], $this->platform, $userSocial);
 
         // ตรวจสอบหรือสร้างห้องสนทนา
         $messageRoom = $this->messageService->getOrCreateMessageRoom($this->platform, $customer, $userSocial);
 
         // บันทึกข้อความและส่งต่อ WebSocket
-        $this->processIncomingMessage($messageRoom, $customer, $message, 'Customer');
+        $this->processIncomingMessage(
+            $messageRoom,
+            $customer,
+            $message['type'],
+            $message['content'],
+            'Customer'
+        );
+
+        return $messageRoom;
     }
 
     public function handleReplyByManual($input)
     {
-        $userID = hashidsDecrypt(session()->get('userID'));
-
-        // ข้อความตอบกลับ
+        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอกแบบรูปภาพ
         $messageReply = $input->message;
 
+        $userID = hashidsDecrypt(session()->get('userID'));
         $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, $userID, 'Admin', 'MANUAL');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageReply,
+            $messageRoom,
+            $userID,
+            'Admin',
+            'MANUAL'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
     }
 
-    public function handleReplyByAI($input, $userSocial)
+    public function handleReplyByAI($messageRoom, $userSocial)
     {
-        $input = $this->prepareWebhookInput($input, $userSocial);
-        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
-        
-        $data_Message = "";
-        if ($dataMessage == null) {
-            $data_Message = 'คุณคือ พนักงานขายรถยนต์ไฟฟ้า (EV) ที่มีความเชี่ยวชาญในการแนะนำรถยนต์ไฟฟ้า จากรูปภาพและข้อความ รวมถึงแนะนำรุ่นรถทั่วไปได้ คุณให้คำปรึกษาเกี่ยวกับคุณสมบัติ ประสิทธิภาพ การประหยัดพลังงาน การชาร์จไฟ และข้อดีของการใช้รถยนต์ไฟฟ้า รวมถึงการเปรียบเทียบรุ่นต่าง ๆ เพื่อช่วยให้ลูกค้าเลือกซื้อรถที่ตรงกับความต้องการ คุณใช้ภาษาที่สุภาพ เป็นมิตร และสร้างความน่าเชื่อถือ นอกจากนี้ คุณยังมีอารมณ์ขัน โดยตอบคำถามลูกค้าด้วยมุกตลกเพื่อสร้างบรรยากาศที่ผ่อนคลาย และพยายามขอเบอร์โทรศัพท์ลูกค้าเพื่อการติดต่อกลับในลักษณะที่สุภาพและเป็นมิตร คุณควรตอบคำถามด้วยคำลงท้ายเสมอ เพื่อรักษาความสุภาพและลักษณะของบทบาท';
-        } else {
-            $data_Message = $dataMessage->message;
-        }
+        $userID =  $userSocial->user_id;
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
-        // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        $event = $input->events[0];
-        $UID = $event->source->userId;
-        $message = $event->message->text;
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
 
-        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        $message = $this->getUserContext($messages);
+
         // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $data_Message);
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
-        $this->sendMessageToPlatform($platformClient, $UID, $messageReply, $messageRoom, session()->get('userID'), 'Admin', 'AI');
+
+        $this->sendMessageToPlatform(
+            $platformClient,
+            $UID,
+            $messageType = 'text',
+            $messageReply,
+            $messageRoom,
+            session()->get('userID'),
+            'Admin',
+            'AI'
+        );
+
+        $this->messageModel->clearUserContext($messageRoom->id);
+    }
+
+    private function getUserContext($messages)
+    {
+        $contextText = '';
+        // $imageUrl = null;
+
+        foreach ($messages as $message) {
+
+            switch ($message->message_type) {
+                case 'text':
+                    $contextText .= $message->message . ' ';
+                    break;
+                case 'image':
+                    // $imageUrl = $message->content;
+                    // $contextText .= 'รูป ' . $message->message . ' ';
+                    $contextText .= $message->message . ' ';
+                    break;
+            }
+        }
+
+        // return [
+        //     'text' => trim($contextText),
+        //     'image_url' => $imageUrl,
+        // ];
+
+        return $contextText;
     }
 
     // -----------------------------------------------------------------------------
     // Helper
     // -----------------------------------------------------------------------------
 
-    private function processIncomingMessage($messageRoom, $customer, $message, $sender)
+    private function processMessage($input, $userSocial)
+    {
+        $entry = $input->entry[0] ?? null;
+        $messaging = $entry->messaging[0] ?? null;
+        $UID = $messaging->sender->id ?? null;
+        $messageType = $messaging->message->attachments[0]->type ?? 'text';
+
+        switch ($messageType) {
+            case 'text':
+                $messageContent = $messaging->message->text ?? '';
+                break;
+
+            case 'image':
+                $attachment = $messaging->message->attachments[0] ?? null;
+                if ($attachment && isset($attachment->payload->url)) {
+                    $fileUrl = $attachment->payload->url;
+                    $fileName = uniqid('instagram_') . '.jpg';
+                    $messageContent = uploadToSpaces(fetchFileFromWebhook($fileUrl), $fileName);
+                    $messageContent = json_encode($messageContent);
+                } else {
+                    $messageContent = '';
+                }
+                break;
+
+            default:
+                $messageContent = '';
+        }
+
+        return [
+            'UID' => $UID,
+            'type' => $messageType,
+            'content' => $messageContent,
+        ];
+    }
+
+
+    private function processIncomingMessage($messageRoom, $customer, $messageType, $message, $sender)
     {
         $this->messageService->saveMessage(
             $messageRoom->id,
             $customer->id,
+            $messageType,
             $message,
             $this->platform,
             $sender
@@ -117,6 +210,7 @@ class InstagramHandler
             'sender_avatar' => $customer->profile,
 
             'platform' => $this->platform,
+            'message_type' => $messageType,
             'message' => $message,
 
             'receiver_id' => hashidsEncrypt($messageRoom->user_id),
@@ -182,11 +276,12 @@ class InstagramHandler
 
     private function getCustomerUID($messageRoom)
     {
-        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
-
         if (getenv('CI_ENVIRONMENT') == 'development') return '1090651699462050';
+        
+        $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
+        $UID = $customer->uid;
 
-        return $customer->uid;
+        return $UID;
     }
 
     private function getMockInstagramWebhookData()

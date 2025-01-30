@@ -53,12 +53,6 @@ class MessageModel
         return $builder->where('id', $id)->delete();
     }
 
-    public function getMessage($Messagename)
-    {
-        $builder = $this->db->table('messages');
-        return $builder->where('Messagename', $Messagename)->get()->getResult();
-    }
-
     public function getLastMessageByRoomID($roomID)
     {
         $sql = "
@@ -87,6 +81,62 @@ class MessageModel
                 $sql .= " AND reply_by = 'AI'";
                 break;
         }
+
+        $builder = $this->db->query($sql);
+
+        return $builder->getResult();
+    }
+
+    public function lastContextTimestamp($messageRoomID)
+    {
+        $sql = "
+            SELECT MAX(created_at) AS _time
+            FROM messages 
+            WHERE room_id = $messageRoomID AND is_context = '1'
+        ";
+
+        $builder = $this->db->query($sql);
+
+        return $builder->getRow();
+    }
+
+    public function newContextCount($messageRoomID, $last_timestamp)
+    {
+
+        $sql = "
+            SELECT COUNT(*) AS _count
+            FROM messages 
+            WHERE room_id = $messageRoomID AND is_context = '1' AND created_at > '$last_timestamp'
+        ";
+        
+        // $sql = "
+        //     SELECT COUNT(*) AS _count
+        //     FROM messages 
+        //     WHERE room_id = 112 AND is_context = '1' AND created_at > '2025-01-29 12:48:00'
+        // ";
+
+        $builder = $this->db->query($sql);
+
+        return $builder->getRow();
+    }
+
+    public function clearUserContext($messageRoomID)
+    {
+        $sql = "
+            UPDATE messages
+            SET is_context = '0'
+            WHERE room_id = $messageRoomID AND is_context = '1'
+        ";
+
+        return $this->db->query($sql);
+    }
+
+    public function getMessageNotReplyBySendByAndRoomID($sendBy, $roomID)
+    {
+        $sql = "
+            SELECT * FROM messages
+            WHERE send_by = '$sendBy' AND room_id = '$roomID' AND is_context = '1'
+        ";
 
         $builder = $this->db->query($sql);
 
