@@ -87,8 +87,8 @@ class WhatsAppHandler
 
     public function handleReplyByAI($messageRoom, $userSocial)
     {
-        $input = $this->prepareWebhookInput($input, $userSocial);
-        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
+        $userID =  $userSocial->user_id;
+        $dataMessage = $this->userModel->getMessageTraningByID($userID);
 
         $customer = $this->customerModel->getCustomerByID($messageRoom->customer_id);
         $UID = $customer->uid;
@@ -98,8 +98,8 @@ class WhatsAppHandler
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
-        // ข้อความตอบกลับ
-        $messageReply = $chatGPT->askChatGPT($message, $dataMessage->message);
+        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);

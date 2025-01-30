@@ -267,24 +267,10 @@ class FacebookHandler
         }
     }
 
-    public function handleReplyByAI($input, $userSocial)
+    private function preparePlatformClient($messageRoom)
     {
-        $GPTToken = getenv('GPT_TOKEN');
-        // CONNECT TO GPT
-        $userID = hashidsDecrypt(session()->get('userID'));
-        $message = $input->entry[0]->messaging[0]->message->text ?? null;
-        $UID = $input->entry[0]->messaging[0]->sender->id ?? null;
+        $userSocial = $this->userSocialModel->getUserSocialByID($messageRoom->user_social_id);
 
-        $chatGPT = new ChatGPT([
-            'GPTToken' => $GPTToken
-        ]);
-
-        $dataMessage = $this->userModel->getMessageTraningByID($userSocial->user_id);
-        $messageReplyToCustomer = $chatGPT->askChatGPT($message, $dataMessage->message);
-        $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
-        $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
-
-        // ข้อมูล Mock สำหรับ Development
         if (getenv('CI_ENVIRONMENT') == 'development') {
             $facebookToken = 'EAAOQeQ3h77gBO3i4jZByjigIFMPNOEbEZBtT430FjEm1QWNqXM3Y2yrrVfI4ZCkPEm9bPu6YeX5hnLr8s1Rg8QfEMAmj6nZAoZAnxgrM5cgE4jZBD9CZAULKS9BxCJTh4xHhHUH1W1gS8GEyaXxMHM9QpnZAjZCKRzpDMIBqeqQC89IQBwfemAqft2MjqjZArAfwfWXQZDZD';
         } else {
