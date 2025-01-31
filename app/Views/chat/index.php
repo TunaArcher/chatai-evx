@@ -182,9 +182,9 @@
                             <div class="col-2 col-md-4 text-end">
                                 <div class="chat-features">
                                     <div class="d-none d-sm-inline-block disabled">
-                                        <a href=""><i class="iconoir-camera"></i></a>
+                                        <!-- <a href=""><i class="iconoir-camera"></i></a> -->
                                         <a href=""><i class="iconoir-attachment"></i></a>
-                                        <a href=""><i class="iconoir-microphone"></i></a>
+                                        <!-- <a href=""><i class="iconoir-microphone"></i></a> -->
                                     </div>
                                     <a href="#" class="text-primary" id="send-btn"><i class="iconoir-send-solid"></i></a>
                                 </div>

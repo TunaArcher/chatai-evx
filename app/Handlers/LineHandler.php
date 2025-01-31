@@ -94,12 +94,18 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
+        // log_message("info", "message_type_up: " . $message['message']);
         $message = $this->getUserContext($messages);
+        log_message("info", "message_type_down: " . $message['message']);
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
+
+        $messageReply = $message['message_type'] == 'text' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg("", $dataMessage, $message['message']);
+
+        // $messageReply = $chatGPT->askChatGPT($message['message'], $dataMessage);
+
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -124,27 +130,35 @@ class LineHandler
     {
         $contextText = '';
         // $imageUrl = null;
+        $messageType = '';
+        $messageBack = [];
 
         foreach ($messages as $message) {
-
             switch ($message->message_type) {
                 case 'text':
                     $contextText .= $message->message . ' ';
+                    $messageType = 'text';
                     break;
                 case 'image':
                     // $imageUrl = $message->content;
                     // $contextText .= 'รูป ' . $message->message . ' ';
                     $contextText .= $message->message . ' ';
+                    $messageType = 'image';
                     break;
             }
         }
+
+        $messageBack = [
+            'message' => $contextText,
+            'message_type' => $messageType,
+        ];
 
         // return [
         //     'text' => trim($contextText),
         //     'image_url' => $imageUrl,
         // ];
 
-        return $contextText;
+        return $messageBack;
     }
 
     // -----------------------------------------------------------------------------
@@ -161,13 +175,13 @@ class LineHandler
 
         switch ($eventType) {
 
-            // เคสข้อความ
+                // เคสข้อความ
             case 'text':
                 $messageType = 'text';
                 $message = $event->message->text;
                 break;
 
-            // เคสรูปภาพหรือ attachment อื่น ๆ
+                // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
 
                 $messageType = 'image';
