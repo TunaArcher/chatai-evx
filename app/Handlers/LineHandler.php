@@ -141,18 +141,18 @@ class LineHandler
                 case 'image':
                     // $imageUrl = $message->content;
                     // $contextText .= 'รูป ' . $message->message . ' ';
-                    $contextText .= $message->message . ' ';
+                    $contextText .= $message->message . ',';
                     $messageType = 'image';
                     break;
             }
         }
 
-        log_message("info", "message_check_function: ". $contextText);
-
         $messageBack = [
             'message' => $contextText,
             'message_type' => $messageType,
         ];
+
+        log_message("info", "message_set_arr " . $messageBack);
 
         // return [
         //     'text' => trim($contextText),
