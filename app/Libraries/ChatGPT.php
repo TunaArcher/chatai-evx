@@ -179,7 +179,6 @@ class ChatGPT
 
         $file_data = $this->updateArrFileLink($file_name);
         // log_message("info", "message_data_json_php: " . $file_data);
-        var_dump($file_data);
         try {
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
@@ -213,6 +212,7 @@ class ChatGPT
             return 'Error: ' . $e->getMessage();
         }
     }
+
 
     private function updateArrFileLink($file_names)
     {
