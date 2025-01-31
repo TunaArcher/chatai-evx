@@ -271,11 +271,6 @@ class ChatGPT
             ];
         }
 
-        // return [
-        //     'text' => trim($contextText),
-        //     'image_url' => $imageUrl,
-        // ];
-
         return  $file_data;
     }
 }
