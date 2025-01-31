@@ -94,17 +94,8 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
-<<<<<<< HEAD
-<<<<<<< HEAD
         $message = $this->getUserContext($messages);
-        // log_message("info", "message_type_down: " . $message['message']);
-=======
-        // $message = $this->getUserContext($messages);
-=======
-        $message = $this->getUserContext($messages);
->>>>>>> 8edf0fff24bc28ded75ba00c3c8c2467cfb7b055
         log_message("info", "message_type_down: " . "AAAA");
->>>>>>> 7fed93b6055558f4dd78df9f1bdb461b602adf95
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
