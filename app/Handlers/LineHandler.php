@@ -143,7 +143,7 @@ class LineHandler
                     $messageType = 'image';
                     break;
             }
-            log_message("info", "message_type_down: " . $contextText);
+            log_message("info", "message_type_down: " . $contextText);    
         }
 
         // return [
