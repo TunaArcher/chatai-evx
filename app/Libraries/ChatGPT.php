@@ -83,7 +83,7 @@ class ChatGPT
     public function askChatGPT($question, $message_setting)
     {
         try {
-            
+
             // log_message("info", "message_setting: " . $message_user);
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
@@ -176,7 +176,9 @@ class ChatGPT
 
     public function askChatGPTimg($question,  $message_setting, $file_name)
     {
-          log_message("info", "message_file_list: " . $file_name);
+
+        $file_data = $this->updateArrFileLink($file_name);
+        log_message("info", "message_data_json_php: " . $file_data);
         try {
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
@@ -197,12 +199,7 @@ class ChatGPT
                                     'type' => 'text',
                                     'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
                                 ],
-                                [
-                                    'type' => 'image_url',
-                                    'image_url' => [
-                                        'url' => $file_name
-                                    ]
-                                ]
+                                $file_data
                             ]
                         ]
                     ]
@@ -214,5 +211,29 @@ class ChatGPT
         } catch (Exception $e) {
             return 'Error: ' . $e->getMessage();
         }
+    }
+
+    private function updateArrFileLink($file_names)
+    {
+        $file_data = [];
+
+        $file_names_splites = explode(',', $file_names);
+
+        foreach ($file_names_splites as $file_names_splite) {
+            
+            $file_data +=  [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => $file_names_splite
+                ]
+            ];
+        }
+
+        // return [
+        //     'text' => trim($contextText),
+        //     'image_url' => $imageUrl,
+        // ];
+
+        return  $file_data;
     }
 }
