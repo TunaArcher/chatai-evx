@@ -17,6 +17,13 @@ class SettingController extends BaseController
     private UserSocialModel $userSocialModel;
     private CustomerModel $customerModel;
     private UserModel $userModel;
+    private $s3_bucket;
+    private $s3_secret_key;
+    private $s3_key;
+    private $s3_endpoint;
+    private $s3_region;
+    private $s3_cdn_img;
+    private $s3Client;
 
     public function __construct()
     {
