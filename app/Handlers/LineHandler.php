@@ -94,7 +94,7 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
-        // $message = $this->getUserContext($messages);
+        $message = $this->getUserContext($messages);
         log_message("info", "message_type_down: " . "AAAA");
 
         // ข้อความตอบกลับ
@@ -143,6 +143,7 @@ class LineHandler
                     $messageType = 'image';
                     break;
             }
+            log_message("info", "message_type_down: " . $contextText);
         }
 
         // return [
