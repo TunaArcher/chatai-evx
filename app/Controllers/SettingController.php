@@ -17,6 +17,13 @@ class SettingController extends BaseController
     private UserSocialModel $userSocialModel;
     private CustomerModel $customerModel;
     private UserModel $userModel;
+    private $s3_bucket;
+    private $s3_secret_key;
+    private $s3_key;
+    private $s3_endpoint;
+    private $s3_region;
+    private $s3_cdn_img;
+    private $s3Client;
 
     public function __construct()
     {
@@ -573,7 +580,7 @@ class SettingController extends BaseController
         if ($file_askAI == NULL) {
             $messageReplyToCustomer = $chatGPT->askChatGPT($message, $data_Message);
         } else {
-            $messageReplyToCustomer = $chatGPT->askChatGPTimg($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
+            $messageReplyToCustomer = $chatGPT->askChatGPTimgTraning($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
             $img_link_back = $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name;
         }
 

@@ -95,13 +95,13 @@ class LineHandler
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
         $message = $this->getUserContext($messages);
-        log_message("info", "message_type_down: " . "AAAA");
+        // log_message("info", "message_type_down: " . $message['message_type']);
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
 
-        $messageReply = $message['message_type'] == 'text' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg("", $dataMessage, $message['message']);
+        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
 
         // $messageReply = $chatGPT->askChatGPT($message['message'], $dataMessage);
 
@@ -128,33 +128,23 @@ class LineHandler
     private function getUserContext($messages)
     {
         $contextText = '';
-        // $imageUrl = null;
-        $messageType = '';
+        $imageUrl = '';
+
         foreach ($messages as $message) {
             switch ($message->message_type) {
                 case 'text':
-                    $contextText .= $message->message . ' ';
-                    $messageType = 'text';
+                    $contextText .= $message->message . ' ';              
                     break;
                 case 'image':
-                    // $imageUrl = $message->content;
-                    // $contextText .= 'รูป ' . $message->message . ' ';
-                    $contextText .= $message->message . ',';
-                    $messageType = 'image';
+                    $imageUrl .= $message->message . ',';
                     break;
             }
-            log_message("info", "message_type_down: =>" . $contextText);    
         }
-
-        // return [
-        //     'text' => trim($contextText),
-        //     'image_url' => $imageUrl,
-        // ];
 
         return  [
             'message' => $contextText,
-            'message_type' => $messageType,
-        ];;
+            'img_url' => $imageUrl,
+        ];
     }
 
     // -----------------------------------------------------------------------------
