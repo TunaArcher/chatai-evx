@@ -94,9 +94,8 @@ class LineHandler
         $UID = $customer->uid;
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
-        // log_message("info", "message_type_up: " . $message['message']);
         $message = $this->getUserContext($messages);
-        log_message("info", "message_type_down: " . $message['message']);
+        log_message("info", "message_type_down: " . "AAAA");
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
@@ -131,8 +130,6 @@ class LineHandler
         $contextText = '';
         // $imageUrl = null;
         $messageType = '';
-        $messageBack = [];
-
         foreach ($messages as $message) {
             switch ($message->message_type) {
                 case 'text':
@@ -142,23 +139,22 @@ class LineHandler
                 case 'image':
                     // $imageUrl = $message->content;
                     // $contextText .= 'รูป ' . $message->message . ' ';
-                    $contextText .= $message->message . ' ';
+                    $contextText .= $message->message . ',';
                     $messageType = 'image';
                     break;
             }
+            log_message("info", "message_type_down: " . $contextText);    
         }
-
-        $messageBack = [
-            'message' => $contextText,
-            'message_type' => $messageType,
-        ];
 
         // return [
         //     'text' => trim($contextText),
         //     'image_url' => $imageUrl,
         // ];
 
-        return $messageBack;
+        return  [
+            'message' => $contextText,
+            'message_type' => $messageType,
+        ];;
     }
 
     // -----------------------------------------------------------------------------
