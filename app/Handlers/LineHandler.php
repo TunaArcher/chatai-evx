@@ -130,8 +130,6 @@ class LineHandler
         $contextText = '';
         // $imageUrl = null;
         $messageType = '';
-        $messageBack = [];
-
         foreach ($messages as $message) {
             switch ($message->message_type) {
                 case 'text':
@@ -147,19 +145,15 @@ class LineHandler
             }
         }
 
-        $messageBack = [
-            'message' => $contextText,
-            'message_type' => $messageType,
-        ];
-
-        log_message("info", "message_set_arr " . $messageBack);
-
         // return [
         //     'text' => trim($contextText),
         //     'image_url' => $imageUrl,
         // ];
 
-        return $messageBack;
+        return  [
+            'message' => $contextText,
+            'message_type' => $messageType,
+        ];;
     }
 
     // -----------------------------------------------------------------------------
