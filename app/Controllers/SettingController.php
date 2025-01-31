@@ -573,7 +573,7 @@ class SettingController extends BaseController
         if ($file_askAI == NULL) {
             $messageReplyToCustomer = $chatGPT->askChatGPT($message, $data_Message);
         } else {
-            $messageReplyToCustomer = $chatGPT->askChatGPTimg($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
+            $messageReplyToCustomer = $chatGPT->askChatGPTimgTraning($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
             $img_link_back = $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name;
         }
 

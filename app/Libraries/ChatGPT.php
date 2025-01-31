@@ -213,6 +213,47 @@ class ChatGPT
         }
     }
 
+    public function askChatGPTimgTraning($question,  $message_setting, $file_name)
+    {
+
+        try {
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $message_setting
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                                ],
+                                [
+                                    'type' => 'image_url',
+                                    'image_url' => [
+                                        'url' => $file_name
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
 
     private function updateArrFileLink($file_names)
     {
@@ -221,7 +262,7 @@ class ChatGPT
         $file_names_splites = explode(',', $file_names);
 
         foreach ($file_names_splites as $file_names_splite) {
-            
+
             $file_data +=  [
                 'type' => 'image_url',
                 'image_url' => [
