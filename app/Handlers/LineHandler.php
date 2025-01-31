@@ -95,7 +95,7 @@ class LineHandler
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
         $message = $this->getUserContext($messages);
-        log_message("info", "message_type_down: " . "AAAA");
+        log_message("info", "message_type_down: " . $message);
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
@@ -143,7 +143,7 @@ class LineHandler
                     $messageType = 'image';
                     break;
             }
-            log_message("info", "message_type_down: =>" . $contextText);    
+            // log_message("info", "message_type_down: =>" . $contextText);    
         }
 
         // return [
