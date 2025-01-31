@@ -215,7 +215,7 @@ function appendMessageToGroup(message, messageType) {
       const newMessage = document.createElement("p");
       newMessage.textContent = message;
       userChatDiv.appendChild(newMessage);
-    } else if (messageType === "image") {
+    } else if (messageType === "image") {      
       const imageUrls = JSON.parse(message);
       imageUrls.forEach((url) => {
         const imgElement = document.createElement("img");
