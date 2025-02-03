@@ -133,7 +133,7 @@ class LineHandler
         foreach ($messages as $message) {
             switch ($message->message_type) {
                 case 'text':
-                    $contextText .= $message->message . ' ';              
+                    $contextText .= $message->message . ' ';
                     break;
                 case 'image':
                     $imageUrl .= $message->message . ',';
