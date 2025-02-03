@@ -306,7 +306,7 @@ class InstagramClient
     //     }
     // }
 
-    public function subscribedApps($userID, $longAccessToken)
+    public function subscribedApps($userID)
     {
         try {
 
@@ -316,7 +316,7 @@ class InstagramClient
             $response = $this->http->request('POST', $endPoint, [
                 'query' => [
                     'subscribed_fields' => 'messages',
-                    'access_token' => $longAccessToken,
+                    'access_token' => $this->accessToken,
                 ]
             ]);
 

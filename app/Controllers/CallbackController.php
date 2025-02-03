@@ -99,7 +99,7 @@ HTML;
             $userID = hashidsDecrypt(session()->get('userID'));
 
             $this->userModel->updateUserByID($userID, [
-                'access_token_instagram' => $longAccessToken
+                'instagram_access_token' => $longAccessToken
             ]);
 
             $instagramAPI = new InstagramClient([

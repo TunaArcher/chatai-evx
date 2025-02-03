@@ -112,7 +112,7 @@ class ConnectController extends BaseController
                 $name = $input->pageName;
 
                 $instagramAPI = new InstagramClient([
-                    'accessToken' => $user->access_token_instagram
+                    'accessToken' => $user->instagram_access_token
                 ]);
 
                 $subscribedApps = $instagramAPI->subscribedApps($instagramBusinessAccountID);
