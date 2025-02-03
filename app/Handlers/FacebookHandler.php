@@ -133,7 +133,7 @@ class FacebookHandler
                     $contextText .= $message->message . ' ';
                     break;
                 case 'image':
-                    $imageUrl .= ',' . $message->message;
+                    $imageUrl .=  $message->message . ',';
                     break;
             }
         }
