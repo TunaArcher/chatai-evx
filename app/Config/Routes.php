@@ -34,7 +34,8 @@ $routes->set404Override('App\Controllers\Errors::show404');
  * --------------------------------------------------------------------
  */
 
-$routes->get('/', 'HomeController::index', ['filter' => ['userAuth', 'checkPermissions:dashboard']]);
+$routes->get('/', 'Authentication::index', ['filter' => 'userNoAuth']); // หน้าแรก
+$routes->get('/dashboard', 'HomeController::index', ['filter' => ['userAuth', 'checkPermissions:dashboard']]);
 $routes->get('/policy', 'HomeController::policy', ['filter' => 'userNoAuth']);
 
 /*

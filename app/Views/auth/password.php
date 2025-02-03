@@ -209,7 +209,11 @@
 
   <!-- Footer -->
   <div class="footer">
-    <a href="#">เงื่อนไขการใช้งาน</a> | <a href="#">นโยบายความเป็นส่วนตัว</a>
+    <p title="UnityX Co.,Ltd.">
+      &copy; 2025 บริษัท ยูนิตี้เอ็กซ์ จํากัด
+      <br>
+      <a href="#">เงื่อนไขการใช้งาน</a> | <a href="#">นโยบายความเป็นส่วนตัว</a>
+    </p>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
