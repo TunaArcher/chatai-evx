@@ -203,10 +203,10 @@
     <p class="mt-3">ยังไม่มีบัญชีใช่หรือไม่? <a href="<?php echo base_url('/auth-register'); ?>">ลงทะเบียน</a></p>
     <hr>
     <a href="<?php echo base_url('auth/login/facebook') ?>" class="btn btn-outline-secondary btn-social">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/667px-2023_Facebook_icon.svg.png"> เข้าสู่ระบบด้วย Facebook (Only Dev mode)
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/667px-2023_Facebook_icon.svg.png"> เข้าสู่ระบบด้วย Facebook
     </a>
     <a href="<?php echo base_url('auth/login/google') ?>" class="btn btn-outline-secondary btn-social">
-      <img src="https://img.icons8.com/color/20/000000/google-logo.png"> เข้าสู่ระบบด้วย Google (Only Dev mode)
+      <img src="https://img.icons8.com/color/20/000000/google-logo.png"> เข้าสู่ระบบด้วย Google
     </a>
   </div>
 
