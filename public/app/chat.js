@@ -91,7 +91,16 @@ function displayMessages(data) {
     customer.profile && customer.profile !== "0"
       ? customer.profile
       : "/assets/images/conX.png";
-  chatBoxUsername.innerHTML = customer.name;
+  // chatBoxUsername.innerHTML = customer.name;
+
+  // ปรับให้แสดงชื่อ และเพิ่ม Subtitle ข้างใต้
+  chatBoxUsername.innerHTML = `
+<div>
+    <strong>${customer.name}</strong>
+    <br>
+    <small style="color: gray;">ส่งมาจาก ${userSocial.platform}: ${userSocial.name}</small>
+</div>
+`;
 
   messagesDiv.innerHTML = "";
   messages.forEach((msg) => renderMessage(msg));
@@ -215,7 +224,7 @@ function appendMessageToGroup(message, messageType) {
       const newMessage = document.createElement("p");
       newMessage.textContent = message;
       userChatDiv.appendChild(newMessage);
-    } else if (messageType === "image") {      
+    } else if (messageType === "image") {
       const imageUrls = JSON.parse(message);
       imageUrls.forEach((url) => {
         const imgElement = document.createElement("img");
