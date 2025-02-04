@@ -21,6 +21,11 @@ ws.onmessage = (event) => {
   }
 };
 
+// จัดการสถานะ WebSocket
+ws.onopen = () => console.log("WebSocket connection opened.");
+ws.onclose = () => console.log("WebSocket connection closed.");
+ws.onerror = (error) => console.error("WebSocket error:", error);
+
 $(document).ready(function () {
   loadMessageTraning();
 });
