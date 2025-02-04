@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="card-body pt-0">
                                     <div class="ex-page-content text-center">
-                                        <img src="assets/images/extra/error.svg" alt="0" class="" height="170">
+                                        <img src="<?php echo base_url('/assets/images/conX.png'); ?>" alt="0" class="" height="170">
                                         <h1 class="my-2">404!</h1>
                                         <h5 class="fs-16 text-muted mb-3">ชำระเงินไม่สำเร็จ กรุณาติดต่อผู้ให้บริการ</h5>
                                     </div>
