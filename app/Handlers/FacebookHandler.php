@@ -235,7 +235,7 @@ class FacebookHandler
 
     private function sendMessageToPlatform($platformClient, $UID, $messageType, $message, $messageRoom, $userID, $sender, $replyBy)
     {
-        $send = $platformClient->pushMessage($UID, $message);
+        $send = $platformClient->pushMessage($UID, $message, $messageType);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
         if ($send) {
