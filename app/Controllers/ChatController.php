@@ -109,14 +109,45 @@ class ChatController extends BaseController
      */
     public function sendMessage()
     {
-        $input = $this->request->getJSON();
-        $messageRoomModel = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        // $input = $this->request->getJSON();
+        $userID = hashidsDecrypt(session()->get('userID'));
+        $message = $this->request->getPost('message');
+        $file_img = $this->request->getFile('file_IMG');
+        $room_id = $this->request->getPost('room_id');
+        $platform = $this->request->getPost('platform');
+        $message_type = "text";
+
+
+        if($message == "")
+        {
+            $message_type = 'image';
+            $fileName =  $userID .'_'. $file_img->getRandomName();
+            $file_img->move('uploads', $fileName);
+            $file_Path = 'uploads/' . $fileName;
+            $fileContent = fopen($file_Path, 'r');
+            // อัปโหลดไปยัง Spaces
+            $message = uploadToSpaces($fileContent, $fileName);
+
+            if ($message != "") {
+                unlink('uploads/' . $fileName);
+            }
+        }
+
+ 
+        $input = [
+            'message' => $message,
+            'message_type' => $message_type,
+            'room_id' => $room_id,
+            'platform' => $platform
+        ];
+
+        $messageRoomModel = $this->messageRoomModel->getMessageRoomByID($room_id);
         $userSocial = $this->userSocialModel->getUserSocialByID($messageRoomModel->user_social_id);
         $customer = $this->customerModel->getCustomerByID($messageRoomModel->customer_id);
 
         try {
 
-            $handler = HandlerFactory::createHandler($userSocial->platform, $this->messageService);
+            $handler = HandlerFactory::createHandler($platform, $this->messageService);
 
             $handler->handleReplyByManual($input, $customer);
 

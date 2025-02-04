@@ -178,12 +178,15 @@
                         <div class="row">
                             <div class="col-10 col-md-8">
                                 <input type="text" class="form-control" placeholder="Type something here..." id="chat-input">
+
                             </div><!-- col-8 -->
                             <div class="col-2 col-md-4 text-end">
                                 <div class="chat-features">
-                                    <div class="d-none d-sm-inline-block disabled">
+                                    <div class="d-none d-sm-inline-block">
                                         <!-- <a href=""><i class="iconoir-camera"></i></a> -->
-                                        <a href=""><i class="iconoir-attachment"></i></a>
+                                        <!-- <a href=""><i class="iconoir-attachment"></i></a> -->
+                                        <a href="javascript:void(0);" class="col-form-label"><label for="file-img-reply"><i class="iconoir-attachment"></i></label></a>
+                                        <input id="file-img-reply" type="file" accept='image/*' style="display: none;" onchange="sendMessage(this)" />
                                         <!-- <a href=""><i class="iconoir-microphone"></i></a> -->
                                     </div>
                                     <a href="#" class="text-primary" id="send-btn"><i class="iconoir-send-solid"></i></a>
