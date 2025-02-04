@@ -98,7 +98,6 @@ class FacebookClient
                         ]
                     ]
                 ];
-                
             } else {
                 $text = [
                     "text" => $text
@@ -113,7 +112,9 @@ class FacebookClient
                 "recipient" => [
                     "id" => $to
                 ],
-                "message" => $text
+                "message" => [
+                    $text
+                ]
             ];
 
             // ส่งคำขอ POST ไปยัง API
