@@ -65,20 +65,20 @@
                                 <div class="plan-card" id="plan-marketing-automation">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="font-weight-bold">AutoCon X Plan เริ่มต้น</h4>
-                                        <span class="font-weight-bold text-primary">Starts at $59/เดือน</span>
+                                        <span class="font-weight-bold text-primary">Starts at $19/เดือน</span>
                                     </div>
                                     <ul>
                                         <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ 5 Platform</li>
                                         <li>ด้วย AutoCon X 's Flow Builder คุณสามารถดึงดูด ตรวจสอบ และดูแลลูกค้าได้อย่างมีประสิทธิภาพ ผ่านการสร้างบทสนทนาอัตโนมัติที่ช่วยเพิ่มการมีส่วนร่วมและขยายธุรกิจของคุณ</li>
                                     </ul>
-                                    <button class="btn btn-add-plan" id="plan-basic" data-plan-id="1" data-plan-name="AutoCon X Plan เริ่มต้น" data-price="59">เลือก</button>
+                                    <button class="btn btn-add-plan" id="plan-basic" data-plan-id="1" data-plan-name="AutoCon X Plan เริ่มต้น" data-price="19">เลือก</button>
                                 </div>
 
                                 <!-- Manychat AI -->
                                 <div class="plan-card" id="plan-manychat-ai">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="font-weight-bold">AutoCon X Plan สุดคุ้ม <span class="badge rounded-pill bg-success">Hot</span></h4>
-                                        <span class="font-weight-bold text-primary">$99/เดือน</span>
+                                        <span class="font-weight-bold text-primary">$9/เดือน</span>
                                     </div>
                                     <ul>
                                         <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ไม่จำกัด</li>
@@ -87,7 +87,7 @@
                                         <li>ให้ AI Step ช่วยจัดระเบียบการสนทนา เพิ่มยอดขาย และกระตุ้นลูกค้าที่ไม่ตอบกลับ</li>
                                         <li>หากคุณลำบากกับการเขียนข้อความ ให้ AI Text Improver ช่วยเขียน ปรับแต่ง และจัดสไตล์ข้อความให้คุณอย่างง่ายดาย</li>
                                     </ul>
-                                    <button class="btn btn-add-plan" id="plan-hot" data-plan-id="2" data-plan-name="AutoCon X Plan สุดคุ้ม" data-price="99">เลือก</button>
+                                    <button class="btn btn-add-plan" id="plan-hot" data-plan-id="2" data-plan-name="AutoCon X Plan สุดคุ้ม" data-price="9">เลือก</button>
                                 </div>
 
                                 <!-- Inbox -->
