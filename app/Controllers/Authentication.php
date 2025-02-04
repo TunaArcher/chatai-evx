@@ -244,7 +244,7 @@ class Authentication extends BaseController
                 $authUrl = 'https://facebook.com/v21.0/dialog/oauth' . '?' . http_build_query([
                     'client_id' => getenv('APP_ID'),
                     'redirect_uri' => $redirectUri,
-                    'scope' => 'email,public_profile,pages_manage_metadata,pages_read_engagement',
+                    'scope' => 'email,public_profile,pages_manage_metadata',
                     'response_type' => 'code',
                     'state' => $state,
                 ]);
