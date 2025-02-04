@@ -63,10 +63,11 @@ class LineHandler
     public function handleReplyByManual($input)
     {
         // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        $messageReply = $input->message;
+        $messageReply = $input['message'];
+        $messageType = $input['message_type'];
 
         $userID = hashidsDecrypt(session()->get('userID'));
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input['room_id']);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
@@ -74,7 +75,7 @@ class LineHandler
         $this->sendMessageToPlatform(
             $platformClient,
             $UID,
-            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageType, 
             $messageReply,
             $messageRoom,
             $userID,
@@ -235,7 +236,7 @@ class LineHandler
 
     private function sendMessageToPlatform($platformClient, $UID, $messageType, $message, $messageRoom, $userID, $sender, $replyBy)
     {
-        $send = $platformClient->pushMessage($UID, $message);
+        $send = $platformClient->pushMessage($UID, $message, $messageType);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
         if ($send) {

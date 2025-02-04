@@ -63,10 +63,12 @@ class WhatsAppHandler
     public function handleReplyByManual($input)
     {
         // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        $messageReply = $input->message;
+        // $messageReply = $input->message;
+        $messageReply = $input['message'];
+        $messageType = $input['message_type'];
 
         $userID = hashidsDecrypt(session()->get('userID'));
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input['room_id']);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
@@ -74,7 +76,7 @@ class WhatsAppHandler
         $this->sendMessageToPlatform(
             $platformClient,
             $UID,
-            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageType, // fix เป็น Text ไปก่อน
             $messageReply,
             $messageRoom,
             $userID,
@@ -99,7 +101,8 @@ class WhatsAppHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
+        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
+        // $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -123,28 +126,23 @@ class WhatsAppHandler
     private function getUserContext($messages)
     {
         $contextText = '';
-        // $imageUrl = null;
+        $imageUrl = '';
 
         foreach ($messages as $message) {
-
             switch ($message->message_type) {
                 case 'text':
                     $contextText .= $message->message . ' ';
                     break;
                 case 'image':
-                    // $imageUrl = $message->content;
-                    // $contextText .= 'รูป ' . $message->message . ' ';
-                    $contextText .= $message->message . ' ';
+                    $imageUrl .=  $message->message . ',';
                     break;
             }
         }
 
-        // return [
-        //     'text' => trim($contextText),
-        //     'image_url' => $imageUrl,
-        // ];
-
-        return $contextText;
+        return  [
+            'message' => $contextText,
+            'img_url' => $imageUrl,
+        ];
     }
 
     // -----------------------------------------------------------------------------
