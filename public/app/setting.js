@@ -142,8 +142,9 @@ function openOAuthInstagramPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  let $scope =
-    "instagram_business_basic,instagram_business_content_publish,instagram_business_manage_messages,instagram_business_manage_comments";
+  // let $scope =
+  //   "instagram_business_basic,instagram_business_content_publish,instagram_business_manage_messages,instagram_business_manage_comments";
+  let $scope = "instagram_business_basic,instagram_business_manage_messages";
 
   const oauthUrl =
     "https://www.instagram.com/oauth/authorize?" +
@@ -194,8 +195,8 @@ function openOAuthWhatsAppPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  const $scope =
-    "whatsapp_business_management,business_management,whatsapp_business_messaging";
+  // const $scope = "whatsapp_business_management,business_management,whatsapp_business_messaging";
+  const $scope = "whatsapp_business_management,whatsapp_business_messaging";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
@@ -240,8 +241,9 @@ function openOAuthFacebookPopup() {
   const state = generateRandomState();
   localStorage.setItem("oauth_state", state); // บันทึก state ใน localStorage
 
-  const $scope =
-    "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
+  // const $scope =
+  //   "pages_messaging pages_manage_metadata pages_read_engagement pages_read_user_content pages_read_engagement";
+  const $scope = "pages_messaging pages_manage_metadata";
 
   const oauthUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
