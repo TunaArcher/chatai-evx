@@ -100,7 +100,7 @@ class FacebookClient
                 ];
             } else {
                 $text = [
-                    "text" => $text
+                    "text" => $message
                 ];
             }
 
