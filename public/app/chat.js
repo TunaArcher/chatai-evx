@@ -1,7 +1,3 @@
-// สร้างการเชื่อมต่อกับ WebSocket Server
-const ws = new WebSocket(wsUrl);
-console.log(`WebSocket URL: ${wsUrl}`);
-
 // DOM Elements (ดึง Element ต่าง ๆ จาก DOM)
 const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("send-btn");

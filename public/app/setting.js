@@ -1,31 +1,26 @@
-// สร้างการเชื่อมต่อกับ WebSocket Server
-const ws = new WebSocket(wsUrl);
-console.log(`WebSocket URL: ${wsUrl}`);
-
 ws.onmessage = (event) => {
   let data = JSON.parse(event.data);
   if (data.receiver === window.userID) {
-    ntf = new Notyf({
-      position: {
-        x: "right",
-        y: "bottom",
-      },
-      types: [
-        {
-          type: "message",
-          background: "rgba(0,0,0,.7)",
-          color: "#000",
-          icon: `<img width="24" src="${data.sender_avatar}">`,
-        },
-      ],
-    });
+      ntf = new Notyf({
+          position: {
+              x: "right",
+              y: "bottom",
+          },
+          types: [{
+              type: "message",
+              background: "rgba(0,0,0,.7)",
+              color: "#000",
+              icon: `<img width="24" src="${data.sender_avatar}">`,
+          }, ],
+      });
 
-    ntf.open({
-      type: "message",
-      message: `ส่งข้อความใหม่: ${data.message}`,
-    });
+      ntf.open({
+          type: "message",
+          message: `ส่งข้อความใหม่: ${data.message}`,
+      });
   }
 };
+
 // จัดการสถานะ WebSocket
 ws.onopen = () => console.log("WebSocket connection opened.");
 ws.onclose = () => console.log("WebSocket connection closed.");
@@ -306,7 +301,8 @@ function FbPagesList() {
       $pages.forEach((page) => {
         let $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2" data-platform="Facebook" data-page-id="${page.id}" data-src="${page.ava}">เชื่อมต่อ</button>`;
         if (page.status == "connected") {
-          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Facebook" data-page-id="${page.id}" data-src="${page.ava}">เชื่อมต่อแล้ว</button>`;        }
+          $btnConnect = `<button type="button" class="btnConnectToApp btn btn-primary btn-sm px-2 disabled" data-platform="Facebook" data-page-id="${page.id}" data-src="${page.ava}">เชื่อมต่อแล้ว</button>`;
+        }
         let pageHtml = `
               <div class="card">
                 <div class="card-body py-0">
@@ -1078,7 +1074,7 @@ $(".step2-facebook-wrapper").on("click", ".btnConnectToApp", function () {
   dataObj = {
     platform: $platform,
     pageID: $pageID,
-    src: $src
+    src: $src,
   };
 
   $me.prop("disabled", true);
