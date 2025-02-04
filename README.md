@@ -60,7 +60,7 @@ https://autoconx.app/
    ```sh
    sudo service rabbitmq-server start
    ```
-6. **เริ่มเซิร์ฟเวอร์ WebSocket: อยู่อีก Repository**
+6. **เริ่มเซิร์ฟเวอร์ WebSocket: อยู่อีก Repository -> https://github.com/TunaArcher/chatai-socket**
 
 ## 📌 การใช้งาน
 
