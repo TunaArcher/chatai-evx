@@ -36,8 +36,10 @@ class FacebookHandler
 
     public function handleWebhook($input, $userSocial)
     {
-        // ข้อมูล Mock สำหรับ Development
-        $input = $this->getMockFacebookWebhookData();
+        if (getenv('CI_ENVIRONMENT') === 'development') {
+            // ข้อมูล Mock สำหรับ Development
+            $input = $this->getMockFacebookWebhookData();
+        }
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
         // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ

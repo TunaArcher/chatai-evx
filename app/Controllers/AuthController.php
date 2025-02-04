@@ -36,7 +36,7 @@ class AuthController extends BaseController
                 break;
 
             case 'Instagram':
-                if ($user->access_token_instagram == '') $response['data'] = 'NO TOKEN';
+                if ($user->instagram_access_token == '') $response['data'] = 'NO TOKEN';
                 $status = 200;
                 break;
 

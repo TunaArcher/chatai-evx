@@ -1,3 +1,26 @@
+ws.onmessage = (event) => {
+  let data = JSON.parse(event.data);
+  if (data.receiver_id === window.userID) {
+      ntf = new Notyf({
+          position: {
+              x: "right",
+              y: "bottom",
+          },
+          types: [{
+              type: "message",
+              background: "rgba(0,0,0,.7)",
+              color: "#000",
+              icon: `<img width="24" src="${data.sender_avatar}">`,
+          }, ],
+      });
+
+      ntf.open({
+          type: "message",
+          message: `ส่งข้อความใหม่: ${data.message}`,
+      });
+  }
+};
+
 // รอให้ DOM โหลดเสร็จ
 document.addEventListener("DOMContentLoaded", function () {
   // ดึงค่า username จาก data-attribute

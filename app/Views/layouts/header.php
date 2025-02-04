@@ -128,6 +128,10 @@
         var IG_APP_ID = '<?php echo getenv('IG_APP_ID'); ?>'
         const wsUrl = window.location.hostname === "localhost" ? "ws://localhost:3000" : "wss://websocket.evxcars.com:8080";
         var subscriptionStatus = '<?php echo session()->get('subscription_status'); ?>'
+
+        // สร้างการเชื่อมต่อกับ WebSocket Server
+        const ws = new WebSocket(wsUrl);
+        console.log(`WebSocket URL: ${wsUrl}`);
     </script>
 </head>
 
