@@ -102,9 +102,25 @@ class LineClient
      * 1. Message | ส่งข้อความ
      */
 
-    public function pushMessage($to, $messages)
+    public function pushMessage($to, $messages, $message_type)
     {
         try {
+
+            $message = [];
+
+            if ($message_type == 'image') {
+
+                $message = [
+                    "type" => "image",
+                    "originalContentUrl" => $messages,
+                    "previewImageUrl" => $messages
+                ];
+            } else {
+                $message =  [
+                    'type' => 'text',
+                    'text' => $messages
+                ];
+            }
 
             $endPoint = $this->baseURL . '/bot/message/push/';
 
@@ -116,10 +132,7 @@ class LineClient
             $data = [
                 'to' => $to,
                 'messages' => [
-                    [
-                        'type' => 'text',
-                        'text' => $messages
-                    ],
+                    $message
                 ],
             ];
 

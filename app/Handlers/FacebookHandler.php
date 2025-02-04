@@ -64,10 +64,13 @@ class FacebookHandler
     public function handleReplyByManual($input)
     {
         // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        $messageReply = $input->message;
+        // $messageReply = $input->message;
+
+        $messageReply = $input['message'];
+        $messageType = $input['message_type'];
 
         $userID = hashidsDecrypt(session()->get('userID'));
-        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input->room_id);
+        $messageRoom = $this->messageRoomModel->getMessageRoomByID($input['room_id']);
         $UID = $this->getCustomerUID($messageRoom);
 
         $platformClient = $this->preparePlatformClient($messageRoom);
@@ -75,7 +78,7 @@ class FacebookHandler
         $this->sendMessageToPlatform(
             $platformClient,
             $UID,
-            $messageType = 'text', // fix เป็น Text ไปก่อน
+            $messageType, // fix เป็น Text ไปก่อน
             $messageReply,
             $messageRoom,
             $userID,

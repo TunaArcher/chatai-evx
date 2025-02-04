@@ -4,6 +4,7 @@ console.log(`WebSocket URL: ${wsUrl}`);
 
 // DOM Elements (ดึง Element ต่าง ๆ จาก DOM)
 const chatInput = document.getElementById("chat-input");
+const fileImgReply = document.getElementById("file-img-reply");
 const sendBtn = document.getElementById("send-btn");
 const messagesDiv = document.getElementById("chat-detail");
 const roomsList = document.getElementById("rooms-list");
@@ -110,24 +111,33 @@ function displayMessages(data) {
 // -----------------------------------------------------------------------------
 function sendMessage() {
   const message = chatInput.value.trim();
+  const fileReply = $('#file-img-reply')[0].files[0]
 
-  if (!message || !currentRoomId) {
+  if (!currentRoomId) {
     console.warn("กรุณาใส่ข้อความก่อนส่ง");
     return;
   }
 
-  const data = {
-    room_id: currentRoomId,
-    message,
-    platform: currentPlatform,
-  };
+  var datafileReply = new FormData();
 
-  console.log("กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์:", data);
+  datafileReply.append("message", message);
+  datafileReply.append("file_IMG", fileReply);
+  datafileReply.append("room_id", currentRoomId);
+  datafileReply.append("platform", currentPlatform);
+
+  // const data = {
+  //   room_id: currentRoomId,
+  //   message,
+  //   fileReply,
+  //   platform: currentPlatform,
+  // };
+
+  console.log("กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์:", datafileReply);
 
   fetch("/send-message", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    // headers: { "Content-Type": "application/json" },
+    body: datafileReply,
   })
     .then((response) => {
       if (!response.ok) throw new Error("HTTP error " + response.status);
