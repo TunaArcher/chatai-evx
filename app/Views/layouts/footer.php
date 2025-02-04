@@ -65,7 +65,7 @@
                                 <div class="plan-card" id="plan-marketing-automation">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="font-weight-bold">AutoCon X Plan เริ่มต้น</h4>
-                                        <span class="font-weight-bold text-primary">Starts at $19/เดือน</span>
+                                        <span class="font-weight-bold text-primary" style="font-size: 18px;">$19/เดือน</span>
                                     </div>
                                     <ul>
                                         <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ 5 Platform</li>
@@ -77,8 +77,8 @@
                                 <!-- Manychat AI -->
                                 <div class="plan-card" id="plan-manychat-ai">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="font-weight-bold">AutoCon X Plan สุดคุ้ม <span class="badge rounded-pill bg-success">Hot</span></h4>
-                                        <span class="font-weight-bold text-primary">$9/เดือน</span>
+                                        <h4 class="font-weight-bold">AutoCon X Plan สุดคุ้ม <span class="badge rounded-pill bg-success">Hot แนะนำ</span></h4>
+                                        <span class="font-weight-bold text-primary" style="font-size: 18px;">$9/เดือน</span>
                                     </div>
                                     <ul>
                                         <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ไม่จำกัด</li>
@@ -87,7 +87,7 @@
                                         <li>ให้ AI Step ช่วยจัดระเบียบการสนทนา เพิ่มยอดขาย และกระตุ้นลูกค้าที่ไม่ตอบกลับ</li>
                                         <li>หากคุณลำบากกับการเขียนข้อความ ให้ AI Text Improver ช่วยเขียน ปรับแต่ง และจัดสไตล์ข้อความให้คุณอย่างง่ายดาย</li>
                                     </ul>
-                                    <button class="btn btn-add-plan" id="plan-hot" data-plan-id="2" data-plan-name="AutoCon X Plan สุดคุ้ม" data-price="9">เลือก</button>
+                                    <button class="btn btn-add-plan handleBtnPlan" id="plan-hot" data-plan-id="2" data-plan-name="AutoCon X Plan สุดคุ้ม" data-price="9">เลือก</button>
                                 </div>
 
                                 <!-- Inbox -->
@@ -97,7 +97,7 @@
                                         <span class="font-weight-bold text-primary"></span>
                                     </div>
                                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto doloribus molestiae aliquid deleniti, fugit consectetur. Maxime omnis sint delectus at nihil reprehenderit, minus sapiente debitis optio vitae cupiditate non voluptate!</p>
-                                    <button class="btn btn-add-plan disabled">ติดต่อผู้ให้บริการ</button>
+                                    <button class="btn btn-add-plan handleBtnPlan disabled">ติดต่อผู้ให้บริการ</button>
                                 </div>
                             </div>
 
@@ -199,7 +199,7 @@
         let selectedPlan = null; // To track selected plan
 
         // Function to handle plan selection
-        $('.btn-add-plan').click(function() {
+        $('.handleBtnPlan').click(function() {
             // Get plan details
             const planID = $(this).data('plan-id');
             const planName = $(this).data('plan-name');
