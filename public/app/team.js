@@ -1,6 +1,6 @@
 ws.onmessage = (event) => {
   let data = JSON.parse(event.data);
-  if (data.receiver === window.userID) {
+  if (data.receiver_id === window.userID) {
       ntf = new Notyf({
           position: {
               x: "right",
