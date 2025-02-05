@@ -112,9 +112,9 @@ class FacebookClient
                 "recipient" => [
                     "id" => $to
                 ],
-                "message" => [
+                "message" => 
                    $text
-                ]
+                
             ];
 
             // ส่งคำขอ POST ไปยัง API
