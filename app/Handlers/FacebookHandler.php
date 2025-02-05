@@ -238,6 +238,8 @@ class FacebookHandler
         $send = $platformClient->pushMessage($UID, $message, $messageType);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
 
+        log_message('info', "Send Logs : " . $send);
+
         if ($send) {
 
             $this->messageService->saveMessage($messageRoom->id, $userID, $messageType, $message, $this->platform, $sender, $replyBy);
