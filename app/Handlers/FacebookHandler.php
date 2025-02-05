@@ -102,6 +102,8 @@ class FacebookHandler
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
         $message = $this->getUserContext($messages);
 
+        log_message("info", "message_link_facebook: " . $message['message']);
+
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
