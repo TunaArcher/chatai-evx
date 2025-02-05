@@ -89,6 +89,8 @@ class FacebookClient
 
             if ($message_type == 'image') {
 
+                
+
                 $text = [
                     "attachment" => [
                         "type" => "image",

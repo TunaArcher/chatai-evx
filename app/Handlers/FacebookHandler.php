@@ -105,7 +105,7 @@ class FacebookHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
+        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message[0]['message'], $dataMessage, $message['img_url']);
         // $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
