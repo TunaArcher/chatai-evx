@@ -81,7 +81,7 @@ class FacebookClient
      * 1. Message | ส่งข้อความ
      */
 
-    public function pushMessage($to, $message, $message_type)
+    public function pushMessage($to, $message_data, $message_type)
     {
         try {
 
@@ -89,19 +89,20 @@ class FacebookClient
 
             if ($message_type == 'image') {
 
+                
+
                 $text = [
                     "attachment" => [
                         "type" => "image",
                         "payload" => [
-                            "url" => $message,
+                            "url" => $message_data,
                             "is_reusable" => true
                         ]
                     ]
                 ];
-                
             } else {
                 $text = [
-                    "text" => $text
+                    "text" => $message_data
                 ];
             }
 
@@ -113,7 +114,9 @@ class FacebookClient
                 "recipient" => [
                     "id" => $to
                 ],
-                "message" => $text
+                "message" => 
+                   $text
+                
             ];
 
             // ส่งคำขอ POST ไปยัง API
