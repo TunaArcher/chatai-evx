@@ -71,7 +71,7 @@
                                         <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ 5 Platform</li>
                                         <li>ด้วย AutoCon X 's Flow Builder คุณสามารถดึงดูด ตรวจสอบ และดูแลลูกค้าได้อย่างมีประสิทธิภาพ ผ่านการสร้างบทสนทนาอัตโนมัติที่ช่วยเพิ่มการมีส่วนร่วมและขยายธุรกิจของคุณ</li>
                                     </ul>
-                                    <button class="btn btn-add-plan" id="plan-basic" data-plan-id="1" data-plan-name="AutoCon X Plan เริ่มต้น" data-price="19">เลือก</button>
+                                    <!-- <button class="btn btn-add-plan" id="plan-basic" data-plan-id="1" data-plan-name="AutoCon X Plan เริ่มต้น" data-price="19">เลือก</button> -->
                                 </div>
 
                                 <!-- Manychat AI -->
