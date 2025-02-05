@@ -113,7 +113,7 @@ class FacebookClient
                     "id" => $to
                 ],
                 "message" => [
-                    $text
+                    "text" => $message_data
                 ]
             ];
 
