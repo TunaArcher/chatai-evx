@@ -138,8 +138,9 @@ class FacebookHandler
                     $contextText .= $message->message . ' ';
                     break;
                 case 'image':
-                    log_message("info", "message_data: " . $message->message);
-                    $imageUrl .=  $message->message . ',';
+                    $message_fix =  str_replace('["', "", $message->message);
+                    $message_fix =  str_replace('"]', "", $message->message);
+                    $imageUrl .= trim($message_fix, "") . ',';
                     break;
             }
         }
