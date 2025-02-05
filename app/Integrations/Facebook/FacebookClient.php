@@ -81,7 +81,7 @@ class FacebookClient
      * 1. Message | ส่งข้อความ
      */
 
-    public function pushMessage($to, $message, $message_type)
+    public function pushMessage($to, $message_data, $message_type)
     {
         try {
 
@@ -93,14 +93,14 @@ class FacebookClient
                     "attachment" => [
                         "type" => "image",
                         "payload" => [
-                            "url" => $message,
+                            "url" => $message_data,
                             "is_reusable" => true
                         ]
                     ]
                 ];
             } else {
                 $text = [
-                    "text" => $message
+                    "text" => $message_data
                 ];
             }
 
