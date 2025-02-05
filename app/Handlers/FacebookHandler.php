@@ -141,7 +141,7 @@ class FacebookHandler
                     break;
                 case 'image':
                     $message_fix =  str_replace('["', "", $message->message);
-                    $message_fix =  str_replace('"]', "", $message->message);
+                    $message_fix =  str_replace('"]', "", $message_fix);
                     $imageUrl .= trim($message_fix, "") . ',';
                     break;
             }
