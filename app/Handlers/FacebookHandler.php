@@ -105,7 +105,7 @@ class FacebookHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message[0]['message'], $dataMessage, $message['img_url']);
+        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
         // $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
@@ -138,6 +138,7 @@ class FacebookHandler
                     $contextText .= $message->message . ' ';
                     break;
                 case 'image':
+                    log_message("info", "message_data: " . $message->message);
                     $imageUrl .=  $message->message . ',';
                     break;
             }
@@ -237,8 +238,6 @@ class FacebookHandler
     {
         $send = $platformClient->pushMessage($UID, $message, $messageType);
         log_message('info', "ข้อความตอบไปที่ลูกค้า Message Room ID $messageRoom->id $this->platform: " . $message);
-
-        log_message('info', "Send Logs : " . $send);
 
         if ($send) {
 
