@@ -116,7 +116,7 @@ function displayMessages(data) {
 // -----------------------------------------------------------------------------
 function sendMessage() {
   const message = chatInput.value.trim();
-  const fileReply = $('#file-img-reply')[0].files[0]
+  const fileReply = $("#file-img-reply")[0].files[0];
 
   if (!currentRoomId) {
     console.warn("กรุณาใส่ข้อความก่อนส่ง");
@@ -238,6 +238,11 @@ function appendMessageToGroup(message, messageType) {
         imgElement.classList.add("chat-image");
         userChatDiv.appendChild(imgElement);
       });
+    } else if (messageType === "audio") {
+      const audioElement = document.createElement("audio");
+      audioElement.controls = true;
+      audioElement.src = message;
+      userChatDiv.appendChild(audioElement);
     }
   }
 }
@@ -297,6 +302,11 @@ function createMessageBubble(msg, messageTime) {
     } catch (error) {
       console.error("Error parsing image message:", error);
     }
+  } else if (msg.message_type === "audio") {
+    const audioElement = document.createElement("audio");
+    audioElement.controls = true;
+    audioElement.src = msg.message;
+    userChatDiv.appendChild(audioElement);
   }
 
   const chatTimeDiv = document.createElement("div");
@@ -369,7 +379,7 @@ function addOrUpdateRoom(data) {
 
 // ฟังก์ชันอัปเดตห้องที่มีอยู่
 function updateRoom(roomElement, data) {
-  const messagePreview = roomElement.querySelector(".text-primary");
+  const messagePreview = roomElement.querySelector(".text-dark");
   const timestamp = roomElement.querySelector("small.float-end");
 
   if (messagePreview) {
@@ -442,7 +452,7 @@ function createNewRoom(data) {
           <small class="float-end text-muted fs-11">Now</small>
         </h6>
         <p class="text-muted mb-0">
-          <span class="text-primary">${prefix}${data.message}</span>
+          <span class="text-dark">${prefix}${data.message}</span>
         </p>
       </div>
     </a>`;

@@ -2160,6 +2160,7 @@ html[data-bs-theme="light"]
   max-width: -webkit-max-content;
   max-width: -moz-max-content;
   max-width: max-content;
+  font-size: 14px; /* fix font */
 }
 .chat-box-right .chat-body .chat-detail .chat-box.reverse {
   display: -webkit-box;
@@ -2194,16 +2195,18 @@ html[data-bs-theme="light"]
   width: 100%;
 }
 .chat-box-right .chat-body .chat-detail .chat-box.reverse .user-chat p {
-  background-color: #00c7e6;
-  color: #fff;
+  /* background-color: #00c7e6; */
+  /* color: #fff; */
   border-radius: 16px 16px 0 16px;
   text-align: end;
+  font-size: 14px; /* fix font */
 }
 .chat-setting .chat-body .chat-detail .chat-box.reverse .user-chat p {
-  background-color: #00c7e6;
-  color: #fff;
+  /* background-color: #00c7e6; */
+  /* color: #fff; */
   border-radius: 16px 16px 0 16px;
   text-align: end;
+  font-size: 14px; /* fix font */
 }
 .chat-box-right .chat-body .chat-detail .chat-box .chat-time {
   font-size: 10px;
