@@ -123,7 +123,7 @@ class WebhookController extends BaseController
                     $subscription = $this->subscriptionModel->getUserSubscription($user->id);
 
                     if (!$subscription) {
-                        if ($user->free_request_limit <= 10) {
+                        if ($user->free_request_limit < 10) {
                             // ส่งข้อความไปที่ RabbitMQ แทนการรอ 5 วินาที
                             $this->rabbitMQPublisher->publishMessage($messageRoom, $userSocial);
                             $this->userModel->updateUserByID($user->id, [
