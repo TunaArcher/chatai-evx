@@ -266,6 +266,7 @@
         });
 
         if (!window.subscriptionStatus != 'active') {
+
             function updateProgressBar(freeRequestLimit) {
                 // Calculate the width percentage (assuming max is 10)
                 let widthPercentage = (freeRequestLimit / 10) * 100;
@@ -274,7 +275,13 @@
                 let progressBar = $(".progress-bar");
                 progressBar.css("width", widthPercentage + "%");
                 progressBar.attr("aria-valuenow", freeRequestLimit);
-                progressBar.text(freeRequestLimit);
+
+                // Change text based on freeRequestLimit value
+                if (freeRequestLimit >= 10) {
+                    progressBar.text("ครบจำนวน Request แล้ว");
+                } else {
+                    progressBar.text(freeRequestLimit);
+                }
             }
 
             // AJAX request to fetch free_request_limit
