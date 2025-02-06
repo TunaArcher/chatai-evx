@@ -188,7 +188,7 @@ class LineHandler
                 $fileContent = fetchFileFromWebhook($url, $headers);
 
                 // ตั้งชื่อไฟล์แบบสุ่ม
-                $fileName = $messageType . uniqid('_line_') . '.m4a';
+                $fileName = $messageType . uniqid('_line_') . '.jpg';
 
                 // อัปโหลดไปยัง Spaces
                 $message = uploadToSpaces($fileContent, $fileName);
