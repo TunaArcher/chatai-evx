@@ -573,5 +573,7 @@
         </div>
     <?php } ?>
 
+    <?php echo view('/partials/copyright'); ?>
+    
 </div><!-- container -->
 <!-- end page content -->

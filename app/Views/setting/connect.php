@@ -274,6 +274,8 @@
     </div>
     <!--end Rightbar/offcanvas-->
     <!--end Rightbar-->
+
+    <?php echo view('/partials/copyright'); ?>
 </div>
 
 <div class="modal fade" id="exampleModalDefault" tabindex="-1" role="dialog" aria-labelledby="exampleModalDefaultLabel" aria-hidden="true">

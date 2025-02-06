@@ -231,5 +231,6 @@
     <!--end Rightbar-->
     <!--Start Footer-->
 
+    <?php echo view('/partials/copyright'); ?>
 </div>
 <!-- end page content -->
