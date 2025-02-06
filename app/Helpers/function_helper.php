@@ -113,3 +113,76 @@ function fetchFileFromWebhook($url, $headers = [])
         throw new Exception("Error fetching file: " . $e->getMessage());
     }
 }
+
+function speechToText($filePath)
+{
+    $apiKey = getenv('GOOGLE_CLOUD_API_KEY');
+    $audioFile = base64_encode(file_get_contents($filePath));
+
+    $data = [
+        "config" => [
+            "encoding" => "LINEAR16",
+            "sampleRateHertz" => 16000,
+            "languageCode" => "th-TH",
+            "alternativeLanguageCodes" => ["en-US"]
+        ],
+        "audio" => [
+            "content" => $audioFile
+        ]
+    ];
+
+    $ch = curl_init("https://speech.googleapis.com/v1/speech:recognize?key=$apiKey");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $result = json_decode($response, true);
+
+    log_message('info', "Debug ข้อความที่ได้หลัง S2T: " . json_encode($result, JSON_PRETTY_PRINT));
+
+    return $result["results"][0]["alternatives"][0]["transcript"] ?? "";
+}
+
+function convertAudioToText($audioUrl)
+{
+    // สร้างโฟลเดอร์ audio ถ้ายังไม่มี
+    if (!file_exists('audio')) {
+        mkdir('audio', 0777, true);
+    }
+
+    // ตั้งชื่อไฟล์แบบสุ่ม
+    $uniqueId = uniqid('audio_');
+    $m4aFile = "audio/{$uniqueId}.m4a";
+    $wavFile = "audio/{$uniqueId}.wav";
+
+    // ✅ ดาวน์โหลดไฟล์เสียงจาก DigitalOcean Spaces
+    file_put_contents($m4aFile, file_get_contents($audioUrl));
+
+    // ✅ ตรวจสอบว่าอยู่ใน Development Environment (Windows)
+    $command = "ffmpeg -i $m4aFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+    if (getenv('CI_ENVIRONMENT') === 'development') {
+        $ffmpegPath = "C:\\ffmpeg\\bin\\ffmpeg.exe"; // Windows ใช้ full path
+        $command = "\"$ffmpegPath\" -i $m4aFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+    }
+
+    // ✅ ใช้ ffmpeg แปลงไฟล์เสียงเป็น WAV
+    exec($command, $output, $returnCode);
+
+    if ($returnCode !== 0) {
+        unlink($m4aFile); // ลบไฟล์ที่ดาวน์โหลดมา
+        return "เกิดข้อผิดพลาดในการแปลงไฟล์เสียง";
+    }
+
+    // ✅ แปลงเสียงเป็นข้อความโดยใช้ Google Speech-to-Text API
+    $text = speechToText($wavFile);
+
+    // ✅ ลบไฟล์เสียงหลังจากแปลงเสร็จ
+    unlink($m4aFile);
+    unlink($wavFile);
+
+    return $text;
+}
