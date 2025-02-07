@@ -174,44 +174,44 @@ class ChatGPT
         }
     }
 
-    public function _askChatGPTimg($question,  $message_setting, $file_name)
-    {
+    // public function _askChatGPTimg($question,  $message_setting, $file_name)
+    // {
 
-        $file_data = $this->_updateArrFileLink($file_name);
-        // log_message("info", "message_data_json_php: " . $file_data);
-        try {
-            $response = $this->http->post($this->baseURL, [
-                'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToken,
-                    'Content-Type'  => 'application/json',
-                ],
-                'json' => [
-                    'model' => 'gpt-4o',
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => $message_setting
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
-                                ],
-                                $file_data
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
+    //     $file_data = $this->_updateArrFileLink($file_name);
+    //     // log_message("info", "message_data_json_php: " . $file_data);
+    //     try {
+    //         $response = $this->http->post($this->baseURL, [
+    //             'headers' => [
+    //                 'Authorization' => "Bearer " . $this->accessToken,
+    //                 'Content-Type'  => 'application/json',
+    //             ],
+    //             'json' => [
+    //                 'model' => 'gpt-4o',
+    //                 'messages' => [
+    //                     [
+    //                         'role' => 'system',
+    //                         'content' => $message_setting
+    //                     ],
+    //                     [
+    //                         'role' => 'user',
+    //                         'content' => [
+    //                             [
+    //                                 'type' => 'text',
+    //                                 'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+    //                             ],
+    //                             $file_data
+    //                         ]
+    //                     ]
+    //                 ]
+    //             ]
+    //         ]);
 
-            $responseBody = json_decode($response->getBody(), true);
-            return $responseBody['choices'][0]['message']['content'];
-        } catch (Exception $e) {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
+    //         $responseBody = json_decode($response->getBody(), true);
+    //         return $responseBody['choices'][0]['message']['content'];
+    //     } catch (Exception $e) {
+    //         return 'Error: ' . $e->getMessage();
+    //     }
+    // }
 
     public function askChatGPTimgTraning($question,  $message_setting, $file_name)
     {
@@ -255,24 +255,28 @@ class ChatGPT
         }
     }
 
-    private function _updateArrFileLink($file_names)
-    {
-        $file_data = [];
+    // private function _updateArrFileLink($file_names)
+    // {
+    //     $file_data = [];
 
-        $file_names_splites = explode(',', $file_names);
+    //     $file_names_splites = explode(',', $file_names);
 
-        foreach ($file_names_splites as $file_names_splite) {
+    //     foreach ($file_names_splites as $file_names_splite) {
 
-            $file_data +=  [
-                'type' => 'image_url',
-                'image_url' => [
-                    'url' => $file_names_splite
-                ]
-            ];
-        }
+    //         $file_data +=  [
+    //             'type' => 'image_url',
+    //             'image_url' => [
+    //                 'url' => $file_names_splite
+    //             ]
+    //         ];
+    //     }
 
-        return  $file_data;
-    }
+    //     return  $file_data;
+    // }
+
+    /*********************************************************************
+     * 1. Completions
+     */
 
     private function sendRequest($model, $messages)
     {
