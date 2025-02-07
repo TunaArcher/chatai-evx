@@ -408,6 +408,22 @@ function createNewRoom(data) {
     : data.receiver_avatar || "default-avatar.png";
   const displayName = isCustomer ? data.sender_name : data.receiver_name;
 
+  // ตรวจสอบประเภทของ message_type และจำกัดความยาวข้อความ
+  let messageText = "";
+  if (data.message_type === "text") {
+    messageText =
+      prefix +
+      (data.message.length > 40
+        ? data.message.substring(0, 40) + "..."
+        : data.message);
+  } else if (data.message_type === "image") {
+    messageText = prefix + "ส่งรูปภาพ";
+  } else if (data.message_type === "audio") {
+    messageText = prefix + "ส่งเสียง";
+  } else {
+    messageText = "ข้อความไม่รองรับ";
+  }
+
   // สร้างองค์ประกอบ DOM สำหรับห้อง
   const newRoom = document.createElement("div");
   const newRoomList = document.createElement("div");
@@ -452,7 +468,7 @@ function createNewRoom(data) {
           <small class="float-end text-muted fs-11">Now</small>
         </h6>
         <p class="text-muted mb-0">
-          <span class="text-dark">${prefix}${data.message}</span>
+          <span class="text-dark">${messageText}</span>
         </p>
       </div>
     </a>`;

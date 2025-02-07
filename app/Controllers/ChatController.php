@@ -62,6 +62,7 @@ class ChatController extends BaseController
             $prefix = '';
             if ($lastMessage->send_by == 'Admin') $prefix = 'คุณ: ';
             $room->last_message = $lastMessage->message ?  $prefix . $lastMessage->message : '';
+            $room->message_type = $lastMessage->message ?  $lastMessage->message_type : '';
             $room->last_time = $lastMessage->created_at ?? '';
         }
 

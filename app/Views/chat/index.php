@@ -41,10 +41,10 @@
                 <div class="chat-box-left" id="chat-box-left">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">Messages</a>
+                            <a class="nav-link py-2 active" id="messages_chat_tab" data-bs-toggle="tab" href="#messages_chat" role="tab">ข้อความ</a>
                         </li>
                         <li class="nav-item disabled" role="presentation">
-                            <a class="nav-link py-2" id="active_chat_tab" data-bs-toggle="tab" href="#active_chat" role="tab">Active</a>
+                            <a class="nav-link py-2" id="active_chat_tab" data-bs-toggle="tab" href="#active_chat" role="tab">จัดเก็บ</a>
                         </li>
                     </ul>
                     <div class="chat-search p-3">
@@ -53,7 +53,7 @@
                                 <div class="input-group-prepend">
                                     <button id="button-addon2" type="submit" class="btn btn-link text-secondary"><i class="fa fa-search"></i></button>
                                 </div>
-                                <input type="search" placeholder="Searching.." aria-describedby="button-addon2" class="form-control border-0 bg-light">
+                                <input type="search" placeholder="ค้นหา.." aria-describedby="button-addon2" class="form-control border-0 bg-light">
                             </div>
                         </div>
                     </div><!--end chat-search-->
@@ -71,25 +71,45 @@
                                                     <a href="#" class="">
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative">
-                                                                <?php if (($room->profile == 0) || ($room->profile == null)) {
+                                                                <?php
+                                                                if (($room->profile == 0) || ($room->profile == null)) {
                                                                     $room->profile = '/assets/images/conX.png';
-                                                                } ?>
+                                                                }
+                                                                ?>
                                                                 <img src="<?php echo $room->profile; ?>" alt="" class="thumb-lg rounded-circle">
                                                                 <span class="position-absolute bottom-0 end-0">
                                                                     <img src="<?php echo base_url('/assets/images/' . $room->ic_platform); ?>" width="14">
                                                                 </span>
                                                             </div>
                                                             <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                                <h6 class="my-0 fw-medium text-dark fs-14"><?php echo $room->customer_name; ?>
-                                                                    <small class="float-end text-muted fs-11"><?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?></small>
+                                                                <h6 class="my-0 fw-medium text-dark fs-14">
+                                                                    <?php echo $room->customer_name; ?>
+                                                                    <small class="float-end text-muted fs-11">
+                                                                        <?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?>
+                                                                    </small>
                                                                 </h6>
-                                                                <p class="text-muted mb-0"><span class="text-primary"><?php echo $room->last_message; ?></span>
+                                                                <p class="text-muted mb-0">
+                                                                    <span class="text-dark" >
+                                                                        <?php
+                                                                        if ($room->message_type == 'text') {
+                                                                            // จำกัดความยาวข้อความที่ 50 ตัวอักษร
+                                                                            echo (mb_strlen($room->last_message, 'UTF-8') > 40) ? mb_substr($room->last_message, 0, 40, 'UTF-8') . '...' : $room->last_message;
+                                                                        } elseif ($room->message_type == 'image') {
+                                                                            echo 'ส่งรูปภาพ';
+                                                                        } elseif ($room->message_type == 'audio') {
+                                                                            echo 'ส่งเสียง';
+                                                                        } else {
+                                                                            echo 'ข้อความไม่รองรับ';
+                                                                        }
+                                                                        ?>
+                                                                    </span>
                                                                 </p>
                                                             </div><!--end media-body-->
                                                         </div><!--end media-->
                                                     </a> <!--end-->
                                                 </div><!--end div-->
                                             <?php endforeach; ?>
+
 
                                         </div>
                                     </div><!--end col-->
@@ -177,7 +197,7 @@
                     <div class="chat-footer">
                         <div class="row">
                             <div class="col-10 col-md-8">
-                                <input type="text" class="form-control" placeholder="Type something here..." id="chat-input">
+                                <input type="text" class="form-control" placeholder="พิมที่นี่..." id="chat-input">
 
                             </div><!-- col-8 -->
                             <div class="col-2 col-md-4 text-end">
