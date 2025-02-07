@@ -101,8 +101,8 @@ class WhatsAppHandler
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
 
         $messageReply = $message['img_url'] == ''
-            ? $chatGPT->askChatGPT($message['message'], $dataMessage)
-            : $chatGPT->askChatGPT($message['message'], $dataMessage, $message['img_url']);
+            ? $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -169,24 +169,24 @@ class WhatsAppHandler
                 break;
 
                 // เคสรูปภาพหรือ attachment อื่น ๆ
-            case 'image':
-                $messageId = $messageObject->id;
-                $waAccessToken = $userSocial->whatsapp_access_token;
+                // case 'image':
+                //     $messageId = $messageObject->id;
+                //     $waAccessToken = $userSocial->whatsapp_access_token;
 
-                $url = "https://graph.facebook.com/v21.0/{$messageId}/content";
-                $headers = ["Authorization: Bearer {$waAccessToken}"];
+                //     $url = "https://graph.facebook.com/v21.0/{$messageId}/content";
+                //     $headers = ["Authorization: Bearer {$waAccessToken}"];
 
-                // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
-                $fileContent = fetchFileFromWebhook($url, $headers);
+                //     // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
+                //     $fileContent = fetchFileFromWebhook($url, $headers);
 
-                // ตั้งชื่อไฟล์แบบสุ่ม
-                $fileName = uniqid('wa_') . '.jpg';
+                //     // ตั้งชื่อไฟล์แบบสุ่ม
+                //     $fileName = uniqid('wa_') . '.jpg';
 
-                // อัปโหลดไปยัง Spaces
-                $messageContent = uploadToSpaces($fileContent, $fileName);
+                //     // อัปโหลดไปยัง Spaces
+                //     $messageContent = uploadToSpaces($fileContent, $fileName);
 
-                $messageContent = json_encode($messageContent);
-                break;
+                //     $messageContent = json_encode($messageContent);
+                //     break;
 
             default:
                 $messageContent = null;

@@ -101,8 +101,8 @@ class InstagramHandler
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
 
         $messageReply = $message['img_url'] == ''
-            ? $chatGPT->askChatGPT($message['message'], $dataMessage)
-            : $chatGPT->askChatGPT($message['message'], $dataMessage, $message['img_url']);
+            ? $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -133,9 +133,9 @@ class InstagramHandler
                 case 'text':
                     $contextText .= $message->message . ' ';
                     break;
-                case 'image':
-                    $imageUrl .=  $message->message . ',';
-                    break;
+                    // case 'image':
+                    //     $imageUrl .=  $message->message . ',';
+                    //     break;
             }
         }
 

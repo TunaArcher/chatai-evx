@@ -105,9 +105,9 @@ class FacebookHandler
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
 
-        $messageReply = $message['img_url'] == '' 
-            ? $chatGPT->askChatGPT($message['message'], $dataMessage) 
-            : $chatGPT->askChatGPT($message['message'], $dataMessage, $message['img_url']);
+        $messageReply = $message['img_url'] == ''
+            ? $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -177,7 +177,7 @@ class FacebookHandler
 
             switch ($messageType) {
 
-                // เคสรูปภาพ
+                    // เคสรูปภาพ
                 case 'image':
                     $messageType = 'image';
 
@@ -196,9 +196,9 @@ class FacebookHandler
 
                             // อัปโหลดไปยัง Spaces
                             $message = uploadToSpaces(
-                                $fileContent, 
-                                $fileName, 
-                                $messageType, 
+                                $fileContent,
+                                $fileName,
+                                $messageType,
                                 $this->platform
                             );
 
@@ -210,7 +210,7 @@ class FacebookHandler
 
                     break;
 
-                // เคสเสียง
+                    // เคสเสียง
                 case 'audio':
                     $messageType = 'audio';
 
@@ -224,9 +224,9 @@ class FacebookHandler
 
                     // อัปโหลดไปยัง DigitalOcean Spaces
                     $message = uploadToSpaces(
-                        $fileContent, 
-                        $fileName, 
-                        $messageType, 
+                        $fileContent,
+                        $fileName,
+                        $messageType,
                         $this->platform
                     );
 
