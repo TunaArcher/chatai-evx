@@ -277,7 +277,7 @@ class ChatGPT
     private function sendRequest($model, $messages)
     {
         try {
-            px($messages);
+
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
                     'Authorization' => "Bearer {$this->accessToken}",
@@ -291,7 +291,8 @@ class ChatGPT
 
             $responseBody = json_decode($response->getBody(), true);
             return $responseBody['choices'][0]['message']['content'] ?? 'No response';
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            log_message('error', 'ChatGPT::sendRequest error {message}', ['message' => $e->getMessage()]);
             return 'Error: ' . $e->getMessage();
         }
     }
