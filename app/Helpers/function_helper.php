@@ -57,7 +57,7 @@ if (!function_exists('px')) {
 }
 
 // อัปโหลดไฟล์ไปยัง DigitalOcean Spaces
-function uploadToSpaces($fileContent, $fileName)
+function _uploadToSpaces($fileContent, $fileName)
 {
     $s3 = new S3Client([
         'version' => 'latest',
@@ -75,7 +75,7 @@ function uploadToSpaces($fileContent, $fileName)
 
         $result = $s3->putObject([
             'Bucket' => getenv('S3_BUCKET'),
-            'Key' => 'uploads/img_autoconx/' . $fileName,
+            'Key' => 'uploads/img/' . $fileName,
             'Body' => $fileContent,
             'ACL' => 'public-read' // ตั้งค่าให้ไฟล์เป็น public
         ]);
@@ -85,6 +85,50 @@ function uploadToSpaces($fileContent, $fileName)
         throw new Exception("Failed to upload to Spaces: " . $e->getMessage());
     }
 }
+
+// อัปโหลดไฟล์ไปยัง DigitalOcean Spaces และแยกโฟลเดอร์ตามประเภทไฟล์และแพลตฟอร์ม
+function uploadToSpaces($fileContent, $fileName, $fileType, $platform)
+{
+    $platform = strtolower($platform);
+
+    $s3 = new S3Client([
+        'version' => 'latest',
+        'region' => getenv('REGION'), // S3-compatible, region ไม่สำคัญเพราะเราใช้ endpoint เอง
+        'endpoint' => getenv('ENDPOINT'),
+        'use_path_style_endpoint' => false,
+        'credentials' => [
+            'key' => getenv('KEY'),
+            'secret' => getenv('SECRET_KEY')
+        ],
+        'suppress_php_deprecation_warning' => true, // ปิดข้อความเตือน
+    ]);
+
+    // ตรวจสอบและกำหนดโฟลเดอร์ตามประเภทไฟล์
+    switch ($fileType) {
+        case 'image':
+            $folder = "uploads/img/{$platform}/";
+            break;
+        case 'audio':
+            $folder = "uploads/audio/{$platform}/";
+            break;
+        default:
+            $folder = "uploads/others/"; // เผื่อไว้สำหรับประเภทอื่น ๆ ในอนาคต
+    }
+
+    try {
+        $result = $s3->putObject([
+            'Bucket' => getenv('S3_BUCKET'),
+            'Key' => $folder . $fileName, // อัปโหลดไปยังโฟลเดอร์ที่เหมาะสม
+            'Body' => $fileContent,
+            'ACL' => 'public-read' // ตั้งค่าให้ไฟล์เป็น public
+        ]);
+
+        return $result['ObjectURL']; // คืน URL ของไฟล์ที่อัปโหลด
+    } catch (AwsException $e) {
+        throw new Exception("Failed to upload to Spaces: " . $e->getMessage());
+    }
+}
+
 
 function fetchFileFromWebhook($url, $headers = [])
 {
@@ -147,7 +191,7 @@ function speechToText($filePath)
     return $result["results"][0]["alternatives"][0]["transcript"] ?? "";
 }
 
-function convertAudioToText($audioUrl)
+function _convertAudioToText($audioUrl)
 {
     // สร้างโฟลเดอร์ audio ถ้ายังไม่มี
     if (!file_exists('audio')) {
@@ -182,6 +226,63 @@ function convertAudioToText($audioUrl)
 
     // ✅ ลบไฟล์เสียงหลังจากแปลงเสร็จ
     unlink($m4aFile);
+    unlink($wavFile);
+
+    return $text;
+}
+
+function convertAudioToText($audioUrl, $platform)
+{
+    // สร้างโฟลเดอร์ audio ถ้ายังไม่มี
+    if (!file_exists('audio')) {
+        mkdir('audio', 0777, true);
+    }
+
+    // ตั้งชื่อไฟล์แบบสุ่ม
+    $uniqueId = uniqid('audio_');
+
+    // ตรวจสอบประเภทไฟล์ตามแพลตฟอร์ม
+    switch (strtolower($platform)) {
+        case 'Line':
+            $audioExtension = 'm4a';
+            break;
+        case 'Facebook':
+            $audioExtension = 'mp4';
+            break;
+        case 'WhatsApp':
+        case 'Instagram':
+            $audioExtension = 'ogg'; // กำหนดค่าเริ่มต้นที่สามารถเปลี่ยนแปลงได้ในอนาคต
+            break;
+        default:
+            return "ไม่รองรับแพลตฟอร์ม: {$platform}";
+    }
+
+    $sourceFile = "audio/{$uniqueId}.{$audioExtension}";
+    $wavFile = "audio/{$uniqueId}.wav";
+
+    // ✅ ดาวน์โหลดไฟล์เสียงจาก DigitalOcean Spaces
+    file_put_contents($sourceFile, file_get_contents($audioUrl));
+
+    // ✅ ตรวจสอบว่าอยู่ใน Development Environment (Windows)
+    $command = "ffmpeg -i $sourceFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+    if (getenv('CI_ENVIRONMENT') === 'development') {
+        $ffmpegPath = "C:\\ffmpeg\\bin\\ffmpeg.exe"; // Windows ใช้ full path
+        $command = "\"$ffmpegPath\" -i $sourceFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+    }
+
+    // ✅ ใช้ ffmpeg แปลงไฟล์เสียงเป็น WAV
+    exec($command, $output, $returnCode);
+
+    if ($returnCode !== 0) {
+        unlink($sourceFile); // ลบไฟล์ที่ดาวน์โหลดมา
+        return "เกิดข้อผิดพลาดในการแปลงไฟล์เสียงจาก {$platform}";
+    }
+
+    // ✅ แปลงเสียงเป็นข้อความโดยใช้ Google Speech-to-Text API
+    $text = speechToText($wavFile);
+
+    // ✅ ลบไฟล์เสียงหลังจากแปลงเสร็จ
+    unlink($sourceFile);
     unlink($wavFile);
 
     return $text;

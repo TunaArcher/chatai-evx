@@ -42,7 +42,7 @@ class FacebookHandler
         }
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        // ตรวจสอบว่าเป็น Message ข้อความ, รูปภาพ, เสียง และจัดการ
         $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
@@ -65,9 +65,6 @@ class FacebookHandler
 
     public function handleReplyByManual($input)
     {
-        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        // $messageReply = $input->message;
-
         $messageReply = $input['message'];
         $messageType = $input['message_type'];
 
@@ -80,7 +77,7 @@ class FacebookHandler
         $this->sendMessageToPlatform(
             $platformClient,
             $UID,
-            $messageType, // fix เป็น Text ไปก่อน
+            $messageType,
             $messageReply,
             $messageRoom,
             $userID,
@@ -144,6 +141,9 @@ class FacebookHandler
                     $message_fix =  str_replace('"]', "", $message_fix);
                     $imageUrl .= trim($message_fix, "") . ',';
                     break;
+                case 'audio':
+                    $contextText .= convertAudioToText($message->message, $this->platform) . ' ';
+                    break;
             }
         }
 
@@ -171,29 +171,65 @@ class FacebookHandler
         // เคสรูปภาพหรือ attachment อื่น ๆ
         else if (isset($inputMessage->attachments)) {
 
-            $messageType = 'image';
+            $messageType = $inputMessage->attachments[0]->type;
 
-            $attachments = [];
+            switch ($messageType) {
 
-            foreach ($inputMessage->attachments as $attachment) {
+                // เคสรูปภาพ
+                case 'image':
+                    $messageType = 'image';
 
-                if ($attachment->type === 'image') {
+                    $attachments = [];
 
-                    $url = $attachment->payload->url;
+                    foreach ($inputMessage->attachments as $attachment) {
 
-                    $fileContent = fetchFileFromWebhook($url);
+                        if ($attachment->type === 'image') {
+
+                            $url = $attachment->payload->url;
+
+                            $fileContent = fetchFileFromWebhook($url);
+
+                            // ตั้งชื่อไฟล์แบบสุ่ม
+                            $fileName = uniqid('facebook_') . '.jpg';
+
+                            // อัปโหลดไปยัง Spaces
+                            $message = uploadToSpaces(
+                                $fileContent, 
+                                $fileName, 
+                                $messageType, 
+                                $this->platform
+                            );
+
+                            $attachments[] = $message;
+                        }
+                    }
+
+                    $message = json_encode($attachments, JSON_UNESCAPED_SLASHES);
+
+                    break;
+
+                // เคสเสียง
+                case 'audio':
+                    $messageType = 'audio';
+
+                    $attachmentUrl = $inputMessage->attachments[0]->payload->url;
+
+                    // ดึงข้อมูลไฟล์จาก Facebook Messenger
+                    $fileContent = fetchFileFromWebhook($attachmentUrl);
 
                     // ตั้งชื่อไฟล์แบบสุ่ม
-                    $fileName = uniqid('facebook_') . '.jpg';
+                    $fileName = uniqid('facebook_') . '.mp4';
 
-                    // อัปโหลดไปยัง Spaces
-                    $message = uploadToSpaces($fileContent, $fileName);
+                    // อัปโหลดไปยัง DigitalOcean Spaces
+                    $message = uploadToSpaces(
+                        $fileContent, 
+                        $fileName, 
+                        $messageType, 
+                        $this->platform
+                    );
 
-                    $attachments[] = $message;
-                }
+                    break;
             }
-
-            $message = json_encode($attachments, JSON_UNESCAPED_SLASHES);
         }
 
         return [

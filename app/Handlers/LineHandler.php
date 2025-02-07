@@ -39,7 +39,7 @@ class LineHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        // ตรวจสอบว่าเป็น Message ข้อความ, รูปภาพ, เสียง และจัดการ
         $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
@@ -105,7 +105,6 @@ class LineHandler
 
         // $messageReply = $chatGPT->askChatGPT($message['message'], $dataMessage);
 
-
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
 
@@ -141,8 +140,7 @@ class LineHandler
                     $imageUrl .= $message->message . ',';
                     break;
                 case 'audio':
-                    log_message("info", "run context audio !!");
-                    $contextText .= convertAudioToText($message->message) . ' ';
+                    $contextText .= convertAudioToText($message->message, $this->platform) . ' ';
                     break;
             }
         }
@@ -167,13 +165,13 @@ class LineHandler
 
         switch ($eventType) {
 
-                // เคสข้อความ
+            // เคสข้อความ
             case 'text':
                 $messageType = 'text';
                 $message = $event->message->text;
                 break;
 
-                // เคสรูปภาพหรือ attachment อื่น ๆ
+            // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
 
                 $messageType = 'image';
@@ -188,13 +186,19 @@ class LineHandler
                 $fileContent = fetchFileFromWebhook($url, $headers);
 
                 // ตั้งชื่อไฟล์แบบสุ่ม
-                $fileName = $messageType . uniqid('_line_') . '.jpg';
+                $fileName = uniqid('line_') . '.jpg';
 
                 // อัปโหลดไปยัง Spaces
-                $message = uploadToSpaces($fileContent, $fileName);
+                $message = uploadToSpaces(
+                    $fileContent, 
+                    $fileName, 
+                    $messageType, 
+                    $this->platform
+                );
 
                 break;
 
+            // เคสเสียง
             case 'audio':
                 $messageType = 'audio';
 
@@ -208,10 +212,15 @@ class LineHandler
                 $fileContent = fetchFileFromWebhook($url, $headers);
 
                 // ตั้งชื่อไฟล์แบบสุ่ม
-                $fileName = $messageType . uniqid('_line_') . '.m4a';
+                $fileName = uniqid('line_') . '.m4a';
 
                 // อัปโหลดไปยัง DigitalOcean Spaces
-                $message = uploadToSpaces($fileContent, $fileName);
+                $message = uploadToSpaces(
+                    $fileContent, 
+                    $fileName, 
+                    $messageType, 
+                    $this->platform
+                );
 
                 break;
 
@@ -384,65 +393,65 @@ class LineHandler
         // );
 
         // Image
-        // return json_decode(
-        //     '{
-        //     "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
-        //     "events": [
-        //         {
-        //             "type": "message",
-        //             "message": {
-        //                 "type": "image",
-        //                 "id": "545609780438499330",
-        //                 "quoteToken": "2hTD5_GTcCNcOLqEXWrPFD7wqV1mRtIysYrI8USZF7dAoCJeN-tpaoi8b--yRZvrZecvrEZilPtSL75nC8bTPLh2xb_ZiVe_FmbKXZ7_nF8f_sLWreBKDDNB6j6WOUJBe3iABJv1GVv5FFPQIb-fPA",
-        //                 "contentProvider": {
-        //                     "type": "line"
-        //                 }
-        //             },
-        //             "webhookEventId": "01JJNM5SM145NRFJ1V6KYJQMN8",
-        //             "deliveryContext": {
-        //                 "isRedelivery": false
-        //             },
-        //             "timestamp": 1738040075709,
-        //             "source": {
-        //                 "type": "user",
-        //                 "userId": "U793093e057eb0dcdecc34012361d0217"
-        //             },
-        //             "replyToken": "934747a8fd95442f9b8cfcd032d7dd97",
-        //             "mode": "active"
-        //         }
-        //     ]
-        // }'
-        // );
-
-        // Audio
         return json_decode(
             '{
-    "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
-    "events": [
-        {
-            "type": "message",
-            "message": {
-                "type": "audio",
-                "id": "546929768709488706",
-                "duration": 7534,
-                "contentProvider": {
-                    "type": "line"
+            "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+            "events": [
+                {
+                    "type": "message",
+                    "message": {
+                        "type": "image",
+                        "id": "545609780438499330",
+                        "quoteToken": "2hTD5_GTcCNcOLqEXWrPFD7wqV1mRtIysYrI8USZF7dAoCJeN-tpaoi8b--yRZvrZecvrEZilPtSL75nC8bTPLh2xb_ZiVe_FmbKXZ7_nF8f_sLWreBKDDNB6j6WOUJBe3iABJv1GVv5FFPQIb-fPA",
+                        "contentProvider": {
+                            "type": "line"
+                        }
+                    },
+                    "webhookEventId": "01JJNM5SM145NRFJ1V6KYJQMN8",
+                    "deliveryContext": {
+                        "isRedelivery": false
+                    },
+                    "timestamp": 1738040075709,
+                    "source": {
+                        "type": "user",
+                        "userId": "U793093e057eb0dcdecc34012361d0217"
+                    },
+                    "replyToken": "934747a8fd95442f9b8cfcd032d7dd97",
+                    "mode": "active"
                 }
-            },
-            "webhookEventId": "01JKD2G7T7HGHNR79HYQYR6E71",
-            "deliveryContext": {
-                "isRedelivery": false
-            },
-            "timestamp": 1738826850049,
-            "source": {
-                "type": "user",
-                "userId": "U793093e057eb0dcdecc34012361d0217"
-            },
-            "replyToken": "bd94a1406d99401e8a6934635ef6e317",
-            "mode": "active"
-        }
-    ]
-}'
+            ]
+        }'
         );
+
+        // Audio
+//         return json_decode(
+//             '{
+//     "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+//     "events": [
+//         {
+//             "type": "message",
+//             "message": {
+//                 "type": "audio",
+//                 "id": "546929768709488706",
+//                 "duration": 7534,
+//                 "contentProvider": {
+//                     "type": "line"
+//                 }
+//             },
+//             "webhookEventId": "01JKD2G7T7HGHNR79HYQYR6E71",
+//             "deliveryContext": {
+//                 "isRedelivery": false
+//             },
+//             "timestamp": 1738826850049,
+//             "source": {
+//                 "type": "user",
+//                 "userId": "U793093e057eb0dcdecc34012361d0217"
+//             },
+//             "replyToken": "bd94a1406d99401e8a6934635ef6e317",
+//             "mode": "active"
+//         }
+//     ]
+// }'
+//         );
     }
 }
