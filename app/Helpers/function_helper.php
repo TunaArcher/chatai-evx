@@ -243,14 +243,14 @@ function convertAudioToText($audioUrl, $platform)
 
     // ตรวจสอบประเภทไฟล์ตามแพลตฟอร์ม
     switch (strtolower($platform)) {
-        case 'Line':
+        case 'line':
             $audioExtension = 'm4a';
             break;
-        case 'Facebook':
+        case 'facebook':
             $audioExtension = 'mp4';
             break;
-        case 'WhatsApp':
-        case 'Instagram':
+        case 'whatsapp':
+        case 'instagram':
             $audioExtension = 'ogg'; // กำหนดค่าเริ่มต้นที่สามารถเปลี่ยนแปลงได้ในอนาคต
             break;
         default:
