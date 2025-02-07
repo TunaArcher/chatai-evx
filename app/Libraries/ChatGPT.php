@@ -384,6 +384,6 @@ class ChatGPT
                 'type' => 'image_url',
                 'image_url' => ['url' => trim($fileName)]
             ];
-        }, explode(',', $fileNames));
+        }, array_filter(explode(',', $fileNames), 'strlen'));
     }
 }

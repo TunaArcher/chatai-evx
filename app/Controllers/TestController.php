@@ -43,6 +43,17 @@ class TestController extends BaseController
         $messageRoom = $this->messageRoomModel->getMessageRoomByID('121');
         $messages = $this->messageModel->getHistoryMessageByRoomID($messageRoom->id, 4);
         
+        $fileNames = 'https://autoconx.sgp1.digitaloceanspaces.com/uploads/img/line/line_67a5f8154d0fc.jpg,https://autoconx.sgp1.digitaloceanspaces.com/uploads/img/line/line_67a5f83269382.jpg,';
+
+        $test = array_map(function ($fileName) {
+            return [
+                'type' => 'image_url',
+                'image_url' => ['url' => trim($fileName)]
+            ];
+        }, explode(',', $fileNames));
+
+        px($test);
+
         echo $chatGPT->askChatGPT($messageRoom->id, $question, $messageSetting);
     }
 }
