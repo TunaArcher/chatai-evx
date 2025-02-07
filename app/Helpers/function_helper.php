@@ -163,10 +163,10 @@ function convertAudioToText($audioUrl)
     file_put_contents($m4aFile, file_get_contents($audioUrl));
 
     // ✅ ตรวจสอบว่าอยู่ใน Development Environment (Windows)
-    $command = "ffmpeg -i $m4aFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+    $command = "ffmpeg -i $m4aFile -c:a pcm_s16le $wavFile";
     if (getenv('CI_ENVIRONMENT') === 'development') {
         $ffmpegPath = "C:\\ffmpeg\\bin\\ffmpeg.exe"; // Windows ใช้ full path
-        $command = "\"$ffmpegPath\" -i $m4aFile -ar 16000 -ac 1 -c:a pcm_s16le $wavFile";
+        $command = "\"$ffmpegPath\" -i $m4aFile -c:a pcm_s16le $wavFile";
     }
 
     // ✅ ใช้ ffmpeg แปลงไฟล์เสียงเป็น WAV
