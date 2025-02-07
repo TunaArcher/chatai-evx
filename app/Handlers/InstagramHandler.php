@@ -62,8 +62,6 @@ class InstagramHandler
 
     public function handleReplyByManual($input)
     {
-        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        // $messageReply = $input->message;
         $messageReply = $input['message'];
         $messageType = $input['message_type'];
 
@@ -101,8 +99,10 @@ class InstagramHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
-        // $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
+
+        $messageReply = $message['img_url'] == ''
+            ? $chatGPT->askChatGPT($message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);

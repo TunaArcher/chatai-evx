@@ -142,4 +142,21 @@ class MessageModel
 
         return $builder->getResult();
     }
+
+    public function getHistoryMessageByRoomID($roomID, $limit)
+    {
+        $sql = "
+            SELECT * FROM (
+                SELECT * FROM messages
+                WHERE room_id = $roomID
+                ORDER BY id DESC
+                LIMIT $limit
+            ) sub
+            ORDER BY id ASC;
+        ";
+
+        $builder = $this->db->query($sql);
+
+        return $builder->getResult();
+    }
 }

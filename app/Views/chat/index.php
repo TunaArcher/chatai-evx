@@ -82,14 +82,14 @@
                                                                 </span>
                                                             </div>
                                                             <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-                                                                <h6 class="my-0 fw-medium text-dark fs-14">
+                                                                <h6 class="my-0 fw-medium fs-14">
                                                                     <?php echo $room->customer_name; ?>
                                                                     <small class="float-end text-muted fs-11">
                                                                         <?php if ($room->last_time != '') echo timeElapsed($room->last_time); ?>
                                                                     </small>
                                                                 </h6>
                                                                 <p class="text-muted mb-0">
-                                                                    <span class="text-dark" >
+                                                                    <span class="text-dark">
                                                                         <?php
                                                                         if ($room->message_type == 'text') {
                                                                             // จำกัดความยาวข้อความที่ 50 ตัวอักษร

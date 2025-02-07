@@ -16,7 +16,7 @@ class WhatsAppHandler
     private $platform = 'WhatsApp';
 
     private MessageService $messageService;
-    
+
     private CustomerModel $customerModel;
     private MessageModel $messageModel;
     private MessageRoomModel $messageRoomModel;
@@ -62,8 +62,6 @@ class WhatsAppHandler
 
     public function handleReplyByManual($input)
     {
-        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
-        // $messageReply = $input->message;
         $messageReply = $input['message'];
         $messageType = $input['message_type'];
 
@@ -101,8 +99,10 @@ class WhatsAppHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
-        // $messageReply = $chatGPT->askChatGPT($message, $dataMessage);
+
+        $messageReply = $message['img_url'] == ''
+            ? $chatGPT->askChatGPT($message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -163,12 +163,12 @@ class WhatsAppHandler
 
         switch ($messageType) {
 
-            // เคสข้อความ
+                // เคสข้อความ
             case 'text':
                 $messageContent = $messageObject->text->body ?? null;
                 break;
 
-            // เคสรูปภาพหรือ attachment อื่น ๆ
+                // เคสรูปภาพหรือ attachment อื่น ๆ
             case 'image':
                 $messageId = $messageObject->id;
                 $waAccessToken = $userSocial->whatsapp_access_token;

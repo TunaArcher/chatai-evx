@@ -341,7 +341,23 @@ function updateRoomPreview(data) {
   if (messagePreview) {
     const isCustomer = data.send_by === "Customer";
     const prefix = isCustomer ? "" : "คุณ: ";
-    messagePreview.textContent = `${prefix}${data.message}`;
+
+    let messageText = "";
+    if (data.message_type === "text") {
+      messageText =
+        prefix +
+        (data.message.length > 40
+          ? data.message.substring(0, 40) + "..."
+          : data.message);
+    } else if (data.message_type === "image") {
+      messageText = prefix + "ส่งรูปภาพ";
+    } else if (data.message_type === "audio") {
+      messageText = prefix + "ส่งเสียง";
+    } else {
+      messageText = "ข้อความไม่รองรับ";
+    }
+
+    messagePreview.textContent = `${messageText}`;
   }
 
   if (timestamp) timestamp.textContent = "Now";
@@ -385,7 +401,23 @@ function updateRoom(roomElement, data) {
   if (messagePreview) {
     const isCustomer = data.send_by === "Customer";
     const prefix = isCustomer ? "" : "คุณ: ";
-    messagePreview.textContent = `${prefix}${data.message}`;
+
+    let messageText = "";
+    if (data.message_type === "text") {
+      messageText =
+        prefix +
+        (data.message.length > 40
+          ? data.message.substring(0, 40) + "..."
+          : data.message);
+    } else if (data.message_type === "image") {
+      messageText = prefix + "ส่งรูปภาพ";
+    } else if (data.message_type === "audio") {
+      messageText = prefix + "ส่งเสียง";
+    } else {
+      messageText = "ข้อความไม่รองรับ";
+    }
+
+    messagePreview.textContent = `${messageText}`;
   }
 
   if (timestamp) timestamp.textContent = "Now";
@@ -464,7 +496,7 @@ function createNewRoom(data) {
         </span>
       </div>
       <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-        <h6 class="my-0 fw-medium text-dark fs-14">${displayName}
+        <h6 class="my-0 fw-medium fs-14">${displayName}
           <small class="float-end text-muted fs-11">Now</small>
         </h6>
         <p class="text-muted mb-0">
