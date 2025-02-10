@@ -274,6 +274,8 @@
     </div>
     <!--end Rightbar/offcanvas-->
     <!--end Rightbar-->
+
+    <?php echo view('/partials/copyright'); ?>
 </div>
 
 <div class="modal fade" id="exampleModalDefault" tabindex="-1" role="dialog" aria-labelledby="exampleModalDefaultLabel" aria-hidden="true">
@@ -335,20 +337,20 @@
                                     <p class="mb-0">Facebook</p>
                                 </div>
                                 <!-- WhatsApp -->
-                                <div class="radio-item" data-value="WhatsApp">
+                                <div class="radio-item disabled" data-value="WhatsApp">
                                     <div class="radio-icon">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png" alt="WhatsApp">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <p class="mb-0">WhatsApp</p>
+                                    <p class="mb-0">WhatsApp (In development)</p>
                                 </div>
                                 <!-- Instagram -->
-                                <div class="radio-item" data-value="Instagram">
+                                <div class="radio-item disabled" data-value="Instagram">
                                     <div class="radio-icon">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
                                         <div class="checkmark"><i class="fas fa-check"></i></div>
                                     </div>
-                                    <p class="mb-0">Instagram</p>
+                                    <p class="mb-0">Instagram (In development)</p>
                                 </div>
                                 <!-- Tiktok -->
                                 <div class="radio-item disabled" data-value="Tiktok">

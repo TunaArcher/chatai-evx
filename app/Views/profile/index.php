@@ -129,7 +129,7 @@
                                     <div class="row d-flex justify-content-center">
                                         <div class="col">
                                             <div class=" ">
-                                                <a href="#" class="fw-bold me-1 text-warning">Active Subscription</a>
+                                                <a href="#" class="fw-bold me-1 text-warning">Active Subscription (ชำระเงินไม่สำเร็จ)</a>
                                                 <hr>
                                                 <?php echo $subscription->name; ?>
                                             </div>
@@ -231,5 +231,6 @@
     <!--end Rightbar-->
     <!--Start Footer-->
 
+    <?php echo view('/partials/copyright'); ?>
 </div>
 <!-- end page content -->

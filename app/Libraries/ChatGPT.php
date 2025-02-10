@@ -18,13 +18,12 @@ class ChatGPT
     private $openAIURL;
     private $channelAccessToken;
     private $debug = false;
-    private $accessToekn;
+    private $accessToken;
 
     public function __construct($config)
     {
         $this->baseURL = 'https://api.openai.com/v1/chat/completions';
-        $this->openAIURL = 'https://api.openai.com/v1/';
-        $this->accessToekn = $config['GPTToken'];
+        $this->accessToken = $config['GPTToken'];
         $this->http = new Client();
     }
 
@@ -43,7 +42,7 @@ class ChatGPT
 
             $endPoint = $this->baseURL . '/message';
             $headers = [
-                'Authorization' => "Bearer " . $this->accessToekn,
+                'Authorization' => "Bearer " . $this->accessToken,
                 'Content-Type' => 'application/json',
             ];
 
@@ -82,37 +81,37 @@ class ChatGPT
         }
     }
 
-    public function askChatGPT($question, $message_setting)
-    {
-        try {
+    // public function _askChatGPT($question, $message_setting)
+    // {
+    //     try {
 
-            // log_message("info", "message_setting: " . $message_user);
-            $response = $this->http->post($this->baseURL, [
-                'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,
-                    'Content-Type'  => 'application/json',
-                ],
-                'json' => [
-                    'model' => 'gpt-4o',
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => $message_setting
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
-                        ]
-                    ]
-                ]
-            ]);
+    //         // log_message("info", "message_setting: " . $message_user);
+    //         $response = $this->http->post($this->baseURL, [
+    //             'headers' => [
+    //                 'Authorization' => "Bearer " . $this->accessToken,
+    //                 'Content-Type'  => 'application/json',
+    //             ],
+    //             'json' => [
+    //                 'model' => 'gpt-4o',
+    //                 'messages' => [
+    //                     [
+    //                         'role' => 'system',
+    //                         'content' => $message_setting
+    //                     ],
+    //                     [
+    //                         'role' => 'user',
+    //                         'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+    //                     ]
+    //                 ]
+    //             ]
+    //         ]);
 
-            $responseBody = json_decode($response->getBody(), true);
-            return $responseBody['choices'][0]['message']['content'];
-        } catch (Exception $e) {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
+    //         $responseBody = json_decode($response->getBody(), true);
+    //         return $responseBody['choices'][0]['message']['content'];
+    //     } catch (Exception $e) {
+    //         return 'Error: ' . $e->getMessage();
+    //     }
+    // }
 
     public function gennaratePromtChatGPT($question)
     {
@@ -120,7 +119,7 @@ class ChatGPT
 
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
                 ],
                 'json' => [
@@ -151,7 +150,7 @@ class ChatGPT
 
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
                 ],
                 'json' => [
@@ -176,44 +175,44 @@ class ChatGPT
         }
     }
 
-    public function askChatGPTimg($question,  $message_setting, $file_name)
-    {
+    // public function _askChatGPTimg($question,  $message_setting, $file_name)
+    // {
 
-        $file_data = $this->updateArrFileLink($file_name);
-        // log_message("info", "message_data_json_php: " . $file_data);
-        try {
-            $response = $this->http->post($this->baseURL, [
-                'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,
-                    'Content-Type'  => 'application/json',
-                ],
-                'json' => [
-                    'model' => 'gpt-4o',
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => $message_setting
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
-                                ],
-                                $file_data
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
+    //     $file_data = $this->_updateArrFileLink($file_name);
+    //     // log_message("info", "message_data_json_php: " . $file_data);
+    //     try {
+    //         $response = $this->http->post($this->baseURL, [
+    //             'headers' => [
+    //                 'Authorization' => "Bearer " . $this->accessToken,
+    //                 'Content-Type'  => 'application/json',
+    //             ],
+    //             'json' => [
+    //                 'model' => 'gpt-4o',
+    //                 'messages' => [
+    //                     [
+    //                         'role' => 'system',
+    //                         'content' => $message_setting
+    //                     ],
+    //                     [
+    //                         'role' => 'user',
+    //                         'content' => [
+    //                             [
+    //                                 'type' => 'text',
+    //                                 'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+    //                             ],
+    //                             $file_data
+    //                         ]
+    //                     ]
+    //                 ]
+    //             ]
+    //         ]);
 
-            $responseBody = json_decode($response->getBody(), true);
-            return $responseBody['choices'][0]['message']['content'];
-        } catch (Exception $e) {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
+    //         $responseBody = json_decode($response->getBody(), true);
+    //         return $responseBody['choices'][0]['message']['content'];
+    //     } catch (Exception $e) {
+    //         return 'Error: ' . $e->getMessage();
+    //     }
+    // }
 
     public function askChatGPTimgTraning($question,  $message_setting, $file_name)
     {
@@ -221,7 +220,7 @@ class ChatGPT
         try {
             $response = $this->http->post($this->baseURL, [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,
+                    'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
                 ],
                 'json' => [
@@ -257,60 +256,139 @@ class ChatGPT
         }
     }
 
-    private function updateArrFileLink($file_names)
+    // private function _updateArrFileLink($file_names)
+    // {
+    //     $file_data = [];
+
+    //     $file_names_splites = explode(',', $file_names);
+
+    //     foreach ($file_names_splites as $file_names_splite) {
+
+    //         $file_data +=  [
+    //             'type' => 'image_url',
+    //             'image_url' => [
+    //                 'url' => $file_names_splite
+    //             ]
+    //         ];
+    //     }
+
+    //     return  $file_data;
+    // }
+
+    /*********************************************************************
+     * 1. Completions
+     */
+
+    private function sendRequest($model, $messages)
     {
-        $file_data = [];
-
-        $file_names_splites = explode(',', $file_names);
-
-        foreach ($file_names_splites as $file_names_splite) {
-
-            $file_data +=  [
-                'type' => 'image_url',
-                'image_url' => [
-                    'url' => $file_names_splite
-                ]
-            ];
-        }
-
-        return  $file_data;
-    }
-
-
-    public function uploadFileAI()
-    {
-
-        // ไฟล์ที่ต้องการอัปโหลด
-        $filePath = 'revenue-forecast.csv';
-
         try {
-            // ส่งคำร้องไปที่ OpenAI API
-            $response = $this->http->post($this->openAIURL. 'files', [
+
+            $response = $this->http->post($this->baseURL, [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToekn,               
+                    'Authorization' => "Bearer {$this->accessToken}",
+                    'Content-Type'  => 'application/json',
                 ],
-                'multipart' => [
-                    [
-                        'name' => 'purpose',
-                        'contents' => 'assistants'
-                    ],
-                    [
-                        'name' => 'file',
-                        'contents' => fopen($filePath, 'r'),
-                        'filename' => basename($filePath)
-                    ]
+                'json' => [
+                    'model' => $model,
+                    'messages' => $messages,
                 ]
             ]);
 
-            // แปลงผลลัพธ์เป็น JSON
-            $responseData = json_decode($response->getBody(), true);
-            return $responseData;
-        } catch (RequestException $e) {
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'] ?? 'No response';
+        } catch (\Exception $e) {
+            log_message('error', 'ChatGPT::sendRequest error {message}', ['message' => $e->getMessage()]);
             return 'Error: ' . $e->getMessage();
         }
     }
 
-    public function createAssistantsFileAI() {}
+    public function askChatGPT($roomId, $question, $messageSetting = null, $fileNames = null)
+    {
+        if (!$messageSetting) $messageSetting = '';
 
-    public function createTreadFileAI() {}
+        // เพิ่ม System Prompt เป็นข้อความเริ่มต้น
+        $messages = [
+            ['role' => 'system', 'content' => $messageSetting]
+        ];
+
+        // ดึงประวัติแชทจาก Cache
+        $chatHistory = $this->getChatHistory($roomId);
+
+        // แปลงประวัติแชทให้อยู่ในรูปแบบที่ GPT รองรับ
+        foreach ($chatHistory as &$msg) {
+            // ตรวจสอบว่า content เป็น array หรือ string
+            if (is_array($msg['content'])) {
+                if (isset($msg['content'][0]['type']) && $msg['content'][0]['type'] === 'text') {
+                    $msg['content'] = $msg['content'][0]['text']; // ดึงข้อความออกมา
+                } else {
+                    $msg['content'] = "[มีไฟล์แนบ]"; // หากเป็นรูปภาพให้ระบุว่าเป็นไฟล์แนบ
+                }
+            }
+        }
+
+        // เพิ่มข้อความของผู้ใช้
+        $userContent = [['type' => 'text', 'text' => $question]];
+
+        // ถ้ามีไฟล์ภาพ ให้เพิ่มข้อมูลภาพเข้าไป
+        if (!empty($fileNames)) {
+            $imageData = $this->formatImageLinks($fileNames);
+            $userContent = array_merge($userContent, $imageData);
+        }
+
+        // เพิ่มข้อความของผู้ใช้ลงไปในแชท
+        $chatHistory[] = [
+            'role' => 'user',
+            'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
+        ];
+
+        // รวมประวัติแชทที่แก้ไขแล้วกับ System Prompt
+        $messages = array_merge($messages, $chatHistory);
+
+        // ส่งข้อความไปยัง GPT
+        $response = $this->sendRequest('gpt-4o', $messages);
+
+        // เพิ่มข้อความของ AI ลงในประวัติแชท
+        $chatHistory[] = [
+            'role' => 'assistant',
+            'content' => $response
+        ];
+
+        // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
+        $this->saveChatHistory($roomId, $chatHistory);
+
+        return $response;
+    }
+
+    private function getChatHistory($roomId)
+    {
+        $cache = \Config\Services::cache();
+        $cacheKey = "chat_history_{$roomId}";
+
+        // ดึงแชทเก่าจาก Cache
+        $chatHistory = $cache->get($cacheKey);
+
+        return $chatHistory ?: [];
+    }
+
+    private function saveChatHistory($roomId, $chatHistory)
+    {
+        $cache = \Config\Services::cache();
+        $cacheKey = "chat_history_{$roomId}";
+
+        // จำกัดแชทให้เหลือ 15 ข้อความล่าสุด
+        $chatHistory = array_slice($chatHistory, -15);
+
+        // บันทึกลง Cache (หมดอายุใน 7วัน)
+        $cache->save($cacheKey, $chatHistory, 604800);
+    }
+
+    private function formatImageLinks($fileNames)
+    {
+        return array_map(function ($fileName) {
+            return [
+                'type' => 'image_url',
+                'image_url' => ['url' => trim($fileName)]
+            ];
+        }, array_filter(explode(',', $fileNames), 'strlen'));
+    }
 }

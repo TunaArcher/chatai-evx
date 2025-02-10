@@ -118,8 +118,22 @@ class WebhookController extends BaseController
 
                 // กรณีเปิดใช้งานให้ AI ช่วยตอบ
                 if ($userSocial->ai === 'on' && $messageRoom) {
-                    // ส่งข้อความไปที่ RabbitMQ แทนการรอ 5 วินาที
-                    $this->rabbitMQPublisher->publishMessage($messageRoom, $userSocial);
+
+                    $user = $this->userModel->getUserByID($userSocial->user_id);
+                    $subscription = $this->subscriptionModel->getUserSubscription($user->id);
+
+                    if (!$subscription) {
+                        if ($user->free_request_limit < 10) {
+                            // ส่งข้อความไปที่ RabbitMQ แทนการรอ 5 วินาที
+                            $this->rabbitMQPublisher->publishMessage($messageRoom, $userSocial);
+                            $this->userModel->updateUserByID($user->id, [
+                                'free_request_limit' => $user->free_request_limit + 1
+                            ]);
+                        }
+                    } elseif ($subscription->status == 'active' && $subscription->current_period_end > time()) {
+                        // ส่งข้อความไปที่ RabbitMQ แทนการรอ 5 วินาที
+                        $this->rabbitMQPublisher->publishMessage($messageRoom, $userSocial);
+                    }
                 }
 
                 return $this->response->setJSON(['status' => 'success']);

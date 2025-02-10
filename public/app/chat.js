@@ -116,7 +116,7 @@ function displayMessages(data) {
 // -----------------------------------------------------------------------------
 function sendMessage() {
   const message = chatInput.value.trim();
-  const fileReply = $('#file-img-reply')[0].files[0]
+  const fileReply = $("#file-img-reply")[0].files[0];
 
   if (!currentRoomId) {
     console.warn("กรุณาใส่ข้อความก่อนส่ง");
@@ -238,6 +238,11 @@ function appendMessageToGroup(message, messageType) {
         imgElement.classList.add("chat-image");
         userChatDiv.appendChild(imgElement);
       });
+    } else if (messageType === "audio") {
+      const audioElement = document.createElement("audio");
+      audioElement.controls = true;
+      audioElement.src = message;
+      userChatDiv.appendChild(audioElement);
     }
   }
 }
@@ -297,6 +302,11 @@ function createMessageBubble(msg, messageTime) {
     } catch (error) {
       console.error("Error parsing image message:", error);
     }
+  } else if (msg.message_type === "audio") {
+    const audioElement = document.createElement("audio");
+    audioElement.controls = true;
+    audioElement.src = msg.message;
+    userChatDiv.appendChild(audioElement);
   }
 
   const chatTimeDiv = document.createElement("div");
@@ -331,7 +341,23 @@ function updateRoomPreview(data) {
   if (messagePreview) {
     const isCustomer = data.send_by === "Customer";
     const prefix = isCustomer ? "" : "คุณ: ";
-    messagePreview.textContent = `${prefix}${data.message}`;
+
+    let messageText = "";
+    if (data.message_type === "text") {
+      messageText =
+        prefix +
+        (data.message.length > 40
+          ? data.message.substring(0, 40) + "..."
+          : data.message);
+    } else if (data.message_type === "image") {
+      messageText = prefix + "ส่งรูปภาพ";
+    } else if (data.message_type === "audio") {
+      messageText = prefix + "ส่งเสียง";
+    } else {
+      messageText = "ข้อความไม่รองรับ";
+    }
+
+    messagePreview.textContent = `${messageText}`;
   }
 
   if (timestamp) timestamp.textContent = "Now";
@@ -369,13 +395,29 @@ function addOrUpdateRoom(data) {
 
 // ฟังก์ชันอัปเดตห้องที่มีอยู่
 function updateRoom(roomElement, data) {
-  const messagePreview = roomElement.querySelector(".text-primary");
+  const messagePreview = roomElement.querySelector(".text-dark");
   const timestamp = roomElement.querySelector("small.float-end");
 
   if (messagePreview) {
     const isCustomer = data.send_by === "Customer";
     const prefix = isCustomer ? "" : "คุณ: ";
-    messagePreview.textContent = `${prefix}${data.message}`;
+
+    let messageText = "";
+    if (data.message_type === "text") {
+      messageText =
+        prefix +
+        (data.message.length > 40
+          ? data.message.substring(0, 40) + "..."
+          : data.message);
+    } else if (data.message_type === "image") {
+      messageText = prefix + "ส่งรูปภาพ";
+    } else if (data.message_type === "audio") {
+      messageText = prefix + "ส่งเสียง";
+    } else {
+      messageText = "ข้อความไม่รองรับ";
+    }
+
+    messagePreview.textContent = `${messageText}`;
   }
 
   if (timestamp) timestamp.textContent = "Now";
@@ -397,6 +439,22 @@ function createNewRoom(data) {
     ? data.sender_avatar
     : data.receiver_avatar || "default-avatar.png";
   const displayName = isCustomer ? data.sender_name : data.receiver_name;
+
+  // ตรวจสอบประเภทของ message_type และจำกัดความยาวข้อความ
+  let messageText = "";
+  if (data.message_type === "text") {
+    messageText =
+      prefix +
+      (data.message.length > 40
+        ? data.message.substring(0, 40) + "..."
+        : data.message);
+  } else if (data.message_type === "image") {
+    messageText = prefix + "ส่งรูปภาพ";
+  } else if (data.message_type === "audio") {
+    messageText = prefix + "ส่งเสียง";
+  } else {
+    messageText = "ข้อความไม่รองรับ";
+  }
 
   // สร้างองค์ประกอบ DOM สำหรับห้อง
   const newRoom = document.createElement("div");
@@ -438,11 +496,11 @@ function createNewRoom(data) {
         </span>
       </div>
       <div class="flex-grow-1 ms-2 text-truncate align-self-center">
-        <h6 class="my-0 fw-medium text-dark fs-14">${displayName}
+        <h6 class="my-0 fw-medium fs-14">${displayName}
           <small class="float-end text-muted fs-11">Now</small>
         </h6>
         <p class="text-muted mb-0">
-          <span class="text-primary">${prefix}${data.message}</span>
+          <span class="text-dark">${messageText}</span>
         </p>
       </div>
     </a>`;

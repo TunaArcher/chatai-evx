@@ -166,9 +166,11 @@
     <!-- Footer -->
     <div class="footer">
         <p title="UnityX Co.,Ltd.">
-            &copy; 2025 บริษัท ยูนิตี้เอ็กซ์ จํากัด
+            &copy; <script>
+                document.write(new Date().getFullYear())
+            </script> บริษัท ยูนิตี้เอ็กซ์ จํากัด
             <br>
-            <a href="#">เงื่อนไขการใช้งาน</a> | <a href="#">นโยบายความเป็นส่วนตัว</a>
+            <a href="#">Terms of Service</a> | <a href="<?php echo base_url('/policy'); ?>">Privacy Policy</a>
         </p>
     </div>
 

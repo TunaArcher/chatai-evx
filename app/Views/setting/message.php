@@ -221,6 +221,8 @@
 
         </div><!-- end col -->
     </div><!--end card-->
+
+    <?php echo view('/partials/copyright'); ?>
 </div><!-- container -->
 
 <div class="modal fade" id="modal-loading" style="display: none;">

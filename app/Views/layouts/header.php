@@ -597,7 +597,7 @@
                             <p class="text-muted mb-0">เชื่อมต่อ Social ได้ 5 Connects</p>
                             <p class="text-muted mb-3">ฟรี AI 10 Request / ต่อวัน</p>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-secondary" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 10%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
                             </div>
                             <a data-tg-order="4" data-tg-tour='เพื่อปลดล็อคความสามารถ สามารถใช้ได้ทุกฟีเจอร์ โนลิมิต' data-tg-title="เพิ่มความสามารถ 🎉" href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#upgradeYourPlan">อัพเกรด</a>
                         </div>

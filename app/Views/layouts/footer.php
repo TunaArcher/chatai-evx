@@ -14,19 +14,19 @@
         }
 
         .selected-plan {
-            border: 2px solid #007bff !important;
+            border: 2px solid #00c7e6 !important;
         }
 
         .btn-add-plan {
             font-weight: bold;
             background: #f8f9fa;
-            color: #007bff;
-            border: 1px solid #007bff;
+            color: #00c7e6;
+            border: 1px solid #00c7e6;
             border-radius: 20px;
         }
 
         .btn-add-plan:hover {
-            background: #007bff;
+            background: #00c7e6;
             color: #fff;
         }
 
@@ -39,7 +39,7 @@
         .total-price {
             font-size: 24px;
             font-weight: bold;
-            color: #007bff;
+            color: #00c7e6;
         }
 
         .payment-icons img {
@@ -58,13 +58,32 @@
                     <div class="container mt-3">
                         <h1 class="text-center font-weight-bold mb-4">Upgrade your plan</h1>
 
+                        <style>
+                            .plan-card ul {
+                                list-style: none;
+                                /* เอาจุดหน้ารายการออก */
+                                padding: 0;
+                                /* ปรับระยะขอบ */
+                            }
+
+                            .plan-card ul li {
+                                margin-bottom: 8px;
+                                /* เพิ่มช่องว่างระหว่างแต่ละรายการ */
+                            }
+
+                            .plan-card ul li i {
+                                margin-right: 8px;
+                                /* เพิ่มระยะห่างระหว่างไอคอนกับข้อความ */
+                            }
+                        </style>
+                        
                         <div class="row">
                             <!-- Left Section: Plans -->
                             <div class="col-md-8">
                                 <!-- Marketing Automation -->
                                 <div class="plan-card" id="plan-marketing-automation">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="font-weight-bold">AutoCon X Plan เริ่มต้น</h4>
+                                        <h4 class="font-weight-bold">AutoCon X เริ่มต้น</h4>
                                         <span class="font-weight-bold text-primary" style="font-size: 18px;">$19/เดือน</span>
                                     </div>
                                     <ul>
@@ -77,34 +96,49 @@
                                 <!-- Manychat AI -->
                                 <div class="plan-card" id="plan-manychat-ai">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="font-weight-bold">AutoCon X Plan สุดคุ้ม <span class="badge rounded-pill bg-success">Hot แนะนำ</span></h4>
+                                        <h4 class="font-weight-bold">AutoCon X Pro <span class="badge rounded-pill bg-success">Hot แนะนำ</span></h4>
                                         <span class="font-weight-bold text-primary" style="font-size: 18px;">$9/เดือน</span>
                                     </div>
                                     <ul>
-                                        <li>สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ไม่จำกัด</li>
-                                        <li>สิทธิการใช้งาน AutoCon X AI</li>
-                                        <li>เพิ่มความแม่นยำในการตอบกลับด้วย AutoCon X AI ที่สามารถตรวจจับเจตนาของข้อความโดยอัตโนมัติ เพื่อการตอบสนองที่ดีที่สุด</li>
-                                        <li>ให้ AI Step ช่วยจัดระเบียบการสนทนา เพิ่มยอดขาย และกระตุ้นลูกค้าที่ไม่ตอบกลับ</li>
-                                        <li>หากคุณลำบากกับการเขียนข้อความ ให้ AI Text Improver ช่วยเขียน ปรับแต่ง และจัดสไตล์ข้อความให้คุณอย่างง่ายดาย</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ไม่จำกัด</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> สิทธิการใช้งาน AutoCon X AI</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> เพิ่มความแม่นยำในการตอบกลับด้วย AutoCon X AI ที่สามารถตรวจจับเจตนาของข้อความโดยอัตโนมัติ เพื่อการตอบสนองที่ดีที่สุด</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> ให้ AI Step ช่วยจัดระเบียบการสนทนา เพิ่มยอดขาย และกระตุ้นลูกค้าที่ไม่ตอบกลับ</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> หากคุณลำบากกับการเขียนข้อความ ให้ AI Text Improver ช่วยเขียน ปรับแต่ง และจัดสไตล์ข้อความให้คุณอย่างง่ายดาย</li>
                                     </ul>
-                                    <button class="btn btn-add-plan handleBtnPlan" id="plan-hot" data-plan-id="2" data-plan-name="AutoCon X Plan สุดคุ้ม" data-price="9">เลือก</button>
+                                    <button class="btn btn-add-plan handleBtnPlan" id="plan-pro" data-plan-id="2" data-plan-name="AutoCon X Pro" data-price="9">เลือก</button>
                                 </div>
 
                                 <!-- Inbox -->
-                                <div class="plan-card" id="plan-inbox">
+                                <!-- <div class="plan-card" id="plan-inbox">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="font-weight-bold">AutoCon X Plan Enterprise</h4>
                                         <span class="font-weight-bold text-primary"></span>
                                     </div>
                                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto doloribus molestiae aliquid deleniti, fugit consectetur. Maxime omnis sint delectus at nihil reprehenderit, minus sapiente debitis optio vitae cupiditate non voluptate!</p>
                                     <button class="btn btn-add-plan handleBtnPlan disabled">ติดต่อผู้ให้บริการ</button>
+                                </div> -->
+
+                                <div class="plan-card" id="plan-manychat-ai">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="font-weight-bold">AutoCon X Pro โปรรายปี <span class="badge rounded-pill gradient-animate-btn ">ประหยัดเพิ่ม 17%</span></h4>
+                                        <span class="font-weight-bold text-primary" style="font-size: 18px;">$90/ปี</span>
+                                    </div>
+                                    <ul>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> สามารถเชื่อมต่อ Social ทุก ๆ Platform ได้ไม่จำกัด</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> สิทธิการใช้งาน AutoCon X AI</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> เพิ่มความแม่นยำในการตอบกลับด้วย AutoCon X AI ที่สามารถตรวจจับเจตนาของข้อความโดยอัตโนมัติ เพื่อการตอบสนองที่ดีที่สุด</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> ให้ AI Step ช่วยจัดระเบียบการสนทนา เพิ่มยอดขาย และกระตุ้นลูกค้าที่ไม่ตอบกลับ</li>
+                                        <li><i class="fa-solid fa-check-circle" style="color: #00c7e6;"></i> หากคุณลำบากกับการเขียนข้อความ ให้ AI Text Improver ช่วยเขียน ปรับแต่ง และจัดสไตล์ข้อความให้คุณอย่างง่ายดาย</li>
+                                    </ul>
+                                    <button class="btn btn-add-plan handleBtnPlan" id="plan-proyear" data-plan-id="3" data-plan-name="AutoCon X Pro โปรรายปี" data-price="90">เลือก</button>
                                 </div>
                             </div>
 
                             <!-- Right Section: Order Summary -->
                             <div class="col-md-4">
                                 <div class="order-summary">
-                                    <h4 class="font-weight-bold">Order Summary</h4>
+                                    <h4 class="font-weight-bold">รายการ</h4>
                                     <ul id="selected-plans" class="list-unstyled">
                                         <!-- Selected plans will be added dynamically -->
                                     </ul>
@@ -266,6 +300,7 @@
         });
 
         if (!window.subscriptionStatus != 'active') {
+
             function updateProgressBar(freeRequestLimit) {
                 // Calculate the width percentage (assuming max is 10)
                 let widthPercentage = (freeRequestLimit / 10) * 100;
@@ -274,7 +309,13 @@
                 let progressBar = $(".progress-bar");
                 progressBar.css("width", widthPercentage + "%");
                 progressBar.attr("aria-valuenow", freeRequestLimit);
-                progressBar.text(freeRequestLimit);
+
+                // Change text based on freeRequestLimit value
+                if (freeRequestLimit >= 10) {
+                    progressBar.text("ครบจำนวน Request แล้ว");
+                } else {
+                    progressBar.text(freeRequestLimit);
+                }
             }
 
             // AJAX request to fetch free_request_limit

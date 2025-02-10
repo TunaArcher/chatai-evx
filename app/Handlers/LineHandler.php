@@ -39,7 +39,7 @@ class LineHandler
         $input = $this->prepareWebhookInput($input, $userSocial);
 
         // ดึงข้อมูล Platform ที่ Webhook เข้ามา
-        // ตรวจสอบว่าเป็น Message ข้อความ หรือ รูปภาพ และจัดการ
+        // ตรวจสอบว่าเป็น Message ข้อความ, รูปภาพ, เสียง และจัดการ
         $message = $this->processMessage($input, $userSocial);
 
         // ตรวจสอบหรือสร้างลูกค้า
@@ -62,7 +62,6 @@ class LineHandler
 
     public function handleReplyByManual($input)
     {
-        // ข้อความตอบกลับ // TODO:: ทำให้รองรับการตอบแบบรูปภาพ
         $messageReply = $input['message'];
         $messageType = $input['message_type'];
 
@@ -75,7 +74,7 @@ class LineHandler
         $this->sendMessageToPlatform(
             $platformClient,
             $UID,
-            $messageType, 
+            $messageType,
             $messageReply,
             $messageRoom,
             $userID,
@@ -96,16 +95,16 @@ class LineHandler
 
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
         $message = $this->getUserContext($messages);
+
         // log_message("info", "message_type_down: " . $message['message_type']);
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
-        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $dataMessage = $dataMessage ? $dataMessage->message : '';
 
-        $messageReply = $message['img_url'] == '' ?  $chatGPT->askChatGPT($message['message'], $dataMessage) : $chatGPT->askChatGPTimg($message['message'], $dataMessage, $message['img_url']);
-
-        // $messageReply = $chatGPT->askChatGPT($message['message'], $dataMessage);
-
+        $messageReply = $message['img_url'] == ''
+            ? $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage)
+            : $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage, $message['img_url']);
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
@@ -128,6 +127,8 @@ class LineHandler
 
     private function getUserContext($messages)
     {
+        helper('function');
+
         $contextText = '';
         $imageUrl = '';
 
@@ -138,6 +139,9 @@ class LineHandler
                     break;
                 case 'image':
                     $imageUrl .= $message->message . ',';
+                    break;
+                case 'audio':
+                    $contextText .= convertAudioToText($message->message, $this->platform) . ' ';
                     break;
             }
         }
@@ -186,7 +190,38 @@ class LineHandler
                 $fileName = uniqid('line_') . '.jpg';
 
                 // อัปโหลดไปยัง Spaces
-                $message = uploadToSpaces($fileContent, $fileName);
+                $message = uploadToSpaces(
+                    $fileContent,
+                    $fileName,
+                    $messageType,
+                    $this->platform
+                );
+
+                break;
+
+                // เคสเสียง
+            case 'audio':
+                $messageType = 'audio';
+
+                $messageId = $event->message->id;
+                $lineAccessToken = $userSocial->line_channel_access_token;
+
+                $url = "https://api-data.line.me/v2/bot/message/{$messageId}/content";
+                $headers = ["Authorization: Bearer {$lineAccessToken}"];
+
+                // ดึงข้อมูลไฟล์จาก Webhook LINE
+                $fileContent = fetchFileFromWebhook($url, $headers);
+
+                // ตั้งชื่อไฟล์แบบสุ่ม
+                $fileName = uniqid('line_') . '.m4a';
+
+                // อัปโหลดไปยัง DigitalOcean Spaces
+                $message = uploadToSpaces(
+                    $fileContent,
+                    $fileName,
+                    $messageType,
+                    $this->platform
+                );
 
                 break;
 
@@ -388,5 +423,36 @@ class LineHandler
             ]
         }'
         );
+
+        // Audio
+        //         return json_decode(
+        //             '{
+        //     "destination": "U3cc700ae815f9f7e37ea930b7b66b2c1",
+        //     "events": [
+        //         {
+        //             "type": "message",
+        //             "message": {
+        //                 "type": "audio",
+        //                 "id": "546929768709488706",
+        //                 "duration": 7534,
+        //                 "contentProvider": {
+        //                     "type": "line"
+        //                 }
+        //             },
+        //             "webhookEventId": "01JKD2G7T7HGHNR79HYQYR6E71",
+        //             "deliveryContext": {
+        //                 "isRedelivery": false
+        //             },
+        //             "timestamp": 1738826850049,
+        //             "source": {
+        //                 "type": "user",
+        //                 "userId": "U793093e057eb0dcdecc34012361d0217"
+        //             },
+        //             "replyToken": "bd94a1406d99401e8a6934635ef6e317",
+        //             "mode": "active"
+        //         }
+        //     ]
+        // }'
+        //         );
     }
 }

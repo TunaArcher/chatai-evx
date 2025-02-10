@@ -62,6 +62,7 @@ class ChatController extends BaseController
             $prefix = '';
             if ($lastMessage->send_by == 'Admin') $prefix = 'คุณ: ';
             $room->last_message = $lastMessage->message ?  $prefix . $lastMessage->message : '';
+            $room->message_type = $lastMessage->message ?  $lastMessage->message_type : '';
             $room->last_time = $lastMessage->created_at ?? '';
         }
 
@@ -118,10 +119,9 @@ class ChatController extends BaseController
         $message_type = "text";
 
 
-        if($message == "")
-        {
+        if ($message == "") {
             $message_type = 'image';
-            $fileName =  $userID .'_'. $file_img->getRandomName();
+            $fileName =  $userID . '_' . $file_img->getRandomName();
             $file_img->move('uploads', $fileName);
             $file_Path = 'uploads/' . $fileName;
             $fileContent = fopen($file_Path, 'r');
@@ -133,7 +133,7 @@ class ChatController extends BaseController
             }
         }
 
- 
+
         $input = [
             'message' => $message,
             'message_type' => $message_type,

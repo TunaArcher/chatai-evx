@@ -527,5 +527,6 @@
 
     <?php } ?>
 
+    <?php echo view('/partials/copyright'); ?>
 </div>
 <!-- end page content -->
