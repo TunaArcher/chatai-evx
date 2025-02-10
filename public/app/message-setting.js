@@ -1,23 +1,25 @@
 ws.onmessage = (event) => {
   let data = JSON.parse(event.data);
   if (data.receiver_id === window.userID) {
-      ntf = new Notyf({
-          position: {
-              x: "right",
-              y: "bottom",
-          },
-          types: [{
-              type: "message",
-              background: "rgba(0,0,0,.7)",
-              color: "#000",
-              icon: `<img width="24" src="${data.sender_avatar}">`,
-          }, ],
-      });
-
-      ntf.open({
+    ntf = new Notyf({
+      position: {
+        x: "right",
+        y: "bottom",
+      },
+      types: [
+        {
           type: "message",
-          message: `ส่งข้อความใหม่: ${data.message}`,
-      });
+          background: "rgba(0,0,0,.7)",
+          color: "#000",
+          icon: `<img width="24" src="${data.sender_avatar}">`,
+        },
+      ],
+    });
+
+    ntf.open({
+      type: "message",
+      message: `ส่งข้อความใหม่: ${data.message}`,
+    });
   }
 };
 
@@ -193,7 +195,6 @@ function sendTestTraning(data) {
         });
       },
       complete: function (response) {
-
         $("#chat_test_training").val("");
         $("#modal-loading").modal("hide");
 
@@ -209,7 +210,7 @@ function sendTestTraning(data) {
               "</div>" +
               "</div>"
           );
-        } else if( testing_send.message == ""){
+        } else if (testing_send.message == "") {
           $("#chat-detail-training-test").append(
             '<div class="d-flex flex-row-reverse">' +
               '<div class="me-1 chat-box w-100 reverse">' +
@@ -297,4 +298,42 @@ function readURLImgTestAI(input) {
 function resetImgTestAI() {
   $("#file_img_ask").val("");
   $("#div_img").hide();
+}
+
+function fileTraining() {
+  var dataTraning = new FormData();
+
+  if ($("#txt_instructions").val() == "") {
+    notyf_message.error("ไม่อนุญาติให้มีค่าว่าง");
+    return;
+  } else if ($("#file_training")[0].files[0] == null) {
+    notyf_message.error("กรุณาเพิ่ม file");
+    return;
+  }
+
+  dataTraning.append("message", $("#txt_instructions").val());
+  dataTraning.append("file_training", $("#file_training")[0].files[0]);
+  dataTraning.append(
+    "switch_open_file_training",
+    $("#switch_open_file_training")[0].checked
+  );
+
+  $.ajax({
+    url: `${serverUrl}/message-training-file`,
+    method: "POST",
+    async: true,
+    data: dataTraning,
+    dataType: "json",
+    cache: false,
+    contentType: false,
+    processData: false,
+    beforeSend: function () {
+      // $("#modal-loading").modal("show", {
+      //   backdrop: "static",
+      //   keyboard: false,
+      // });
+    },
+    complete: function (response) {},
+    success: function (response) {},
+  });
 }

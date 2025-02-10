@@ -15,6 +15,7 @@ class ChatGPT
 {
     private $http;
     private $baseURL;
+    private $openAIURL;
     private $channelAccessToken;
     private $debug = false;
     private $accessToekn;
@@ -22,6 +23,7 @@ class ChatGPT
     public function __construct($config)
     {
         $this->baseURL = 'https://api.openai.com/v1/chat/completions';
+        $this->openAIURL = 'https://api.openai.com/v1/';
         $this->accessToekn = $config['GPTToken'];
         $this->http = new Client();
     }
@@ -273,4 +275,42 @@ class ChatGPT
 
         return  $file_data;
     }
+
+
+    public function uploadFileAI()
+    {
+
+        // ไฟล์ที่ต้องการอัปโหลด
+        $filePath = 'revenue-forecast.csv';
+
+        try {
+            // ส่งคำร้องไปที่ OpenAI API
+            $response = $this->http->post($this->openAIURL. 'files', [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToekn,               
+                ],
+                'multipart' => [
+                    [
+                        'name' => 'purpose',
+                        'contents' => 'assistants'
+                    ],
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($filePath, 'r'),
+                        'filename' => basename($filePath)
+                    ]
+                ]
+            ]);
+
+            // แปลงผลลัพธ์เป็น JSON
+            $responseData = json_decode($response->getBody(), true);
+            return $responseData;
+        } catch (RequestException $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function createAssistantsFileAI() {}
+
+    public function createTreadFileAI() {}
 }

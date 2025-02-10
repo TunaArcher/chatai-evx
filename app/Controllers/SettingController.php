@@ -624,4 +624,12 @@ class SettingController extends BaseController
             ->setContentType('application/json')
             ->setJSON($response);
     }
+
+    public function file_training()
+    {
+        $message = $this->request->getPost('message');
+        $file_training = $this->request->getFile('file_training');
+        $switch_load_file = $this->request->getPost('switch_open_file_training');
+
+    }
 }
