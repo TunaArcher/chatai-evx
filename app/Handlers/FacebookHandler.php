@@ -99,8 +99,6 @@ class FacebookHandler
         $messages = $this->messageModel->getMessageNotReplyBySendByAndRoomID('Customer', $messageRoom->id);
         $message = $this->getUserContext($messages);
 
-        // log_message("info", "message_link_facebook: " . $message['img_url']);
-
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
@@ -180,16 +178,16 @@ class FacebookHandler
                     // เคสรูปภาพ
                 case 'image':
                     $messageType = 'image';
+                    $attachments = $inputMessage->attachments ?? [];
+                    $uploadedImages = [];
 
-                    $attachments = [];
+                    foreach ($attachments as $attachment) {
 
-                    foreach ($inputMessage->attachments as $attachment) {
+                        if ($attachment->type === 'image' && $attachment->payload->url) {
 
-                        if ($attachment->type === 'image') {
+                            $fileUrl = $attachment->payload->url;
 
-                            $url = $attachment->payload->url;
-
-                            $fileContent = fetchFileFromWebhook($url);
+                            $fileContent = fetchFileFromWebhook($fileUrl);
 
                             // ตั้งชื่อไฟล์แบบสุ่ม
                             $fileName = uniqid('facebook_') . '.jpg';
@@ -202,11 +200,11 @@ class FacebookHandler
                                 $this->platform
                             );
 
-                            $attachments[] = $message;
+                            $uploadedImages[] = $message;
                         }
                     }
 
-                    $message = json_encode($attachments, JSON_UNESCAPED_SLASHES);
+                    $message = json_encode($uploadedImages, JSON_UNESCAPED_SLASHES);
 
                     break;
 
