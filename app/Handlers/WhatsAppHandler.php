@@ -125,6 +125,8 @@ class WhatsAppHandler
 
     private function getUserContext($messages)
     {
+        helper('function');
+
         $contextText = '';
         $imageUrl = '';
 
@@ -135,6 +137,9 @@ class WhatsAppHandler
                     break;
                 case 'image':
                     $imageUrl .=  $message->message . ',';
+                    break;
+                case 'audio':
+                    $contextText .= convertAudioToText($message->message, $this->platform) . ' ';
                     break;
             }
         }
@@ -149,6 +154,37 @@ class WhatsAppHandler
     // Helper
     // -----------------------------------------------------------------------------
 
+    // private function processMessage($input, $userSocial)
+    // {
+    //     $entry = $input->entry[0] ?? null;
+    //     $changes = $entry->changes[0] ?? null;
+    //     $value = $changes->value ?? null;
+    //     $messageObject = $value->messages[0] ?? null;
+    //     $contact = $value->contacts[0] ?? null;
+
+    //     $UID = $messageObject->from ?? null;
+    //     $messageType = $messageObject->type ?? 'text';
+    //     $name = $contact->profile->name ?? null;
+
+    //     switch ($messageType) {
+
+    //             // เคสข้อความ
+    //         case 'text':
+    //             $messageContent = $messageObject->text->body ?? null;
+    //             break;
+
+    //         default:
+    //             $messageContent = null;
+    //     }
+
+    //     return [
+    //         'UID' => $UID,
+    //         'type' => $messageType,
+    //         'content' => $messageContent,
+    //         'name' => $name,
+    //     ];
+    // }
+
     private function processMessage($input, $userSocial)
     {
         $entry = $input->entry[0] ?? null;
@@ -160,33 +196,62 @@ class WhatsAppHandler
         $UID = $messageObject->from ?? null;
         $messageType = $messageObject->type ?? 'text';
         $name = $contact->profile->name ?? null;
+        $messageContent = null;
 
         switch ($messageType) {
-
                 // เคสข้อความ
             case 'text':
+                $messageType = 'text';
                 $messageContent = $messageObject->text->body ?? null;
                 break;
 
-                // เคสรูปภาพหรือ attachment อื่น ๆ
-                // case 'image':
-                //     $messageId = $messageObject->id;
-                //     $waAccessToken = $userSocial->whatsapp_access_token;
+                // เคสรูปภาพ
+            case 'image':
+                $messageType = 'image';
+                $messageId = $messageObject->image->id ?? null;
+                $whatsappAccessToken = $userSocial->whatsapp_access_token;
 
-                //     $url = "https://graph.facebook.com/v21.0/{$messageId}/content";
-                //     $headers = ["Authorization: Bearer {$waAccessToken}"];
+                $url = "https://graph.facebook.com/v21.0/{$messageId}";
+                $headers = ["Authorization: Bearer {$whatsappAccessToken}"];
 
-                //     // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
-                //     $fileContent = fetchFileFromWebhook($url, $headers);
+                // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
+                $fileContent = fetchFileFromWebhook($url, $headers);
 
-                //     // ตั้งชื่อไฟล์แบบสุ่ม
-                //     $fileName = uniqid('wa_') . '.jpg';
+                // ตั้งชื่อไฟล์แบบสุ่ม
+                $fileName = uniqid('wa_') . '.jpg';
 
-                //     // อัปโหลดไปยัง Spaces
-                //     $messageContent = uploadToSpaces($fileContent, $fileName);
+                // อัปโหลดไปยัง Spaces
+                $messageContent = uploadToSpaces(
+                    $fileContent,
+                    $fileName,
+                    $messageType,
+                    $this->platform
+                );
+                break;
 
-                //     $messageContent = json_encode($messageContent);
-                //     break;
+                // เคสเสียง
+            case 'audio':
+                $messageType = 'audio';
+                $messageId = $messageObject->audio->id ?? null;
+                $whatsappAccessToken = $userSocial->whatsapp_access_token;
+
+                $url = "https://graph.facebook.com/v21.0/{$messageId}";
+                $headers = ["Authorization: Bearer {$whatsappAccessToken}"];
+
+                // ดึงข้อมูลไฟล์จาก Webhook WhatsApp
+                $fileContent = fetchFileFromWebhook($url, $headers);
+
+                // ตั้งชื่อไฟล์แบบสุ่ม
+                $fileName = uniqid('wa_') . '.m4a';
+
+                // อัปโหลดไปยัง Spaces
+                $messageContent = uploadToSpaces(
+                    $fileContent,
+                    $fileName,
+                    $messageType,
+                    $this->platform
+                );
+                break;
 
             default:
                 $messageContent = null;

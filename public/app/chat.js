@@ -81,6 +81,35 @@ function loadMessagesForRoom(roomId) {
 }
 
 // ฟังก์ชันแสดงข้อความใน UI
+// function displayMessages(data) {
+//   const { customer, messages, userSocial } = data;
+
+//   chatBoxProfile.src =
+//     customer.profile && customer.profile !== "0"
+//       ? customer.profile
+//       : "/assets/images/conX.png";
+//   // chatBoxUsername.innerHTML = customer.name;
+
+//   // ปรับให้แสดงชื่อ และเพิ่ม Subtitle ข้างใต้
+//   chatBoxUsername.innerHTML = `
+// <div>
+//     <strong>${customer.name}</strong>
+//     <br>
+//     <small style="color: gray;">ส่งมาจาก ${userSocial.platform}: ${userSocial.name}</small>
+// </div>
+// `;
+
+//   messagesDiv.innerHTML = "";
+//   messages.forEach((msg) => renderMessage(msg));
+
+//   $(".btnAI").toggle(userSocial.ai === "on");
+
+//   document.getElementById("preloader").style.display = "none";
+//   document.getElementById("chat-box-preloader").style.display = "none";
+//   document.getElementById("chat-box-right").style.display = "block";
+
+//   scrollToBottom();
+// }
 function displayMessages(data) {
   const { customer, messages, userSocial } = data;
 
@@ -88,19 +117,36 @@ function displayMessages(data) {
     customer.profile && customer.profile !== "0"
       ? customer.profile
       : "/assets/images/conX.png";
-  // chatBoxUsername.innerHTML = customer.name;
 
-  // ปรับให้แสดงชื่อ และเพิ่ม Subtitle ข้างใต้
   chatBoxUsername.innerHTML = `
-<div>
-    <strong>${customer.name}</strong>
-    <br>
-    <small style="color: gray;">ส่งมาจาก ${userSocial.platform}: ${userSocial.name}</small>
-</div>
-`;
+      <div>
+          <strong>${customer.name}</strong>
+          <br>
+          <small style="color: gray;">ส่งมาจาก ${userSocial.platform}: ${userSocial.name}</small>
+      </div>
+  `;
 
   messagesDiv.innerHTML = "";
-  messages.forEach((msg) => renderMessage(msg));
+  let lastDate = null; // ใช้ตรวจจับการเปลี่ยนวัน
+
+  messages.forEach((msg) => {
+    const messageDate = new Date(msg.created_at).toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    if (lastDate !== messageDate) {
+      // ถ้าข้อความก่อนหน้านี้เป็นวันใหม่ ให้เพิ่ม Date Break
+      const dateBreakDiv = document.createElement("div");
+      dateBreakDiv.classList.add("date-break");
+      dateBreakDiv.innerHTML = `<span>${messageDate}</span>`;
+      messagesDiv.appendChild(dateBreakDiv);
+    }
+
+    renderMessage(msg);
+    lastDate = messageDate; // อัปเดตวันที่ล่าสุด
+  });
 
   $(".btnAI").toggle(userSocial.ai === "on");
 
@@ -123,12 +169,19 @@ function sendMessage() {
     return;
   }
 
+  let message_type = "text";
+
   var datafileReply = new FormData();
 
   datafileReply.append("message", message);
   datafileReply.append("file_IMG", fileReply);
   datafileReply.append("room_id", currentRoomId);
   datafileReply.append("platform", currentPlatform);
+
+  // มีรูปภาพ
+  if (fileReply) {
+    message_type = "image";
+  }
 
   // const data = {
   //   room_id: currentRoomId,
@@ -152,6 +205,7 @@ function sendMessage() {
       console.log("ส่งข้อความสำเร็จ:", result);
       addOrUpdateRoom({
         room_id: currentRoomId,
+        message_type,
         message,
         platform: currentPlatform,
         sender_name: "Admin",
@@ -202,6 +256,17 @@ ws.onerror = (error) => console.error("WebSocket error:", error);
 // -----------------------------------------------------------------------------
 // ฟังก์ชันแสดงข้อความบนหน้าจอ
 // -----------------------------------------------------------------------------
+// function renderMessage(msg) {
+//   const messageTime = formatMessageTime(msg.created_at);
+
+//   if (shouldGroupWithPrevious(msg.sender_id, messageTime)) {
+//     appendMessageToGroup(msg.message, msg.message_type);
+//   } else {
+//     createMessageBubble(msg, messageTime);
+//     updateRoomPreview(msg);
+//   }
+// }
+// ปรับ `renderMessage` ให้รองรับ Date Break
 function renderMessage(msg) {
   const messageTime = formatMessageTime(msg.created_at);
 
@@ -525,7 +590,7 @@ function formatMessageTime(createdAt) {
   return new Date(createdAt).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour24: true,
   });
 }
 

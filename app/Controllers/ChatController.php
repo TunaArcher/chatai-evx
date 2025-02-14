@@ -126,7 +126,7 @@ class ChatController extends BaseController
             $file_Path = 'uploads/' . $fileName;
             $fileContent = fopen($file_Path, 'r');
             // อัปโหลดไปยัง Spaces
-            $message = uploadToSpaces($fileContent, $fileName);
+            $message = uploadToSpaces($fileContent, $fileName, $message_type, $platform);
 
             if ($message != "") {
                 unlink('uploads/' . $fileName);

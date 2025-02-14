@@ -32,6 +32,22 @@
         }
     }
 </style>
+<style>
+    .date-break {
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        margin: 10px 0;
+        font-weight: bold;
+    }
+
+    .date-break span {
+        display: inline-block;
+        background: #f1f1f1;
+        padding: 5px 12px;
+        border-radius: 15px;
+    }
+</style>
 
 <!-- Page Content-->
 <div class="page-content">
@@ -109,7 +125,6 @@
                                                     </a> <!--end-->
                                                 </div><!--end div-->
                                             <?php endforeach; ?>
-
 
                                         </div>
                                     </div><!--end col-->

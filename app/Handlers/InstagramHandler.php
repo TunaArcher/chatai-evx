@@ -125,6 +125,8 @@ class InstagramHandler
 
     private function getUserContext($messages)
     {
+        helper('function');
+
         $contextText = '';
         $imageUrl = '';
 
@@ -133,9 +135,14 @@ class InstagramHandler
                 case 'text':
                     $contextText .= $message->message . ' ';
                     break;
-                    // case 'image':
-                    //     $imageUrl .=  $message->message . ',';
-                    //     break;
+                case 'image':
+                    $message_fix =  str_replace('["', "", $message->message);
+                    $message_fix =  str_replace('"]', "", $message_fix);
+                    $imageUrl .= trim($message_fix, "") . ',';
+                    break;
+                case 'audio':
+                    $contextText .= convertAudioToText($message->message, $this->platform) . ' ';
+                    break;
             }
         }
 
@@ -149,30 +156,109 @@ class InstagramHandler
     // Helper
     // -----------------------------------------------------------------------------
 
+    // private function processMessage($input, $userSocial)
+    // {
+    //     $entry = $input->entry[0] ?? null;
+    //     $messaging = $entry->messaging[0] ?? null;
+    //     $UID = $messaging->sender->id ?? null;
+    //     $messageType = $messaging->message->attachments[0]->type ?? 'text';
+
+    //     switch ($messageType) {
+    //             // เคสข้อความ
+    //         case 'text':
+    //             $messageContent = $messaging->message->text ?? '';
+    //             break;
+
+    //             // เคสรูปภาพหรือ attachment อื่น ๆ
+    //         case 'image':
+    //             $attachment = $messaging->message->attachments[0] ?? null;
+    //             if ($attachment && isset($attachment->payload->url)) {
+    //                 $fileUrl = $attachment->payload->url;
+    //                 $fileName = uniqid('instagram_') . '.jpg';
+    //                 $messageContent = uploadToSpaces(fetchFileFromWebhook($fileUrl), $fileName);
+    //                 $messageContent = json_encode($messageContent);
+    //             } else {
+    //                 $messageContent = '';
+    //             }
+    //             break;
+
+    //         default:
+    //             $messageContent = '';
+    //     }
+
+    //     return [
+    //         'UID' => $UID,
+    //         'type' => $messageType,
+    //         'content' => $messageContent,
+    //     ];
+    // }
+
     private function processMessage($input, $userSocial)
     {
         $entry = $input->entry[0] ?? null;
         $messaging = $entry->messaging[0] ?? null;
         $UID = $messaging->sender->id ?? null;
-        $messageType = $messaging->message->attachments[0]->type ?? 'text';
+        $messageType = $messaging->message->attachments[0]->type ?? ($messaging->message->text ? 'text' : '');
+        $messageContent = '';
 
         switch ($messageType) {
+
                 // เคสข้อความ
             case 'text':
+
+                $messageType = 'text';
+
                 $messageContent = $messaging->message->text ?? '';
+
                 break;
 
-                // เคสรูปภาพหรือ attachment อื่น ๆ
+                // เคสรูปภาพ (รองรับหลายภาพ)
             case 'image':
-                $attachment = $messaging->message->attachments[0] ?? null;
-                if ($attachment && isset($attachment->payload->url)) {
-                    $fileUrl = $attachment->payload->url;
-                    $fileName = uniqid('instagram_') . '.jpg';
-                    $messageContent = uploadToSpaces(fetchFileFromWebhook($fileUrl), $fileName);
-                    $messageContent = json_encode($messageContent);
-                } else {
-                    $messageContent = '';
+
+                $messageType = 'image';
+
+                $attachments = $messaging->message->attachments ?? [];
+
+                $uploadedImages = [];
+
+                foreach ($attachments as $attachment) {
+
+                    if ($attachment->type === 'image' && isset($attachment->payload->url)) {
+
+                        $fileUrl = $attachment->payload->url;
+
+                        $fileContent = fetchFileFromWebhook($fileUrl);
+
+                        // ตั้งชื่อไฟล์แบบสุ่ม
+                        $fileName = uniqid('instagram_') . '.jpg';
+
+                        // อัปโหลดไปยัง Spaces
+                        $uploadedImages[] = uploadToSpaces($fileContent, $fileName, $messageType, $this->platform);
+                    }
                 }
+                $messageContent = json_encode($uploadedImages, JSON_UNESCAPED_SLASHES);
+                break;
+
+                // เคสเสียง
+            case 'audio':
+
+                $messageType = 'audio';
+
+                $attachment = $messaging->message->attachments[0] ?? null;
+
+                if ($attachment && isset($attachment->payload->url)) {
+
+                    $fileUrl = $attachment->payload->url;
+
+                    $fileContent = fetchFileFromWebhook($fileUrl);
+
+                    // ตั้งชื่อไฟล์แบบสุ่ม
+                    $fileName = uniqid('instagram_') . '.m4a';
+
+                    // อัปโหลดไปยัง Spaces
+                    $messageContent = uploadToSpaces($fileContent, $fileName, $messageType, $this->platform);
+                }
+
                 break;
 
             default:
@@ -185,7 +271,6 @@ class InstagramHandler
             'content' => $messageContent,
         ];
     }
-
 
     private function processIncomingMessage($messageRoom, $customer, $messageType, $message, $sender)
     {
