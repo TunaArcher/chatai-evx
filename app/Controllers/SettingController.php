@@ -77,6 +77,31 @@ class SettingController extends BaseController
             }
             return $randomString;
         }
+
+        function CSV_to_JSON($file_path, $jsonFile)
+        {
+
+            try {
+                // เปิดไฟล์ CSV
+                if (($handle = fopen($file_path, 'r')) !== FALSE) {
+                    $data = [];
+                    $headers = fgetcsv($handle); // อ่านบรรทัดแรกเป็น header
+
+                    // อ่านข้อมูลที่เหลือ
+                    while (($row = fgetcsv($handle)) !== FALSE) {
+                        $data[] = array_combine($headers, $row);
+                    }
+                    fclose($handle);
+
+                    // แปลงเป็น JSON และบันทึกลงไฟล์
+                    file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                    return "success";
+                }
+            } catch (Exception $e) {
+                return 'Error: ' . $e->getMessage();
+            }
+        }
     }
 
     public function index()
@@ -626,7 +651,7 @@ class SettingController extends BaseController
         $img_link_back = null;
         //check file assistant
         if ($dataMessage->file_training_setting == '1') {
-            $img_link_back = $link_s3_file == "" ? null : $link_s3_file;                
+            $img_link_back = $link_s3_file == "" ? null : $link_s3_file;
             $thread_id = $chatGPT->createthreads($img_link_back, $message);
             if ($thread_id != null) {
                 //thread_id
@@ -689,15 +714,18 @@ class SettingController extends BaseController
 
     public function file_training()
     {
-
+        //create file temp
+        $filePaths = [];
         $buffer_datetime = date("Y-m-d H:i:s");
         $response = [
             'success' => 0,
             'message' => '',
         ];
-       
+
         $switch_load_file = $_POST['switch_state'];
         $userID = hashidsDecrypt(session()->get('userID'));
+        $multifile_training = newArrayFilesName($_FILES['files']);
+
 
         $chatGPT = new ChatGPT([
             'GPTToken' => $this->GPTToken
@@ -734,13 +762,26 @@ class SettingController extends BaseController
             ]);
         }
 
-        //create file temp
-        $filePaths = [];
-        $multifile_training = newArrayFilesName($_FILES['files']);
 
         foreach ($multifile_training as $val) {
             $file_training_name = $userID . '_' . generateRandomString() . "." . pathinfo($val['name'], PATHINFO_EXTENSION);
-            move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);        
+
+            //check csv file convet to json 
+            if ($val['type'] == 'text/csv') {
+                $file_json =  $userID . '_' . generateRandomString() . "." . "json";
+                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);     
+                //convert function
+                $status_convert =  CSV_to_JSON('./uploads/' . $file_training_name, './uploads/' . $file_json);
+                if ($status_convert == 'success') {
+
+                    unlink('./uploads/' . $file_training_name);
+                    $file_training_name =  $file_json;
+                    move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);
+                }
+            } else {
+                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);
+            }
+
             array_push($filePaths, 'uploads/' . $file_training_name);
         }
 

@@ -82,31 +82,6 @@ class ChatGPT
         }
     }
 
-    public function singleFiletoOpenAI($file_path)
-    {
-        $response = $this->http->post($this->baseURLOpenAI . 'files', [
-            'headers' => [
-                'Authorization' => "Bearer " . $this->accessToken,
-            ],
-            'multipart' => [
-                [
-                    'name' => 'purpose',
-                    'contents' => 'vision'
-                ],
-                [
-                    'name' => 'file',
-                    'contents' => fopen($file_path, 'r'),
-                    'filename' => basename($file_path)
-                ],
-            ],
-        ]);
-
-        $fileResponse = json_decode($response->getBody(), true);
-        $fileId = $fileResponse['id'] ?? null;
-
-        return $fileId;
-    }
-
     public function runAssistant($thread_id, $assistant_id)
     {
         try {
@@ -355,7 +330,7 @@ class ChatGPT
 
             $responseBody = json_decode($response->getBody(), true);
             return $responseBody['choices'][0]['message']['content'];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 'Error: ' . $e->getMessage();
         }
     }
