@@ -411,8 +411,7 @@ function load_uppy_file_training() {
 
   //  ตรวจสอบเมื่ออัปโหลดเสร็จ
   uppy.on("complete", (result) => {
-    console.log("ไฟล์ที่อัปโหลดสำเร็จ:", result.successful);
-    console.log("ไฟล์ที่ล้มเหลว:", result.failed);
+    notyf_message.success("สำเร็จ");
 
     uppy.cancelAll();
   });

@@ -688,7 +688,7 @@ class ChatGPT
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question  .'\n ไม่ต้องแสดงลิงก์อ้างอิง'
                             ],
                             [
                                 'type' => 'image_url',
@@ -711,7 +711,7 @@ class ChatGPT
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question . '\n ไม่ต้องแสดงลิงก์อ้างอิง'
                             ]
                         ]
                     ];
