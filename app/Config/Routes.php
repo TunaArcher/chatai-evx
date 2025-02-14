@@ -137,10 +137,12 @@ $routes->post('/check/connection', 'SettingController::connection'); // เช�
 $routes->post('/remove-social', 'SettingController::removeSocial'); // ลบ User Social
 $routes->post('/message-traning', 'SettingController::message_traning'); // traning message by user   
 $routes->get('/message-traning-load/(:any)', 'SettingController::message_traning_load/$1'); // load training success
+$routes->get('//message-setting-load/(:any)', 'SettingController::message_setting_load/$1'); // load message-setting success
 $routes->post('/message-traning-testing', 'SettingController::message_traning_testing'); // test traninng
 $routes->post('/message-traning-clears', 'SettingController::message_traning_clears'); // clear training
 $routes->post('/message-training-file', 'SettingController::file_training'); // training file 
-
+$routes->post('/message-training-switch-state', 'SettingController::file_training_state'); // stste use file training
+ 
 // -----------------------------------------------------------------------------
 // Webhook
 // -----------------------------------------------------------------------------

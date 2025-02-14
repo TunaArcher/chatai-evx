@@ -100,29 +100,36 @@
                                 <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample" style="">
                                     <div class="accordion-body">
                                         <div class="row">
-                                            <div class="row">
+                                            <!-- <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group row mb-2">
                                                         <label for="txt_instructions" class="col-lg-3 col-form-label text-end">Training instructions:</label>
                                                         <div class="col-lg-9">
                                                             <textarea id="txt_instructions" name="txt_instructions" rows="5" class="form-control" placeholder="You are a helpful assistant..."></textarea>
                                                         </div>
-                                                    </div><!--end form-group-->
-                                                </div><!--end col-->
-                                            </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
                                             <div class="row col-md-12 d-flex justify-content-between">
                                                 <div class="form-check form-switch form-switch-success ms-3 mb-2 col-md-6">
                                                     <input class="form-check-input" type="checkbox" id="switch_open_file_training">
                                                     <label class="form-check-label" for="customSwitchSuccess">File training.</label>
                                                 </div>
+                                                <div>
+                                                    <div class="card-body pt-0">
+                                                        <div id="drag-drop-area">
+                                                          
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="btn-group float-end col-md-3 mb-2">
-                                                    <button type="button" class="btn btn-secondary me-0 overflow-hidden">
-                                                        <i class="fas fa-cloud-upload-alt"></i> File
-                                                        <input type="file" name="file_training" id="file_training" accept='.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, .pdf' class="overflow-hidden position-absolute top-0 start-0 opacity-0">
-                                                    </button>
+                                                    <!-- <button type="button" class="btn btn-dark me-0 overflow-hidden">
+                                                        <i class="fas fa-file-archive"></i> File
+                                                        <input type="file" name="file_training" id="file_training" accept='.csv, .pdf' class="overflow-hidden position-absolute top-0 start-0 opacity-0">
+                                                    </button> -->
                                                 </div>
                                             </div>
-                                            <button type="button" class="btn btn-primary w-100" onclick="fileTraining();">Run</button>
+                                            <!-- <button type="button" class="btn btn-primary w-100" id="uploadBtn">Run</button> -->
                                         </div>
                                     </div>
                                 </div>
@@ -222,7 +229,8 @@
         </div><!-- end col -->
     </div><!--end card-->
 
-    <?php echo view('/partials/copyright'); ?>
+    <!--  <?php // echo view('/partials/copyright'); 
+            ?> -->
 </div><!-- container -->
 
 <div class="modal fade" id="modal-loading" style="display: none;">
