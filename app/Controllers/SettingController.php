@@ -630,14 +630,14 @@ class SettingController extends BaseController
 
             $result_back = $this->s3Client->putObject([
                 'Bucket' => $this->s3_bucket,
-                'Key'    => 'uploads/img/' . $file_askAI_name,
+                'Key'    => 'uploads/img/training/' . $file_askAI_name,
                 'Body'   => fopen($file_Path, 'r'),
                 'ACL'    => 'public-read',
             ]);
 
             if ($result_back['ObjectURL'] != "") {
                 unlink('uploads/' . $file_askAI_name);
-                $link_s3_file = $this->s3_cdn_img . "/uploads/img/" . $file_askAI_name;
+                $link_s3_file = $this->s3_cdn_img . "/uploads/img/training/" . $file_askAI_name;
             }
         }
 
