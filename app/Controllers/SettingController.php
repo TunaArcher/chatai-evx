@@ -10,7 +10,7 @@ use App\Models\UserModel;
 use App\Models\UserSocialModel;
 use App\Libraries\ChatGPT;
 use Aws\S3\S3Client;
-
+use Google\Service\CloudDeploy\DefaultPool;
 
 class SettingController extends BaseController
 {
@@ -24,6 +24,7 @@ class SettingController extends BaseController
     private $s3_region;
     private $s3_cdn_img;
     private $s3Client;
+    private $GPTToken;
 
     public function __construct()
     {
@@ -38,6 +39,7 @@ class SettingController extends BaseController
         $this->s3_endpoint = getenv('ENDPOINT');
         $this->s3_region = getenv('REGION');
         $this->s3_cdn_img = getenv('CDN_IMG');
+        $this->GPTToken = getenv('GPT_TOKEN');
 
         $this->s3Client = new S3Client([
             'version' => 'latest',
@@ -50,6 +52,56 @@ class SettingController extends BaseController
             ],
             'suppress_php_deprecation_warning' => true, // ปิดข้อความเตือน
         ]);
+
+        function newArrayFilesName($file)
+        {
+            $file_ary = array();
+            $file_count = count($file['name']);
+            $file_key = array_keys($file);
+
+            for ($i = 0; $i < $file_count; $i++) {
+                foreach ($file_key as $val) {
+                    $file_ary[$i][$val] = $file[$val][$i];
+                }
+            }
+            return $file_ary;
+        }
+
+        function generateRandomString($length = 7)
+        {
+            $characters = '0123456789';
+            $charactersLength = strlen($characters);
+            $randomString = '';
+            for ($i = 0; $i < $length; $i++) {
+                $randomString .= $characters[rand(0, $charactersLength - 1)];
+            }
+            return $randomString;
+        }
+
+        function CSV_to_JSON($file_path, $jsonFile)
+        {
+
+            try {
+                // เปิดไฟล์ CSV
+                if (($handle = fopen($file_path, 'r')) !== FALSE) {
+                    $data = [];
+                    $headers = fgetcsv($handle); // อ่านบรรทัดแรกเป็น header
+
+                    // อ่านข้อมูลที่เหลือ
+                    while (($row = fgetcsv($handle)) !== FALSE) {
+                        $data[] = array_combine($headers, $row);
+                    }
+                    fclose($handle);
+
+                    // แปลงเป็น JSON และบันทึกลงไฟล์
+                    file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                    return "success";
+                }
+            } catch (Exception $e) {
+                return 'Error: ' . $e->getMessage();
+            }
+        }
     }
 
     public function index()
@@ -434,17 +486,21 @@ class SettingController extends BaseController
             'css_critical' => '
                 <link href="' . base_url('assets/libs/sweetalert2/sweetalert2.min.css') . '" rel="stylesheet" type="text/css">
                 <link href="' . base_url('assets/libs/animate.css/animate.min.css') . '" rel="stylesheet" type="text/css">
+                <link href="' . base_url('assets/libs/uppy/uppy.min.css') . '" rel="stylesheet" type="text/css">             
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
             ',
             'js_critical' => '
                 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>   
+                <script src="' . base_url('assets/libs/uppy/uppy.legacy.min.js') . '"></script>                 
                 <script src="' . base_url('assets/libs/sweetalert2/sweetalert2.min.js') . '"></script>       
                 <script src="' . base_url('app/setting.js?v=' . time()) . '"></script>   
                 <script src="' . base_url('app/message-setting.js?v=' . time()) . '"></script>
             ',
             'rooms' => [],
             'user_socials' => $userSocials,
+
+            // <script src="' . base_url('assets/js/pages/file-upload.init.js') . '"></script>
         ]);
     }
 
@@ -471,9 +527,8 @@ class SettingController extends BaseController
                 'message_state' => $message_state
             ]);
 
-            $GPTToken = getenv('GPT_TOKEN');
             $chatGPT = new ChatGPT([
-                'GPTToken' => $GPTToken
+                'GPTToken' => $this->GPTToken
             ]);
 
             //get message to promt
@@ -539,9 +594,23 @@ class SettingController extends BaseController
             ->setJSON($response);
     }
 
+    public function message_setting_load($user_id)
+    {
+        $messageBack = $this->customerModel->getMessageSettingByID(hashidsDecrypt($user_id));
+
+        $status = 200;
+        $response = $messageBack;
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
     public function message_traning_testing()
     {
 
+        $buffer_datetime = date("Y-m-d H:i:s");
         $response = [
             'success' => 0,
             'message' => '',
@@ -552,6 +621,7 @@ class SettingController extends BaseController
         $message = $this->request->getPost('message');
         $file_askAI = $this->request->getFile('file_IMG');
 
+        $link_s3_file = "";
         if ($file_askAI != NULL) {
 
             $file_askAI_name = $file_askAI->getRandomName();
@@ -560,13 +630,14 @@ class SettingController extends BaseController
 
             $result_back = $this->s3Client->putObject([
                 'Bucket' => $this->s3_bucket,
-                'Key'    => 'uploads/img_ask_ai/' . $file_askAI_name,
+                'Key'    => 'uploads/img/' . $file_askAI_name,
                 'Body'   => fopen($file_Path, 'r'),
-                'ACL'    => 'public-read', // make file 'public'
+                'ACL'    => 'public-read',
             ]);
 
             if ($result_back['ObjectURL'] != "") {
                 unlink('uploads/' . $file_askAI_name);
+                $link_s3_file = $this->s3_cdn_img . "/uploads/img/" . $file_askAI_name;
             }
         }
 
@@ -576,12 +647,28 @@ class SettingController extends BaseController
 
         $dataMessage = $this->customerModel->getMessageSettingByID($userID);
         $data_Message = $dataMessage ? $dataMessage->message : 'you are assistance';
-        $img_link_back = "";
-        if ($file_askAI == NULL) {
-            $messageReplyToCustomer = $chatGPT->askChatGPT($message, $data_Message);
+
+        $img_link_back = null;
+        //check file assistant
+        if ($dataMessage->file_training_setting == '1') {
+            $img_link_back = $link_s3_file == "" ? null : $link_s3_file;
+            $thread_id = $chatGPT->createthreads($img_link_back, $message);
+            if ($thread_id != null) {
+                //thread_id
+                $thread_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
+                    'thread_id' => $thread_id,
+                    'updated_at' => $buffer_datetime
+                ]);
+            }
+            $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
+            $messageReplyToCustomer = $chatGPT->sendmessagetoThreadIdTraining($data_file_search->thread_id, $data_file_search->assistant_id);
         } else {
-            $messageReplyToCustomer = $chatGPT->askChatGPTimgTraning($message, $dataMessage->message, $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name);
-            $img_link_back = $this->s3_cdn_img . "/uploads/img_ask_ai/" . $file_askAI_name;
+            if ($file_askAI == NULL) {
+                $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);
+            } else {
+                $messageReplyToCustomer = $chatGPT->askChatGPTimgTraining($message, $dataMessage->message, $link_s3_file);
+                $img_link_back = $link_s3_file;
+            }
         }
 
 
@@ -618,6 +705,162 @@ class SettingController extends BaseController
             $response['message'] = $e->getMessage();
         }
 
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function file_training()
+    {
+        //create file temp
+        $filePaths = [];
+        $buffer_datetime = date("Y-m-d H:i:s");
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+
+        $switch_load_file = $_POST['switch_state'];
+        $userID = hashidsDecrypt(session()->get('userID'));
+        $multifile_training = newArrayFilesName($_FILES['files']);
+
+
+        $chatGPT = new ChatGPT([
+            'GPTToken' => $this->GPTToken
+        ]);
+
+        //update status messate to file data
+        if ($switch_load_file == true) {
+            $message_setting_status_update = $this->customerModel->updateMessageSetting($userID, [
+                'file_training_setting' => 1,
+                'updated_at' => $buffer_datetime
+            ]);
+        }
+
+        // get message setting to setting assistants
+        $message_setting  =  $this->customerModel->getMessageSettingByID($userID);
+        // create ssistants
+        $assistant_id  = $chatGPT->createAssistantsFileSearch($userID, $message_setting->message);
+
+        $check_user_id = $this->customerModel->getTrainingAssistantByUserID($userID);
+        // add or update assistants in Database table file_training.
+        //get setting status
+        if ($check_user_id) {
+            //remove assistants for update 
+            $removeassistent = $chatGPT->removeAssistant($check_user_id->assistant_id);
+            $data_update = [
+                'assistant_id' => $assistant_id,
+                'updated_at' => $buffer_datetime
+            ];
+            $assistant_id_status_insert = $this->customerModel->updateTrainingAssistant($userID, $data_update);
+        } else {
+            $assistant_id_status_insert = $this->customerModel->insertFileTrainingAssistant([
+                'user_id' => $userID,
+                'assistant_id' => $assistant_id,
+            ]);
+        }
+
+
+        foreach ($multifile_training as $val) {
+            $file_training_name = $userID . '_' . generateRandomString() . "." . pathinfo($val['name'], PATHINFO_EXTENSION);
+
+            //check csv file convet to json 
+            if ($val['type'] == 'text/csv') {
+                $file_json =  $userID . '_' . generateRandomString() . "." . "json";
+                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);     
+                //convert function
+                $status_convert =  CSV_to_JSON('./uploads/' . $file_training_name, './uploads/' . $file_json);
+                if ($status_convert == 'success') {
+
+                    unlink('./uploads/' . $file_training_name);
+                    $file_training_name =  $file_json;
+                    move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);
+                }
+            } else {
+                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);
+            }
+
+            array_push($filePaths, 'uploads/' . $file_training_name);
+        }
+
+        // create vactor store file
+        $reponse_vactor = $chatGPT->createVactorStore($userID);
+        if ($reponse_vactor) {
+            $vactor_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
+                'vactor_store_id' => $reponse_vactor['vactorstore_id'],
+                'updated_at' => $buffer_datetime
+            ]);
+        }
+        // create file upload to vactor store
+        $response_file_upload =  $chatGPT->fileUpload($reponse_vactor['vactorstore_id'], $filePaths);
+        // delete file temp
+        if ($response_file_upload['file_id'] != "") {
+
+            foreach ($filePaths as $filePath) {
+                unlink($filePath);
+            }
+
+            //file id
+            $file_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
+                'file_training_id' => $response_file_upload['file_id'],
+                'updated_at' => $buffer_datetime
+            ]);
+        }
+        //update Assistant add vactor
+        $reponse_update = $chatGPT->addVatorfileToAssistant($assistant_id, $reponse_vactor['vactorstore_id']);
+
+        $status = 200;
+        $response = [
+            'success' => 1,
+            'message' => $reponse_update,
+        ];
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
+
+    public function file_training_state()
+    {
+        $buffer_datetime = date("Y-m-d H:i:s");
+        $userID = hashidsDecrypt(session()->get('userID'));
+        $status = 500;
+        $response = [
+            'success' => 0,
+            'message' => '',
+        ];
+
+        try {
+            $switch_state = $this->request->getPost('switch_state');
+            $state_file = array();
+
+            if ($switch_state == "true") {
+                $state_file = array(
+                    'file_training_setting' => 1,
+                    'updated_at' => $buffer_datetime
+                );
+            } else {
+                $state_file = array(
+                    'file_training_setting' => 0,
+                    'updated_at' => $buffer_datetime
+                );
+            }
+
+            $message_setting_status_update = $this->customerModel->updateMessageSetting($userID, $state_file);
+
+            if ($message_setting_status_update) {
+                $status = 200;
+                $response = [
+                    'success' => 1,
+                    'message' => $message_setting_status_update,
+                ];
+            }
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+        }
 
         return $this->response
             ->setStatusCode($status)

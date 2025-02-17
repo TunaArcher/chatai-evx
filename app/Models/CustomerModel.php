@@ -56,7 +56,7 @@ class CustomerModel
     public function getCustomer($Customername)
     {
         $builder = $this->db->table('customers');
-        
+
         return $builder->where('Customername', $Customername)->get()->getResult();
     }
 
@@ -74,11 +74,11 @@ class CustomerModel
         return $builder->insert($data) ? $this->db->insertID() : false;
     }
 
-    public function updateMessageSetting($id, $data)
+    public function updateMessageSetting($id, $data = null)
     {
         $builder = $this->db->table('message_setting');
 
-        return $builder->where('user_id', $id)->update($data);
+        return $builder->where('user_id', $id)->update($data) ? true : false;
     }
 
     public function insertMessageTraning($data)
@@ -111,5 +111,25 @@ class CustomerModel
         $builder = $this->db->table('message_setting_training');
 
         return $builder->where('user_id', $user_id)->delete();
+    }
+
+    public function insertFileTrainingAssistant($data)
+    {
+        $builder = $this->db->table('file_training');
+
+        return $builder->insert($data) ? $this->db->insertID() : false;
+    }
+
+    public function updateTrainingAssistant($user_id, $data)
+    {
+        $builder = $this->db->table('file_training');
+
+        return $builder->where('user_id', $user_id)->update($data);
+    }
+
+    public function getTrainingAssistantByUserID($user_id)
+    {
+        $builder = $this->db->table('file_training');
+        return $builder->where('user_id', $user_id)->get()->getRow();
     }
 }

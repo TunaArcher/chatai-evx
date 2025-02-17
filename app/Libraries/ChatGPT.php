@@ -15,6 +15,7 @@ class ChatGPT
 {
     private $http;
     private $baseURL;
+    private $baseURLOpenAI;
     private $channelAccessToken;
     private $debug = false;
     private $accessToken;
@@ -22,6 +23,7 @@ class ChatGPT
     public function __construct($config)
     {
         $this->baseURL = 'https://api.openai.com/v1/chat/completions';
+        $this->baseURLOpenAI = 'https://api.openai.com/v1/';
         $this->accessToken = $config['GPTToken'];
         $this->http = new Client();
     }
@@ -80,37 +82,115 @@ class ChatGPT
         }
     }
 
-    // public function _askChatGPT($question, $message_setting)
-    // {
-    //     try {
+    public function runAssistant($thread_id, $assistant_id)
+    {
+        try {
+            //Run the Assistant
+            $response_run = $this->http->post($this->baseURLOpenAI . "threads/$thread_id/runs", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'assistant_id' => $assistant_id,
+                ]
+            ]);
 
-    //         // log_message("info", "message_setting: " . $message_user);
-    //         $response = $this->http->post($this->baseURL, [
-    //             'headers' => [
-    //                 'Authorization' => "Bearer " . $this->accessToken,
-    //                 'Content-Type'  => 'application/json',
-    //             ],
-    //             'json' => [
-    //                 'model' => 'gpt-4o',
-    //                 'messages' => [
-    //                     [
-    //                         'role' => 'system',
-    //                         'content' => $message_setting
-    //                     ],
-    //                     [
-    //                         'role' => 'user',
-    //                         'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
-    //                     ]
-    //                 ]
-    //             ]
-    //         ]);
+            $runResponse = json_decode($response_run->getBody(), true);
+            $runId = $runResponse['id'] ?? null;
 
-    //         $responseBody = json_decode($response->getBody(), true);
-    //         return $responseBody['choices'][0]['message']['content'];
-    //     } catch (Exception $e) {
-    //         return 'Error: ' . $e->getMessage();
-    //     }
-    // }
+            // var_dump($runId);
+            // exit;
+
+            do {
+                sleep(5);
+                $response =  $this->http->get($this->baseURLOpenAI . "/threads/$thread_id/runs/$runId", [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                        'OpenAI-Beta' => 'assistants=v2'
+                    ],
+                ]);
+
+                $runStatus = json_decode($response->getBody(), true);
+                $status = $runStatus['status'] ?? 'unknown';
+
+                // echo "Assistant Run Status: $status\n";
+
+                if (in_array($status, ['completed', 'failed', 'cancelled'])) {
+                    break;
+                }
+            } while ($status === 'queued' || $status === 'in_progress');
+
+            if ($status === 'completed') {
+                return $status;
+            } else {
+                return  "Assistant ล้มเหลว: " . ($runStatus['last_error']['message'] ?? 'ไม่ทราบข้อผิดพลาด') . "\n";
+            }
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function retrieveAssistant($thread_id)
+    {
+        try {
+
+
+            $response =  $this->http->get($this->baseURLOpenAI . "threads/$thread_id/messages", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+            ]);
+
+            $messages = json_decode($response->getBody(), true)['data'] ?? [];
+
+            $message_reply = "";
+
+            foreach ($messages as $msg) {
+                if ($msg['role'] === 'assistant') {
+                    $message_reply .= $msg['content'][0]['text']['value'] . "\n";
+                }
+            }
+
+            return $message_reply;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function askChatGPTTraininng($question, $message_setting)
+    {
+        try {
+
+            // log_message("info", "message_setting: " . $message_user);
+            $response = $this->http->post($this->baseURL, [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $message_setting
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
 
     public function gennaratePromtChatGPT($question)
     {
@@ -213,7 +293,7 @@ class ChatGPT
     //     }
     // }
 
-    public function askChatGPTimgTraning($question,  $message_setting, $file_name)
+    public function askChatGPTimgTraining($question,  $message_setting, $file_name)
     {
 
         try {
@@ -250,7 +330,7 @@ class ChatGPT
 
             $responseBody = json_decode($response->getBody(), true);
             return $responseBody['choices'][0]['message']['content'];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 'Error: ' . $e->getMessage();
         }
     }
@@ -389,5 +469,369 @@ class ChatGPT
                 'image_url' => ['url' => trim($fileName)]
             ];
         }, array_filter(explode(',', $fileNames), 'strlen'));
+    }
+
+    public function createAssistantsFileSearch($user_id, $message_setting)
+    {
+        try {
+            $response = $this->http->post($this->baseURLOpenAI . 'assistants', [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'name' => 'assistant_' . $user_id,
+                    'instructions' => $message_setting,
+                    'tools' => [
+                        ['type' => 'file_search']
+                    ],
+                    'model' => 'gpt-4-turbo'
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['id'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function createVactorStore($user_id)
+    {
+        try {
+            $dataResponse = [];
+            //vactor store create
+            $response = $this->http->post($this->baseURLOpenAI . 'vector_stores', [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'name' => 'vactorstore' . $user_id
+                ],
+            ]);
+
+            $vectorStoreResponse = json_decode($response->getBody(), true);
+            $vectorStoreId = $vectorStoreResponse['id'] ?? null;
+
+            if (!$vectorStoreId) {
+                die("Failed to create Vector Store.\n");
+            }
+
+
+            $dataResponse = [
+                'vactorstore_id' => $vectorStoreId
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function fileUpload($vectorStoreId,  $filePaths)
+    {
+        try {
+
+            //Upload files and get file IDs
+            $fileIds = [];
+
+            foreach ($filePaths as $filePath) {
+                $response = $this->http->post($this->baseURLOpenAI . 'files', [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                    ],
+                    'multipart' => [
+                        [
+                            'name' => 'purpose',
+                            'contents' => 'assistants'
+                        ],
+                        [
+                            'name' => 'file',
+                            'contents' => fopen($filePath, 'r'),
+                            'filename' => basename($filePath)
+                        ],
+                    ],
+                ]);
+
+                $fileResponse = json_decode($response->getBody(), true);
+                $fileId = $fileResponse['id'] ?? null;
+
+                if ($fileId) {
+                    $fileIds[] = $fileId;
+                    echo "File uploaded successfully! File ID: $fileId\n";
+                } else {
+                    echo "Failed to upload file: $filePath\n";
+                }
+            }
+
+            if (empty($fileIds)) {
+                die("No files were uploaded successfully.\n");
+            }
+
+            // Attach Files to Vector Store (Batch Upload)
+
+            $file_id_response = "";
+
+            foreach ($fileIds as $fileId) {
+                $response = $this->http->post($this->baseURLOpenAI . "vector_stores/$vectorStoreId/files", [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                        'Content-Type' => 'application/json',
+                        'OpenAI-Beta' => 'assistants=v2'
+                    ],
+                    'json' => [
+                        'file_id' => $fileId
+                    ],
+                ]);
+
+                $addFileResponse = json_decode($response->getBody(), true);
+
+                if (isset($addFileResponse['id'])) {
+                    echo "File $fileId added to Vector Store successfully!\n";
+                } else {
+                    echo "Failed to add file $fileId to Vector Store.\n";
+                }
+            }
+
+            $dataResponse = [
+                'file_id' => $fileId
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function addVatorfileToAssistant($assistant_id, $vectorStoreId)
+    {
+        try {
+            $dataResponse = [];
+            //vactor store create
+            $response = $this->http->post($this->baseURLOpenAI . "/assistants/$assistant_id", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'tools' => [
+                        ['type' => 'file_search']
+                    ],
+                    'tool_resources' => [
+                        'file_search' => [
+                            'vector_store_ids' => [$vectorStoreId]
+                        ]
+                    ]
+                ]
+            ]);
+
+            $updateResponse  = json_decode($response->getBody(), true);
+            $updateResponse_id  = $updateResponse['id'] ?? null;
+
+            if (!$updateResponse_id) {
+                die("Failed to update Assistant.\n");
+            }
+
+            $dataResponse = [
+                'vactorstore_id' => $updateResponse_id
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function removeAssistant($assistant_id)
+    {
+        try {
+            $dataResponse = [];
+            //vactor store create
+            $response = $this->http->delete($this->baseURLOpenAI . "/assistants/$assistant_id", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ]
+            ]);
+
+            $updateResponse  = $response->getStatusCode();
+
+            if ($updateResponse !== 204) {
+                echo  "Failed to delete Assistant.";
+            }
+
+            $dataResponse = [
+                'status_response' => $updateResponse
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function createthreads($fileId, $question)
+    {
+        try {
+            $dataResponse = [];
+            $messages_context = [];
+            if ($fileId != null) {
+
+                $messages_context =
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question  .'\n ไม่ต้องแสดงลิงก์อ้างอิง'
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => $fileId
+                                ]
+                            ],
+                            // [
+                            //     'type' => 'image_file',
+                            //     'image_file' => [
+                            //         'file_id' => $fileId
+                            //     ]
+                            // ]
+                        ]
+                    ];
+            } else {
+                $messages_context =
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question . '\n ไม่ต้องแสดงลิงก์อ้างอิง'
+                            ]
+                        ]
+                    ];
+            }
+
+            //Create a Thread
+            $response = $this->http->post($this->baseURLOpenAI . "threads", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'messages' => [$messages_context]
+                ]
+            ]);
+
+            $threadResponse = json_decode($response->getBody(), true);
+            $threadId = $threadResponse['id'] ?? null;
+
+            if ($threadId == null) {
+                echo  "Failed to delete Assistant.";
+            }
+
+            $dataResponse = [
+                'status_response' => $threadId
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function sendmessagetoThreadId($roomId, $thread_id, $assistant_id, $question, $messageSetting = null, $fileNames = null)
+    {
+        try {
+            if (!$messageSetting) $messageSetting = '';
+
+            $messages = [
+                ['role' => 'system', 'content' => $messageSetting]
+            ];
+
+            $chatHistory = $this->getChatHistory($roomId);
+
+            foreach ($chatHistory as &$msg) {
+                if (is_array($msg['content'])) {
+                    if (isset($msg['content'][0]['type']) && $msg['content'][0]['type'] === 'text') {
+                        $msg['content'] = $msg['content'][0]['text']; // ดึงข้อความออกมา
+                    } else {
+                        $msg['content'] = "[มีไฟล์แนบ]"; // หากเป็นรูปภาพให้ระบุว่าเป็นไฟล์แนบ
+                    }
+                }
+            }
+
+            $userContent = [['type' => 'text', 'text' => $question]];
+
+            if (!empty($fileNames)) {
+                $imageData = $this->formatImageLinks($fileNames);
+                $userContent = array_merge($userContent, $imageData);
+            }
+
+            $chatHistory[] = [
+                'role' => 'user',
+                'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
+            ];
+
+            $messages = array_merge($messages, $chatHistory);
+
+            //User sends a message
+            $response = $this->http->post($this->baseURLOpenAI . "threads/$thread_id/messages", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    $messages
+                ]
+            ]);
+
+            $updateResponse  = json_decode($response->getBody(), true);
+            $updateResponse_id  = $updateResponse['id'] ?? null;
+
+            $response_run_assistant = $this->runAssistant($thread_id, $assistant_id);
+            $response_retrieve_assistant = "";
+            if ($response_run_assistant == 'completed') {
+                $response_retrieve_assistant = $this->retrieveAssistant($thread_id);
+            }
+
+            // เพิ่มข้อความของ AI ลงในประวัติแชท
+            $chatHistory[] = [
+                'role' => 'assistant',
+                'content' => $response_retrieve_assistant
+            ];
+
+            // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
+            $this->saveChatHistory($roomId, $chatHistory);
+
+            return $response_retrieve_assistant;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function sendmessagetoThreadIdTraining($thread_id, $assistant_id)
+    {
+
+        try {
+            $response_run_assistant = $this->runAssistant($thread_id, $assistant_id);
+            $response_retrieve_assistant = "";
+            if ($response_run_assistant == 'completed') {
+                $response_retrieve_assistant = $this->retrieveAssistant($thread_id);
+            } else {
+                $response_retrieve_assistant = $response_run_assistant;
+            }
+
+            return $response_retrieve_assistant;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
     }
 }

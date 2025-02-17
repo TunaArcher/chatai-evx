@@ -93,15 +93,44 @@
                             </div>
                             <div class="accordion-item">
                                 <h4 class="accordion-header m-0" id="flush-headingTwo">
-                                    <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo" disabled>
-                                        Training By File (development)
+                                    <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                        Training By File
                                     </button>
                                 </h4>
                                 <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample" style="">
                                     <div class="accordion-body">
-                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon
-                                        tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                                        lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                        <div class="row">
+                                            <!-- <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row mb-2">
+                                                        <label for="txt_instructions" class="col-lg-3 col-form-label text-end">Training instructions:</label>
+                                                        <div class="col-lg-9">
+                                                            <textarea id="txt_instructions" name="txt_instructions" rows="5" class="form-control" placeholder="You are a helpful assistant..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                                            <div class="row col-md-12 d-flex justify-content-between">
+                                                <div class="form-check form-switch form-switch-success ms-3 mb-2 col-md-6">
+                                                    <input class="form-check-input" type="checkbox" id="switch_open_file_training">
+                                                    <label class="form-check-label" for="customSwitchSuccess">File training.</label>
+                                                </div>
+                                                <div>
+                                                    <div class="card-body pt-0">
+                                                        <div id="drag-drop-area">
+                                                          
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="btn-group float-end col-md-3 mb-2">
+                                                    <!-- <button type="button" class="btn btn-dark me-0 overflow-hidden">
+                                                        <i class="fas fa-file-archive"></i> File
+                                                        <input type="file" name="file_training" id="file_training" accept='.csv, .pdf' class="overflow-hidden position-absolute top-0 start-0 opacity-0">
+                                                    </button> -->
+                                                </div>
+                                            </div>
+                                            <!-- <button type="button" class="btn btn-primary w-100" id="uploadBtn">Run</button> -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +209,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-8">
                                     <div class="card col-2" style="display: none;" id="div_img">
-                                        <button type="button" class="btn-close" style="height: 20px; width: 20px;" onclick="resetImgTestAI();" ></button>
+                                        <button type="button" class="btn-close" style="height: 20px; width: 20px;" onclick="resetImgTestAI();"></button>
                                         <img src="" alt="No Image" id="img_ai" style='height:80px;'>
                                     </div>
                                     <input type="text" class="form-control" id="chat_test_training" placeholder="send to training test..." onkeydown="sendTestTraning(this);">
@@ -200,7 +229,8 @@
         </div><!-- end col -->
     </div><!--end card-->
 
-    <?php echo view('/partials/copyright'); ?>
+    <!--  <?php // echo view('/partials/copyright'); 
+            ?> -->
 </div><!-- container -->
 
 <div class="modal fade" id="modal-loading" style="display: none;">

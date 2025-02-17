@@ -1,23 +1,25 @@
 ws.onmessage = (event) => {
   let data = JSON.parse(event.data);
   if (data.receiver_id === window.userID) {
-      ntf = new Notyf({
-          position: {
-              x: "right",
-              y: "bottom",
-          },
-          types: [{
-              type: "message",
-              background: "rgba(0,0,0,.7)",
-              color: "#000",
-              icon: `<img width="24" src="${data.sender_avatar}">`,
-          }, ],
-      });
-
-      ntf.open({
+    ntf = new Notyf({
+      position: {
+        x: "right",
+        y: "bottom",
+      },
+      types: [
+        {
           type: "message",
-          message: `ส่งข้อความใหม่: ${data.message}`,
-      });
+          background: "rgba(0,0,0,.7)",
+          color: "#000",
+          icon: `<img width="24" src="${data.sender_avatar}">`,
+        },
+      ],
+    });
+
+    ntf.open({
+      type: "message",
+      message: `ส่งข้อความใหม่: ${data.message}`,
+    });
   }
 };
 
@@ -26,8 +28,12 @@ ws.onopen = () => console.log("WebSocket connection opened.");
 ws.onclose = () => console.log("WebSocket connection closed.");
 ws.onerror = (error) => console.error("WebSocket error:", error);
 
+var uppy;
+
 $(document).ready(function () {
   loadMessageTraning();
+  load_uppy_file_training();
+  loadMessageSetting();
 });
 
 const notyf_message = new Notyf({
@@ -160,6 +166,21 @@ function loadMessageTraning() {
   });
 }
 
+function loadMessageSetting() {
+  $.ajax({
+    url: `${serverUrl}/message-setting-load/${userID}`,
+    method: "get",
+    async: false,
+    success: function (response_setting) {
+      if (response_setting.file_training_setting == "1") {
+        $("#switch_open_file_training").prop("checked", true);
+      } else {
+        $("#switch_open_file_training").prop("checked", false);
+      }
+    },
+  });
+}
+
 function sendTestTraning(data) {
   if (event.key === "Enter") {
     if (data.value == "" && $("#file_img_ask")[0].files[0] == null) {
@@ -193,11 +214,10 @@ function sendTestTraning(data) {
         });
       },
       complete: function (response) {
-
         $("#chat_test_training").val("");
         $("#modal-loading").modal("hide");
 
-        if (response.responseJSON.img_link == "") {
+        if (response.responseJSON.img_link == null) {
           $("#chat-detail-training-test").append(
             '<div class="d-flex flex-row-reverse">' +
               '<div class="me-1 chat-box w-100 reverse">' +
@@ -209,7 +229,7 @@ function sendTestTraning(data) {
               "</div>" +
               "</div>"
           );
-        } else if( testing_send.message == ""){
+        } else if (testing_send.message == "") {
           $("#chat-detail-training-test").append(
             '<div class="d-flex flex-row-reverse">' +
               '<div class="me-1 chat-box w-100 reverse">' +
@@ -297,4 +317,102 @@ function readURLImgTestAI(input) {
 function resetImgTestAI() {
   $("#file_img_ask").val("");
   $("#div_img").hide();
+}
+
+$("#uploadBtn").on("click", function () {
+  // var dataTraning = new FormData();
+  // if ($("#file_training")[0].files[0] == null) {
+  //   notyf_message.error("กรุณาเพิ่ม file");
+  //   return;
+  // }
+  // dataTraning.append("message", $("#txt_instructions").val());
+  // dataTraning.append("file_training", $("#file_training")[0].files[0]);
+  // dataTraning.append(
+  //   "switch_open_file_training",
+  //   $("#switch_open_file_training")[0].checked
+  // );
+  // $.ajax({
+  //   url: `${serverUrl}/message-training-file`,
+  //   method: "POST",
+  //   async: true,
+  //   data: dataTraning,
+  //   dataType: "json",
+  //   cache: false,
+  //   contentType: false,
+  //   processData: false,
+  //   beforeSend: function () {
+  //     $("#modal-loading").modal("show", {
+  //       backdrop: "static",
+  //       keyboard: false,
+  //     });
+  //   },
+  //   complete: function (response) {
+  //     console.log(response.message);
+  //     $("#modal-loading").modal("hide");
+  //     $("#file_training").val(null);
+  //   },
+  //   success: function (response) {},
+  // });
+});
+
+$("#switch_open_file_training").on("change", function () {
+  var dataTraning = new FormData();
+  dataTraning.append(
+    "switch_state",
+    $("#switch_open_file_training")[0].checked
+  );
+
+  $.ajax({
+    url: `${serverUrl}/message-training-switch-state`,
+    method: "POST",
+    async: true,
+    data: dataTraning,
+    dataType: "json",
+    cache: false,
+    contentType: false,
+    processData: false,
+    beforeSend: function () {},
+    complete: function (response) {
+      // console.log(response.message);
+    },
+    success: function (response) {},
+  });
+});
+
+function load_uppy_file_training() {
+  uppy = new Uppy.Uppy({
+    debug: true,
+    autoProceed: false,
+    restrictions: {
+      maxNumberOfFiles: 3,
+      allowedFileTypes: [".pdf", ".csv"],
+      maxFileSize: 300 * 1024 * 1024,
+    },
+  });
+
+  // เพิ่ม UI (Dashboard)
+  uppy.use(Uppy.Dashboard, {
+    inline: true,
+    target: "#drag-drop-area",
+  });
+
+  // ตั้งค่าอัปโหลดไปยังเซิร์ฟเวอร์
+  uppy.use(Uppy.XHRUpload, {
+    endpoint: `${serverUrl}/message-training-file`,
+    fieldName: "files[]",
+    bundle: true,
+    method: "POST",
+  });
+
+  // เพิ่มค่าที่ส่งไปกับไฟล์
+  uppy.setMeta({
+    switch_state: $("#switch_open_file_training")[0].checked,
+  });
+
+  //  ตรวจสอบเมื่ออัปโหลดเสร็จ
+  uppy.on("complete", (result) => {
+    notyf_message.success("สำเร็จ");
+
+    uppy.cancelAll();
+  });
 }
