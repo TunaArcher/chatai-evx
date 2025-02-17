@@ -449,7 +449,7 @@ class ChatGPT
         return $chatHistory ?: [];
     }
 
-    private function saveChatHistory($roomId, $chatHistory)
+    public function saveChatHistory($roomId, $chatHistory)
     {
         $cache = \Config\Services::cache();
         $cacheKey = "chat_history_{$roomId}";
@@ -675,33 +675,91 @@ class ChatGPT
         }
     }
 
-    public function createthreads($fileId, $question)
+    public function createthreads($roomId, $fileNames, $question)
+    {
+        try {
+
+            $dataResponse = [];
+            
+            // ดึงประวัติแชทจาก Cache
+            $chatHistory = $this->getChatHistory($roomId);
+
+            // แปลงประวัติแชทให้อยู่ในรูปแบบที่ GPT รองรับ
+            foreach ($chatHistory as &$msg) {
+                // ตรวจสอบว่า content เป็น array หรือ string
+                if (is_array($msg['content'])) {
+                    if (isset($msg['content'][0]['type']) && $msg['content'][0]['type'] === 'text') {
+                        $msg['content'] = $msg['content'][0]['text']; // ดึงข้อความออกมา
+                    } else {
+                        $msg['content'] = "[มีไฟล์แนบ]"; // หากเป็นรูปภาพให้ระบุว่าเป็นไฟล์แนบ
+                    }
+                }
+            }
+
+            // เพิ่มข้อความของผู้ใช้
+            $userContent = [['type' => 'text', 'text' => $question]];
+
+            // ถ้ามีไฟล์ภาพ ให้เพิ่มข้อมูลภาพเข้าไป
+            if (!empty($fileNames)) {
+                $imageData = $this->formatImageLinks($fileNames);
+                $userContent = array_merge($userContent, $imageData);
+            }
+
+            // เพิ่มข้อความของผู้ใช้ลงไปในแชท
+            $chatHistory[] = [
+                'role' => 'user',
+                'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
+            ];
+
+            //ประวัติแชทที่แก้ไขแล้ว
+            $messages =  $chatHistory;
+       
+           //Create a Thread
+            $response = $this->http->post($this->baseURLOpenAI . "threads", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'messages' => $messages
+                ]
+            ]);
+
+            $threadResponse = json_decode($response->getBody(), true);
+            $threadId = $threadResponse['id'] ?? null;
+
+            if ($threadId == null) {
+                echo  "Failed to delete Assistant.";
+            }
+
+    
+            $dataResponse = [
+                'status_response' => $threadId
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function createthreadsTraining($fileId, $question)
     {
         try {
             $dataResponse = [];
             $messages_context = [];
-            if ($fileId != null) {
-
+            if (!empty($fileId)) {
+                $message_block = $this->formatImageLinks($fileId);
                 $messages_context =
                     [
                         'role' => 'user',
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question  .'\n ไม่ต้องแสดงลิงก์อ้างอิง'
+                                'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question  . '\n ไม่ต้องแสดงลิงก์อ้างอิง'
                             ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => $fileId
-                                ]
-                            ],
-                            // [
-                            //     'type' => 'image_file',
-                            //     'image_file' => [
-                            //         'file_id' => $fileId
-                            //     ]
-                            // ]
+                            $message_block[0]
                         ]
                     ];
             } else {
@@ -716,9 +774,7 @@ class ChatGPT
                         ]
                     ];
             }
-
             //  log_message('info', "File S3: " . json_encode($messages_context));
-
             //Create a Thread
             $response = $this->http->post($this->baseURLOpenAI . "threads", [
                 'headers' => [
