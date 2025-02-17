@@ -717,6 +717,8 @@ class ChatGPT
                     ];
             }
 
+             log_message('info', "File S3: " . json_encode($messages_context));
+
             //Create a Thread
             $response = $this->http->post($this->baseURLOpenAI . "threads", [
                 'headers' => [
