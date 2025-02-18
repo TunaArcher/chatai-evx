@@ -101,8 +101,8 @@ class FacebookHandler
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
-        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         $status_gpt  =  $dataMessage->file_training_setting;
+        $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         if($status_gpt == '1'){
             $thread_id = $chatGPT->createthreads($messageRoom->id, $message['img_url'], $message['message']);
             if ($thread_id != null) {
