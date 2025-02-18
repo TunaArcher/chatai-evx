@@ -652,7 +652,11 @@ class SettingController extends BaseController
         //check file assistant
         if ($dataMessage->file_training_setting == '1') {
             $img_link_back = $link_s3_file == "" ? null : $link_s3_file;
-            $thread_id = $chatGPT->createthreads($img_link_back, $message);
+            $img_link_back_ = "";
+            if ($img_link_back != null) {
+                $img_link_back_ = $img_link_back . ",";
+            }
+            $thread_id = $chatGPT->createthreadsTraining($img_link_back_, $message);
             if ($thread_id != null) {
                 //thread_id
                 $thread_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
@@ -769,7 +773,7 @@ class SettingController extends BaseController
             //check csv file convet to json 
             if ($val['type'] == 'text/csv') {
                 $file_json =  $userID . '_' . generateRandomString() . "." . "json";
-                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);     
+                move_uploaded_file($val['tmp_name'], './uploads/' . $file_training_name);
                 //convert function
                 $status_convert =  CSV_to_JSON('./uploads/' . $file_training_name, './uploads/' . $file_json);
                 if ($status_convert == 'success') {
