@@ -118,9 +118,10 @@
                                                 <div>
                                                     <div class="card-body pt-0">
                                                         <div id="drag-drop-area">
-                                                          
+
                                                         </div>
                                                     </div>
+                                                    <div class="text-body mb-2  d-flex align-items-center" id="dataFileTraining" style="display: none;"><i class="fas fa-database fs-20 me-1 text-muted"></i><span class="text-body fw-semibold">File Data :</span> English / French / Spanish</div>
                                                 </div>
                                                 <div class="btn-group float-end col-md-3 mb-2">
                                                     <!-- <button type="button" class="btn btn-dark me-0 overflow-hidden">
