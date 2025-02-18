@@ -594,10 +594,12 @@ class ChatGPT
                 } else {
                     echo "Failed to add file $fileId to Vector Store.\n";
                 }
+
+                $file_id_response .=  $fileId . ",";
             }
 
             $dataResponse = [
-                'file_id' => $fileId
+                'file_id' => $file_id_response
             ];
 
             return $dataResponse;

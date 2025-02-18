@@ -871,4 +871,17 @@ class SettingController extends BaseController
             ->setContentType('application/json')
             ->setJSON($response);
     }
+
+    public function message_setting_file($user_id)
+    {
+        $messageBack = $this->customerModel->getTrainingAssistantByUserID(hashidsDecrypt($user_id));
+
+        $status = 200;
+        $response = $messageBack;
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setContentType('application/json')
+            ->setJSON($response);
+    }
 }

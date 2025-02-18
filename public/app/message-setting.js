@@ -34,6 +34,7 @@ $(document).ready(function () {
   loadMessageTraning();
   load_uppy_file_training();
   loadMessageSetting();
+  loadFileId();
 });
 
 const notyf_message = new Notyf({
@@ -414,5 +415,35 @@ function load_uppy_file_training() {
     notyf_message.success("สำเร็จ");
 
     uppy.cancelAll();
+  });
+}
+
+function loadFileId() {
+  $.ajax({
+    url: `${serverUrl}/message-setting-file/${userID}`,
+    method: "get",
+    async: false,
+    success: function (response_file) {
+      if (response_file.length != 0) {
+        let file_training_id_array = response_file.file_training_id.split(",");
+        let newcomparetext = "";
+        for (let index = 0; index < file_training_id_array.length; index++) {
+          if (file_training_id_array[index] != "") {
+            newcomparetext +=
+              (index + 1).toString() + "." + file_training_id_array[index].toString() + "  ";
+          }
+        }
+
+        $("#dataFileTraining").html(
+          '<div class="text-body mb-2  d-flex align-items-center" id="dataFileTraining">' +
+            '<i class="fas fa-database fs-20 me-1 text-muted"></i>' +
+            '<span class="text-body fw-semibold">File Data :</span>' +
+            '<span class="fs-15 text-muted fw-normal">' +
+            newcomparetext +
+            +"</span>" +
+            "</div>"
+        );
+      }
+    },
   });
 }
