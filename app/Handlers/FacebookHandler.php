@@ -102,10 +102,32 @@ class FacebookHandler
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
+        $status_gpt  =  $dataMessage->file_training_setting;
+        if($status_gpt == '1'){
+            $thread_id = $chatGPT->createthreads($messageRoom->id, $message['img_url'], $message['message']);
+            if ($thread_id != null) {
+                //thread_id
+                $thread_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
+                    'thread_id' => $thread_id
+                ]);
+            }
+            $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
+            $messageReply = $chatGPT->sendmessagetoThreadIdTraining($data_file_search->thread_id, $data_file_search->assistant_id);
 
-        $messageReply = $message['img_url'] == ''
+            // เพิ่มข้อความของ AI ลงในประวัติแชท
+            $chatHistory[] = [
+                'role' => 'assistant',
+                'content' => $messageReply
+            ];
+
+            // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
+            $chatGPT->saveChatHistory($messageRoom->id, $chatHistory);
+        }else{
+            $messageReply = $message['img_url'] == ''
             ? $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage)
             : $chatGPT->askChatGPT($messageRoom->id, $message['message'], $dataMessage, $message['img_url']);
+        }
+       
 
         $customer = $this->customerModel->getCustomerByUIDAndPlatform($UID, $this->platform);
         $messageRoom = $this->messageRoomModel->getMessageRoomByCustomerID($customer->id);
