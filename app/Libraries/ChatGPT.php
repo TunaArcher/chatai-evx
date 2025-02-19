@@ -714,7 +714,7 @@ class ChatGPT
             //ประวัติแชทที่แก้ไขแล้ว
             $messages =  $chatHistory;
 
-               log_message('info', "File S3: " . json_encode($messages));
+            // log_message('info', "File S3: " . json_encode($messages));
 
             //Create a Thread
             $response = $this->http->post($this->baseURL . "threads", [
@@ -732,7 +732,7 @@ class ChatGPT
             $threadId = $threadResponse['id'] ?? null;
 
             if ($threadId == null) {
-                echo  "Failed to delete Assistant.";
+                echo  "Failed to create thread.";
             }
 
 
