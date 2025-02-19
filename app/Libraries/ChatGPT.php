@@ -717,7 +717,7 @@ class ChatGPT
 
             // log_message('info', "File S3: " . json_encode($messages));
 
-             // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
+             // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ) AAAA
             $this->saveChatHistory($roomId, $chatHistory);
 
             //Create a Thread
