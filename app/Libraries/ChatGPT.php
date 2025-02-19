@@ -711,7 +711,6 @@ class ChatGPT
                 'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
             ];
 
-            log_message('info', "File S3: " . json_encode($userContent));
 
             //ประวัติแชทที่แก้ไขแล้ว
             $messages =  $chatHistory;
