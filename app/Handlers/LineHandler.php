@@ -101,6 +101,7 @@ class LineHandler
         $status_gpt  =  $dataMessage->file_training_setting == null ? '0' : $dataMessage->file_training_setting;
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         if ($status_gpt == '1') {
+            log_message('info', "ask AI: " . $message['message']);
             $thread_id = $chatGPT->createthreads($messageRoom->id, $message['img_url'], $message['message']);
             if ($thread_id != null) {
                 //thread_id
