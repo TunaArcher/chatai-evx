@@ -147,7 +147,7 @@ class LineHandler
 
     private function getUserContext($messages)
     {
-        helper('function');
+        // helper('function');
 
         $contextText = '';
         $imageUrl = '';
