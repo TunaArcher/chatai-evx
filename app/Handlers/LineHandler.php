@@ -111,8 +111,6 @@ class LineHandler
             $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
             $messageReply = $chatGPT->sendmessagetoThreadIdTraining($data_file_search->thread_id, $data_file_search->assistant_id);
 
-            log_message('info', "messageReply: " . $messageReply);
-
             // เพิ่มข้อความของ AI ลงในประวัติแชท
             $chatHistory[] = [
                 'role' => 'assistant',
