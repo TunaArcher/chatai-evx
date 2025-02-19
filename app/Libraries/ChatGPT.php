@@ -15,15 +15,13 @@ class ChatGPT
 {
     private $http;
     private $baseURL;
-    private $baseURLOpenAI;
     private $channelAccessToken;
     private $debug = false;
     private $accessToken;
 
     public function __construct($config)
     {
-        $this->baseURL = 'https://api.openai.com/v1/chat/completions';
-        $this->baseURLOpenAI = 'https://api.openai.com/v1/';
+        $this->baseURL = 'https://api.openai.com/v1/';
         $this->accessToken = $config['GPTToken'];
         $this->http = new Client();
     }
@@ -86,7 +84,7 @@ class ChatGPT
     {
         try {
             //Run the Assistant
-            $response_run = $this->http->post($this->baseURLOpenAI . "threads/$thread_id/runs", [
+            $response_run = $this->http->post($this->baseURL . "threads/$thread_id/runs", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -105,7 +103,7 @@ class ChatGPT
 
             do {
                 sleep(5);
-                $response =  $this->http->get($this->baseURLOpenAI . "/threads/$thread_id/runs/$runId", [
+                $response =  $this->http->get($this->baseURL . "/threads/$thread_id/runs/$runId", [
                     'headers' => [
                         'Authorization' => "Bearer " . $this->accessToken,
                         'OpenAI-Beta' => 'assistants=v2'
@@ -137,7 +135,7 @@ class ChatGPT
         try {
 
 
-            $response =  $this->http->get($this->baseURLOpenAI . "threads/$thread_id/messages", [
+            $response =  $this->http->get($this->baseURL . "threads/$thread_id/messages", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'OpenAI-Beta' => 'assistants=v2'
@@ -165,7 +163,7 @@ class ChatGPT
         try {
 
             // log_message("info", "message_setting: " . $message_user);
-            $response = $this->http->post($this->baseURL, [
+            $response = $this->http->post($this->baseURL . "chat/completions", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -196,7 +194,7 @@ class ChatGPT
     {
         try {
 
-            $response = $this->http->post($this->baseURL, [
+            $response = $this->http->post($this->baseURL . "chat/completions", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -227,7 +225,7 @@ class ChatGPT
     {
         try {
 
-            $response = $this->http->post($this->baseURL, [
+            $response = $this->http->post($this->baseURL . "chat/completions", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -297,7 +295,7 @@ class ChatGPT
     {
 
         try {
-            $response = $this->http->post($this->baseURL, [
+            $response = $this->http->post($this->baseURL . "chat/completions", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -362,7 +360,7 @@ class ChatGPT
     {
         try {
 
-            $response = $this->http->post($this->baseURL, [
+            $response = $this->http->post($this->baseURL . "chat/completions", [
                 'headers' => [
                     'Authorization' => "Bearer {$this->accessToken}",
                     'Content-Type'  => 'application/json',
@@ -474,7 +472,7 @@ class ChatGPT
     public function createAssistantsFileSearch($user_id, $message_setting)
     {
         try {
-            $response = $this->http->post($this->baseURLOpenAI . 'assistants', [
+            $response = $this->http->post($this->baseURL . 'assistants', [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -502,7 +500,7 @@ class ChatGPT
         try {
             $dataResponse = [];
             //vactor store create
-            $response = $this->http->post($this->baseURLOpenAI . 'vector_stores', [
+            $response = $this->http->post($this->baseURL . 'vector_stores', [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -539,7 +537,7 @@ class ChatGPT
             $fileIds = [];
 
             foreach ($filePaths as $filePath) {
-                $response = $this->http->post($this->baseURLOpenAI . 'files', [
+                $response = $this->http->post($this->baseURL . 'files', [
                     'headers' => [
                         'Authorization' => "Bearer " . $this->accessToken,
                     ],
@@ -576,7 +574,7 @@ class ChatGPT
             $file_id_response = "";
 
             foreach ($fileIds as $fileId) {
-                $response = $this->http->post($this->baseURLOpenAI . "vector_stores/$vectorStoreId/files", [
+                $response = $this->http->post($this->baseURL . "vector_stores/$vectorStoreId/files", [
                     'headers' => [
                         'Authorization' => "Bearer " . $this->accessToken,
                         'Content-Type' => 'application/json',
@@ -613,7 +611,7 @@ class ChatGPT
         try {
             $dataResponse = [];
             //vactor store create
-            $response = $this->http->post($this->baseURLOpenAI . "/assistants/$assistant_id", [
+            $response = $this->http->post($this->baseURL . "/assistants/$assistant_id", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -653,7 +651,7 @@ class ChatGPT
         try {
             $dataResponse = [];
             //vactor store create
-            $response = $this->http->delete($this->baseURLOpenAI . "/assistants/$assistant_id", [
+            $response = $this->http->delete($this->baseURL . "/assistants/$assistant_id", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -682,7 +680,7 @@ class ChatGPT
         try {
 
             $dataResponse = [];
-            
+
             // ดึงประวัติแชทจาก Cache
             $chatHistory = $this->getChatHistory($roomId);
 
@@ -715,9 +713,9 @@ class ChatGPT
 
             //ประวัติแชทที่แก้ไขแล้ว
             $messages =  $chatHistory;
-       
-           //Create a Thread
-            $response = $this->http->post($this->baseURLOpenAI . "threads", [
+
+            //Create a Thread
+            $response = $this->http->post($this->baseURL . "threads", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -735,7 +733,7 @@ class ChatGPT
                 echo  "Failed to delete Assistant.";
             }
 
-    
+
             $dataResponse = [
                 'status_response' => $threadId
             ];
@@ -778,7 +776,7 @@ class ChatGPT
             }
             //  log_message('info', "File S3: " . json_encode($messages_context));
             //Create a Thread
-            $response = $this->http->post($this->baseURLOpenAI . "threads", [
+            $response = $this->http->post($this->baseURL . "threads", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
@@ -842,7 +840,7 @@ class ChatGPT
             $messages = array_merge($messages, $chatHistory);
 
             //User sends a message
-            $response = $this->http->post($this->baseURLOpenAI . "threads/$thread_id/messages", [
+            $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
                 'headers' => [
                     'Authorization' => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
