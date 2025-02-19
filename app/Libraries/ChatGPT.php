@@ -711,6 +711,7 @@ class ChatGPT
                 'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
             ];
 
+
             //ประวัติแชทที่แก้ไขแล้ว
             $messages =  $chatHistory;
 
