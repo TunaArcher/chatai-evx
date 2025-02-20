@@ -101,7 +101,7 @@ class FacebookHandler
 
         // ข้อความตอบกลับ
         $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
-        $status_gpt  =  $dataMessage->file_training_setting == null ? '0' : $dataMessage->file_training_setting;
+        $status_gpt  =  $dataMessage == null ? '0' : $dataMessage->file_training_setting;
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         if ($status_gpt == '1') {
             $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
