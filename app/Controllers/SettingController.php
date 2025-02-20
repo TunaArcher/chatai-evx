@@ -665,7 +665,7 @@ class SettingController extends BaseController
                 ]);
             }
             $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
-            $messageReplyToCustomer = $chatGPT->sendmessagetoThreadIdTraining($data_file_search->thread_id, $data_file_search->assistant_id);
+            $messageReplyToCustomer = $chatGPT->sendmessagetoThreadId($data_file_search->thread_id, $data_file_search->assistant_id);
         } else {
             if ($file_askAI == NULL) {
                 $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);
