@@ -753,7 +753,7 @@ class ChatGPT
 
             $threadmessage = $this->sendmessagetoThreadId($threadId, $assistant_id);
 
-            log_message('info', "Detail create thards: " . json_encode($threadmessage));
+            log_message('info', "Detail create thards: " . $threadmessage);
 
             // เพิ่มข้อความของ AI ลงในประวัติแชท
             $chatHistory[] = [
