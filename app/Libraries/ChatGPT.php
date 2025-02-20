@@ -744,7 +744,7 @@ class ChatGPT
                 $thread_id = $threadResponse['id'] ?? null;
             }
 
-            
+
             log_message('info', "question: " . json_encode($userContent));
 
             $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
@@ -753,7 +753,12 @@ class ChatGPT
                     'Content-Type'  => 'application/json',
                     'OpenAI-Beta'   => 'assistants=v2'
                 ],
-                'json' => $userContent
+                'json' => [
+                    'role' => 'user',
+                    'content' => [
+                        $userContent
+                    ]
+                ]
             ]);
 
             $threadmessage = $this->sendmessagetoThreadId($thread_id, $assistant_id);
