@@ -745,8 +745,6 @@ class ChatGPT
             }
 
 
-            log_message('info', "question: " . json_encode($userContent));
-
             $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
                 'headers' => [
                     'Authorization'  => "Bearer " . $this->accessToken,
