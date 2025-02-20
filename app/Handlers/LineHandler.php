@@ -102,7 +102,7 @@ class LineHandler
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         if ($status_gpt == '1') {
             $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
-            $thread_message = $chatGPT->createthreads($messageRoom->id, $message['img_url'], $message['message'], $data_file_search->assistant_id);
+            $thread_message = $chatGPT->createthreads($messageRoom->id, $message['img_url'], $message['message'], $data_file_search->assistant_id, $data_file_search->thread_id);
             if ($data_file_search->assistant_id != null) {
                 //thread_id
                 $thread_id_insert = $this->customerModel->updateTrainingAssistant($userID, [

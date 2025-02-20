@@ -694,7 +694,7 @@ class ChatGPT
         }
     }
 
-    public function createthreads($roomId, $fileNames, $question, $assistant_id)
+    public function createthreads($roomId, $fileNames, $question, $assistant_id, $thread_id)
     {
         try {
 
@@ -729,30 +729,34 @@ class ChatGPT
                 'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
             ];
 
-            // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ) AAAA
-            $this->saveChatHistory($roomId, $chatHistory);
 
-            //ประวัติแชทที่แก้ไขแล้ว
-            $messages =  $chatHistory;
+            if ($thread_id != null) {
+                //Create a Thread
+                $response = $this->http->post($this->baseURL . "threads", [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                        'Content-Type'  => 'application/json',
+                        'OpenAI-Beta' => 'assistants=v2'
+                    ],
+                    'json' => []
+                ]);
+                $threadResponse = json_decode($response->getBody(), true);
+                $thread_id = $threadResponse['id'] ?? null;
+            }
 
-            log_message('info', "Detail create thards: " . json_encode($messages));
-        
-            //Create a Thread
-            $response = $this->http->post($this->baseURL . "threads", [
+            
+            log_message('info', "question: " . json_encode($userContent));
+
+            $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Authorization'  => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
-                    'OpenAI-Beta' => 'assistants=v2'
+                    'OpenAI-Beta'   => 'assistants=v2'
                 ],
-                'json' => [
-                    'messages' => $messages
-                ]
+                'json' => $userContent
             ]);
 
-            $threadResponse = json_decode($response->getBody(), true);
-            $threadId = $threadResponse['id'] ?? null;
-
-            $threadmessage = $this->sendmessagetoThreadId($threadId, $assistant_id);
+            $threadmessage = $this->sendmessagetoThreadId($thread_id, $assistant_id);
 
             // เพิ่มข้อความของ AI ลงในประวัติแชท
             $chatHistory[] = [
@@ -763,13 +767,13 @@ class ChatGPT
             // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
             $this->saveChatHistory($roomId, $chatHistory);
 
-            if ($threadId == null) {
+            if ($thread_id == null) {
                 echo  "Failed to create thread.";
             }
 
 
             $dataResponse = [
-                'thread_id' => $threadId,
+                'thread_id' => $thread_id,
                 'thread_message' => $threadmessage
             ];
 
@@ -779,7 +783,7 @@ class ChatGPT
         }
     }
 
-    public function createthreadsTraining($fileId, $question)
+    public function createthreadsTraining($fileId, $question, $thread_id)
     {
         try {
             $dataResponse = [];
@@ -810,27 +814,38 @@ class ChatGPT
                     ];
             }
             //  log_message('info', "File S3: " . json_encode($messages_context));
-            //Create a Thread
-            $response = $this->http->post($this->baseURL . "threads", [
+            if ($thread_id == null) {
+                //Create a Thread
+                $response = $this->http->post($this->baseURL . "threads", [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                        'Content-Type'  => 'application/json',
+                        'OpenAI-Beta' => 'assistants=v2'
+                    ],
+                    'json' => []
+                ]);
+                $threadResponse = json_decode($response->getBody(), true);
+                $thread_id = $threadResponse['id'] ?? null;
+            }
+
+            $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
                 'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Authorization'  => "Bearer " . $this->accessToken,
                     'Content-Type'  => 'application/json',
-                    'OpenAI-Beta' => 'assistants=v2'
+                    'OpenAI-Beta'   => 'assistants=v2'
                 ],
-                'json' => [
-                    'messages' => [$messages_context]
-                ]
+                'json' => $messages_context
             ]);
 
-            $threadResponse = json_decode($response->getBody(), true);
-            $threadId = $threadResponse['id'] ?? null;
 
-            if ($threadId == null) {
+
+
+            if ($thread_id == null) {
                 echo  "Failed to delete Assistant.";
             }
 
             $dataResponse = [
-                'status_response' => $threadId
+                'thread_id' => $thread_id
             ];
 
             return $dataResponse;
