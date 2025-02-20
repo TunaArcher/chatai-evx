@@ -130,6 +130,24 @@ class ChatGPT
         }
     }
 
+    public function sendmessagetoThreadId($thread_id, $assistant_id)
+    {
+
+        try {
+            $response_run_assistant = $this->runAssistant($thread_id, $assistant_id);
+            $response_retrieve_assistant = "";
+            if ($response_run_assistant == 'completed') {
+                $response_retrieve_assistant = $this->retrieveAssistant($thread_id);
+            } else {
+                $response_retrieve_assistant = $response_run_assistant;
+            }
+
+            return $response_retrieve_assistant;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
     public function retrieveAssistant($thread_id)
     {
         try {
@@ -252,76 +270,6 @@ class ChatGPT
         }
     }
 
-    public function sendmessagetoThreadId($roomId, $thread_id, $assistant_id, $question, $messageSetting = null, $fileNames = null)
-    {
-        try {
-            if (!$messageSetting) $messageSetting = '';
-
-            $messages = [
-                ['role' => 'system', 'content' => $messageSetting]
-            ];
-
-            $chatHistory = $this->getChatHistory($roomId);
-
-            foreach ($chatHistory as &$msg) {
-                if (is_array($msg['content'])) {
-                    if (isset($msg['content'][0]['type']) && $msg['content'][0]['type'] === 'text') {
-                        $msg['content'] = $msg['content'][0]['text']; // ดึงข้อความออกมา
-                    } else {
-                        $msg['content'] = "[มีไฟล์แนบ]"; // หากเป็นรูปภาพให้ระบุว่าเป็นไฟล์แนบ
-                    }
-                }
-            }
-
-            $userContent = [['type' => 'text', 'text' => $question]];
-
-            if (!empty($fileNames)) {
-                $imageData = $this->formatImageLinks($fileNames);
-                $userContent = array_merge($userContent, $imageData);
-            }
-
-            $chatHistory[] = [
-                'role' => 'user',
-                'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
-            ];
-
-            $messages = array_merge($messages, $chatHistory);
-
-            //User sends a message
-            $response = $this->http->post($this->baseURL . "threads/$thread_id/messages", [
-                'headers' => [
-                    'Authorization' => "Bearer " . $this->accessToken,
-                    'Content-Type'  => 'application/json',
-                    'OpenAI-Beta' => 'assistants=v2'
-                ],
-                'json' => [
-                    $messages
-                ]
-            ]);
-
-            $updateResponse  = json_decode($response->getBody(), true);
-            $updateResponse_id  = $updateResponse['id'] ?? null;
-
-            $response_run_assistant = $this->runAssistant($thread_id, $assistant_id);
-            $response_retrieve_assistant = "";
-            if ($response_run_assistant == 'completed') {
-                $response_retrieve_assistant = $this->retrieveAssistant($thread_id);
-            }
-
-            // เพิ่มข้อความของ AI ลงในประวัติแชท
-            $chatHistory[] = [
-                'role' => 'assistant',
-                'content' => $response_retrieve_assistant
-            ];
-
-            // อัปเดตประวัติการสนทนา (เก็บไว้ไม่เกิน 6 ข้อความ)
-            $this->saveChatHistory($roomId, $chatHistory);
-
-            return $response_retrieve_assistant;
-        } catch (Exception $e) {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
 
     // public function _askChatGPTimg($question,  $message_setting, $file_name)
     // {
@@ -751,7 +699,6 @@ class ChatGPT
         try {
 
             $dataResponse = [];
-
             // ดึงประวัติแชทจาก Cache
             $chatHistory = $this->getChatHistory($roomId);
 
@@ -789,7 +736,6 @@ class ChatGPT
             $messages =  $chatHistory;
 
             // log_message('info', "File S3: " . json_encode($messages));
-
             //Create a Thread
             $response = $this->http->post($this->baseURL . "threads", [
                 'headers' => [
@@ -805,7 +751,7 @@ class ChatGPT
             $threadResponse = json_decode($response->getBody(), true);
             $threadId = $threadResponse['id'] ?? null;
 
-            $threadmessage = $this->sendmessagetoThreadIdTraining($threadId, $assistant_id);
+            $threadmessage = $this->sendmessagetoThreadId($threadId, $assistant_id);
 
             // เพิ่มข้อความของ AI ลงในประวัติแชท
             $chatHistory[] = [
@@ -887,26 +833,6 @@ class ChatGPT
             ];
 
             return $dataResponse;
-        } catch (Exception $e) {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
-
-
-
-    public function sendmessagetoThreadIdTraining($thread_id, $assistant_id)
-    {
-
-        try {
-            $response_run_assistant = $this->runAssistant($thread_id, $assistant_id);
-            $response_retrieve_assistant = "";
-            if ($response_run_assistant == 'completed') {
-                $response_retrieve_assistant = $this->retrieveAssistant($thread_id);
-            } else {
-                $response_retrieve_assistant = $response_run_assistant;
-            }
-
-            return $response_retrieve_assistant;
         } catch (Exception $e) {
             return 'Error: ' . $e->getMessage();
         }
