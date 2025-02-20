@@ -755,9 +755,9 @@ class ChatGPT
                 ],
                 'json' => [
                     'role' => 'user',
-                    'content' => [
-                        $userContent
-                    ]
+                    'content' =>
+                    $userContent
+
                 ]
             ]);
 
