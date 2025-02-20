@@ -656,16 +656,16 @@ class SettingController extends BaseController
             if ($img_link_back != null) {
                 $img_link_back_ = $img_link_back . ",";
             }
-            $thread_id = $chatGPT->createthreadsTraining($img_link_back_, $message);
-            if ($thread_id != null) {
+            $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
+            $thread_id = $chatGPT->createthreadsTraining($img_link_back_, $message, $data_file_search->thread_id);
+            if ($data_file_search->assistant_id != null) {
                 //thread_id
                 $thread_id_insert = $this->customerModel->updateTrainingAssistant($userID, [
-                    'thread_id' => $thread_id,
+                    'thread_id' => $thread_id['thread_id'],
                     'updated_at' => $buffer_datetime
                 ]);
             }
-            $data_file_search = $this->customerModel->getTrainingAssistantByUserID($userID);
-            $messageReplyToCustomer = $chatGPT->sendmessagetoThreadId($data_file_search->thread_id, $data_file_search->assistant_id);
+            $messageReplyToCustomer = $chatGPT->sendmessagetoThreadId($thread_id['thread_id'], $data_file_search->assistant_id);
         } else {
             if ($file_askAI == NULL) {
                 $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);
@@ -756,6 +756,7 @@ class SettingController extends BaseController
             $removeassistent = $chatGPT->removeAssistant($check_user_id->assistant_id);
             $data_update = [
                 'assistant_id' => $assistant_id,
+                'thread_id' => null,
                 'updated_at' => $buffer_datetime
             ];
             $assistant_id_status_insert = $this->customerModel->updateTrainingAssistant($userID, $data_update);
