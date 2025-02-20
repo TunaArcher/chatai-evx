@@ -735,7 +735,7 @@ class ChatGPT
             //ประวัติแชทที่แก้ไขแล้ว
             $messages =  $chatHistory;
 
-            log_message('info', "Detail create thards: " . $messages);
+            log_message('info', "Detail create thards: " . json_encode($messages));
         
             //Create a Thread
             $response = $this->http->post($this->baseURL . "threads", [
