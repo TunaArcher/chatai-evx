@@ -729,6 +729,8 @@ class ChatGPT
                 'content' => count($userContent) === 1 ? $userContent[0]['text'] : $userContent
             ];
 
+              log_message('info', "link facebook: " . json_encode($userContent));
+
 
             if ($thread_id != null) {
                 //Create a Thread
