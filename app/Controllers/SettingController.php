@@ -25,6 +25,7 @@ class SettingController extends BaseController
     private $s3_cdn_img;
     private $s3Client;
     private $GPTToken;
+    private $QWENToken;
 
     public function __construct()
     {
@@ -40,6 +41,7 @@ class SettingController extends BaseController
         $this->s3_region = getenv('REGION');
         $this->s3_cdn_img = getenv('CDN_IMG');
         $this->GPTToken = getenv('GPT_TOKEN');
+        $this->QWENToken = getenv('QWEN_TOKEN');
 
         $this->s3Client = new S3Client([
             'version' => 'latest',
@@ -614,8 +616,7 @@ class SettingController extends BaseController
         $response = [
             'success' => 0,
             'message' => '',
-        ];
-        $GPTToken = getenv('GPT_TOKEN');
+        ];      
         // CONNECT TO GPT
         $userID = hashidsDecrypt(session()->get('userID'));
         $message = $this->request->getPost('message');
@@ -642,7 +643,8 @@ class SettingController extends BaseController
         }
 
         $chatGPT = new ChatGPT([
-            'GPTToken' => $GPTToken
+            'GPTToken' => $this->GPTToken,
+            'QWENToken' => $this->QWENToken
         ]);
 
         $dataMessage = $this->customerModel->getMessageSettingByID($userID);
@@ -668,9 +670,11 @@ class SettingController extends BaseController
             $messageReplyToCustomer = $chatGPT->sendmessagetoThreadId($thread_id['thread_id'], $data_file_search->assistant_id);
         } else {
             if ($file_askAI == NULL) {
-                $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);
+                // $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);  
+                $messageReplyToCustomer = $chatGPT->askQwenTraininng($message, $data_Message);
             } else {
                 $messageReplyToCustomer = $chatGPT->askChatGPTimgTraining($message, $dataMessage->message, $link_s3_file);
+                // $messageReplyToCustomer = $chatGPT->askChatQwenimgTraining($message, $dataMessage->message, $link_s3_file);
                 $img_link_back = $link_s3_file;
             }
         }

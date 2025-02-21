@@ -15,14 +15,18 @@ class ChatGPT
 {
     private $http;
     private $baseURL;
+    private $baseQwenURL;
     private $channelAccessToken;
     private $debug = false;
     private $accessToken;
+    private $accessQwenToken;
 
     public function __construct($config)
     {
         $this->baseURL = 'https://api.openai.com/v1/';
+        $this->baseQwenURL = 'https://dashscope-intl.aliyuncs.com/';
         $this->accessToken = $config['GPTToken'];
+        $this->accessQwenToken = $config['QWENToken'];
         $this->http = new Client();
     }
 
@@ -208,6 +212,38 @@ class ChatGPT
         }
     }
 
+    public function askQwenTraininng($question, $message_setting)
+    {
+        try {
+
+            // log_message("info", "message_setting: " . $message_user);
+            $response = $this->http->post($this->baseQwenURL . "compatible-mode/v1/chat/completions", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessQwenToken,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'qwen-plus',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $message_setting
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
     public function gennaratePromtChatGPT($question)
     {
         try {
@@ -321,6 +357,48 @@ class ChatGPT
                 ],
                 'json' => [
                     'model' => 'gpt-4o',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $message_setting
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => 'งาน, เป้าหมาย, หรือ Prompt ปัจจุบัน:\n' . $question
+                                ],
+                                [
+                                    'type' => 'image_url',
+                                    'image_url' => [
+                                        'url' => $file_name
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+            $responseBody = json_decode($response->getBody(), true);
+            return $responseBody['choices'][0]['message']['content'];
+        } catch (\Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function askChatQwenimgTraining($question,  $message_setting, $file_name)
+    {
+
+        try {
+            $response = $this->http->post($this->baseQwenURL . "compatible-mode/v1/chat/completions", [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessQwenToken,
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'qwen-plus',
                     'messages' => [
                         [
                             'role' => 'system',
@@ -549,6 +627,83 @@ class ChatGPT
     }
 
     public function fileUpload($vectorStoreId,  $filePaths)
+    {
+        try {
+
+            //Upload files and get file IDs
+            $fileIds = [];
+
+            foreach ($filePaths as $filePath) {
+                $response = $this->http->post($this->baseURL . 'files', [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                    ],
+                    'multipart' => [
+                        [
+                            'name' => 'purpose',
+                            'contents' => 'assistants'
+                        ],
+                        [
+                            'name' => 'file',
+                            'contents' => fopen($filePath, 'r'),
+                            'filename' => basename($filePath)
+                        ],
+                    ],
+                ]);
+
+                $fileResponse = json_decode($response->getBody(), true);
+                $fileId = $fileResponse['id'] ?? null;
+
+                if ($fileId) {
+                    $fileIds[] = $fileId;
+                    echo "File uploaded successfully! File ID: $fileId\n";
+                } else {
+                    echo "Failed to upload file: $filePath\n";
+                }
+            }
+
+            if (empty($fileIds)) {
+                die("No files were uploaded successfully.\n");
+            }
+
+            // Attach Files to Vector Store (Batch Upload)
+
+            $file_id_response = "";
+
+            foreach ($fileIds as $fileId) {
+                $response = $this->http->post($this->baseURL . "vector_stores/$vectorStoreId/files", [
+                    'headers' => [
+                        'Authorization' => "Bearer " . $this->accessToken,
+                        'Content-Type' => 'application/json',
+                        'OpenAI-Beta' => 'assistants=v2'
+                    ],
+                    'json' => [
+                        'file_id' => $fileId
+                    ],
+                ]);
+
+                $addFileResponse = json_decode($response->getBody(), true);
+
+                if (isset($addFileResponse['id'])) {
+                    echo "File $fileId added to Vector Store successfully!\n";
+                } else {
+                    echo "Failed to add file $fileId to Vector Store.\n";
+                }
+
+                $file_id_response .=  $fileId . ",";
+            }
+
+            $dataResponse = [
+                'file_id' => $file_id_response
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function fileUploadQwen($vectorStoreId,  $filePaths)
     {
         try {
 
@@ -861,4 +1016,6 @@ class ChatGPT
             return 'Error: ' . $e->getMessage();
         }
     }
+
+
 }
