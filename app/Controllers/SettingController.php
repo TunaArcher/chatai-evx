@@ -670,8 +670,8 @@ class SettingController extends BaseController
             $messageReplyToCustomer = $chatGPT->sendmessagetoThreadId($thread_id['thread_id'], $data_file_search->assistant_id);
         } else {
             if ($file_askAI == NULL) {
-                // $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);  
-                $messageReplyToCustomer = $chatGPT->askQwenTraininng($message, $data_Message);
+                $messageReplyToCustomer = $chatGPT->askChatGPTTraininng($message, $data_Message);  
+                // $messageReplyToCustomer = $chatGPT->askQwenTraininng($message, $data_Message);
             } else {
                 $messageReplyToCustomer = $chatGPT->askChatGPTimgTraining($message, $dataMessage->message, $link_s3_file);
                 // $messageReplyToCustomer = $chatGPT->askChatQwenimgTraining($message, $dataMessage->message, $link_s3_file);

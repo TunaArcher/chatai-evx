@@ -626,6 +626,40 @@ class ChatGPT
         }
     }
 
+    public function createVactorStoreQwen($user_id)
+    {
+        try {
+            $dataResponse = [];
+            //vactor store create
+            $response = $this->http->post($this->baseURL . 'vector_stores', [
+                'headers' => [
+                    'Authorization' => "Bearer " . $this->accessToken,
+                    'Content-Type'  => 'application/json',
+                    'OpenAI-Beta' => 'assistants=v2'
+                ],
+                'json' => [
+                    'name' => 'vactorstore' . $user_id
+                ],
+            ]);
+
+            $vectorStoreResponse = json_decode($response->getBody(), true);
+            $vectorStoreId = $vectorStoreResponse['id'] ?? null;
+
+            if (!$vectorStoreId) {
+                die("Failed to create Vector Store.\n");
+            }
+
+
+            $dataResponse = [
+                'vactorstore_id' => $vectorStoreId
+            ];
+
+            return $dataResponse;
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    }
+
     public function fileUpload($vectorStoreId,  $filePaths)
     {
         try {
