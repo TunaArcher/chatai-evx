@@ -97,7 +97,7 @@ class LineHandler
         $message = $this->getUserContext($messages);
 
         // ข้อความตอบกลับ
-        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN')]);
+        $chatGPT = new ChatGPT(['GPTToken' => getenv('GPT_TOKEN'),  'QWENToken' => getenv('QWEN_TOKEN')]);
         $status_gpt  =  $dataMessage == null ? '0' : $dataMessage->file_training_setting;
         $dataMessage = $dataMessage ? $dataMessage->message : 'you are assistance';
         if ($status_gpt == '1') {
