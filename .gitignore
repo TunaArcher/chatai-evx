@@ -133,3 +133,7 @@ public/uploads/stock_img/*
 public/uploads/stock_doc/*
 public/uploads/img/*
 public/uploads/loan_img/*
+
+#composer file
+composer.json
+composer.lock
